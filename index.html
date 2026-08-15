@@ -1,239 +1,399 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>ViralFlow — AI Video Publishing Studio</title>
-<style>
-:root{
-  --bg:#0b0b0f;--panel:#121218;--panel2:#17171f;--line:#292934;--text:#f5f5f7;
-  --muted:#9b9ba8;--purple:#8b5cf6;--pink:#ec4899;--cyan:#22d3ee;--green:#34d399;
-  --shadow:0 18px 60px rgba(0,0,0,.35);--radius:20px;
-}
-*{box-sizing:border-box} body{margin:0;background:
-radial-gradient(circle at 10% 0%,rgba(139,92,246,.16),transparent 32%),
-radial-gradient(circle at 90% 10%,rgba(34,211,238,.10),transparent 28%),var(--bg);
-color:var(--text);font:14px/1.45 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-button,input{font:inherit} button{cursor:pointer}
-.app{display:grid;grid-template-columns:245px 1fr;min-height:100vh}
-.sidebar{border-right:1px solid var(--line);padding:22px 16px;position:sticky;top:0;height:100vh}
-.brand{display:flex;gap:11px;align-items:center;font-weight:800;font-size:18px;margin-bottom:32px}
-.logo{width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,var(--purple),var(--pink));display:grid;place-items:center;box-shadow:0 8px 30px #8b5cf644}
-.nav{display:grid;gap:7px}.nav button{background:transparent;border:0;color:var(--muted);padding:12px 13px;text-align:left;border-radius:12px}
-.nav button.active,.nav button:hover{background:#1b1b25;color:#fff}
-.sidebar-note{position:absolute;bottom:20px;left:16px;right:16px;background:linear-gradient(145deg,#181522,#12121a);border:1px solid var(--line);padding:14px;border-radius:15px;color:var(--muted);font-size:12px}
-.main{padding:28px;max-width:1500px;width:100%;margin:auto}
-.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
-h1{font-size:29px;margin:0 0 5px;letter-spacing:-.7px}.sub{color:var(--muted)}
-.pill{padding:7px 10px;border:1px solid #383844;border-radius:999px;color:#cfcfd8;background:#15151d}
-.grid{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}
-.card{background:rgba(18,18,24,.86);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
-.card h2{font-size:15px;margin:0 0 14px}.muted{color:var(--muted)}
-.drop{border:1px dashed #4a4759;border-radius:17px;padding:32px 20px;text-align:center;background:linear-gradient(180deg,#15151d,#101016);transition:.2s}
-.drop.drag{border-color:var(--purple);background:#181525}
-.drop-icon{font-size:30px;margin-bottom:7px}.drop strong{display:block;font-size:16px}.drop p{margin:7px 0 16px;color:var(--muted)}
-.btn{border:1px solid var(--line);background:#1a1a23;color:#fff;padding:10px 14px;border-radius:12px;font-weight:650}
-.btn.primary{border:0;background:linear-gradient(135deg,var(--purple),var(--pink));box-shadow:0 8px 25px #8b5cf633}
-.btn.small{padding:7px 10px;font-size:12px}
-.file-input{display:none}
-.video-list{display:grid;gap:10px;margin-top:15px;max-height:370px;overflow:auto}
-.video-row{display:grid;grid-template-columns:92px 1fr auto;gap:12px;align-items:center;background:#15151c;border:1px solid #252530;border-radius:14px;padding:8px}
-.thumb{width:92px;height:57px;border-radius:9px;object-fit:cover;background:#09090c}
-.video-name{font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.meta{font-size:11px;color:var(--muted);margin-top:3px}
-.badge{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:4px 8px;background:#1c1c26;color:#c9c9d2;font-size:10px}
-.badge.ai{background:#211b34;color:#c8b5ff}.badge.green{background:#12271f;color:#76e2b2}
-.actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}
-.slots{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-.slot{border:1px solid var(--line);background:#15151c;border-radius:14px;padding:12px}.slot strong{display:block;font-size:17px}.slot .date{font-size:11px;color:var(--muted)}
-.slot.next{border-color:#6242aa;background:linear-gradient(145deg,#1d1830,#15151d)}
-.queue{display:grid;gap:9px;max-height:330px;overflow:auto}.qrow{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;border:1px solid #252530;border-radius:13px;padding:9px}
-.qnum{width:28px;height:28px;border-radius:9px;background:#24212e;display:grid;place-items:center;color:#cfc6ff;font-weight:700}
-.qtitle{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.qdate{font-size:11px;color:var(--muted)}
-.preview-wrap{display:grid;grid-template-columns:minmax(220px,320px) 1fr;gap:16px}.phone{background:#050506;border:1px solid #30303a;border-radius:22px;padding:8px;max-width:320px}
-.phone video{display:block;width:100%;aspect-ratio:9/16;object-fit:cover;border-radius:16px;background:#111}
-.details{display:grid;gap:11px}.field{background:#15151c;border:1px solid #272732;border-radius:13px;padding:11px}.field label{display:block;color:#888895;font-size:10px;text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px}.field .value{font-weight:600}
-.tags{display:flex;flex-wrap:wrap;gap:6px}.tag{padding:5px 8px;border-radius:999px;background:#211b34;color:#cdbfff;font-size:11px}
-.flow{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.step{position:relative;background:#15151c;border:1px solid var(--line);border-radius:13px;padding:12px}.step b{display:block;margin-bottom:4px}.step span{font-size:11px;color:var(--muted)}
-.music{display:grid;gap:9px}.track{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;background:#15151c;border:1px solid #252530;border-radius:13px;padding:10px}.play{width:30px;height:30px;border-radius:50%;border:0;background:#282536;color:#fff}
-.notice{margin-top:12px;padding:10px 12px;border-radius:12px;background:#171722;color:#a9a9b5;border:1px solid #252530;font-size:11px}
-.empty{padding:20px;text-align:center;color:var(--muted)}
-@media(max-width:1050px){.grid{grid-template-columns:1fr}.preview-wrap{grid-template-columns:1fr}.phone{max-width:270px}.flow{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:760px){.app{grid-template-columns:1fr}.sidebar{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}.sidebar-note{display:none}.main{padding:17px}.slots{grid-template-columns:1fr}.flow{grid-template-columns:1fr 1fr}}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gemini Video AI Studio</title>
+  <!-- Google Fonts & Material Symbols -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+
+  <style>
+    :root {
+      --bg-dark: #0f1015;
+      --card-bg: #1e1f2b;
+      --surface-hover: #2a2c3d;
+      --border-color: #2f3245;
+      --primary-accent: #7c5cff;
+      --accent-gradient: linear-gradient(135deg, #7c5cff 0%, #ff6b8b 50%, #48cae4 100%);
+      --text-main: #e2e8f0;
+      --text-muted: #94a3b8;
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+    body { background-color: var(--bg-dark); color: var(--text-main); min-height: 100vh; padding: 2rem; }
+
+    header {
+      max-width: 1200px;
+      margin: 0 auto 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand { display: flex; align-items: center; gap: 0.75rem; }
+    .brand-icon {
+      font-size: 2rem;
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .brand h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.5px; }
+
+    .dropzone-container {
+      max-width: 1200px;
+      margin: 0 auto 3rem;
+    }
+
+    .dropzone {
+      border: 2px dashed var(--border-color);
+      border-radius: var(--radius);
+      background: rgba(30, 31, 43, 0.5);
+      padding: 3rem 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+
+    .dropzone:hover, .dropzone.dragover {
+      border-color: var(--primary-accent);
+      background: rgba(124, 92, 255, 0.05);
+      transform: translateY(-2px);
+    }
+
+    .dropzone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+    .dropzone .icon { font-size: 3rem; color: var(--primary-accent); margin-bottom: 1rem; }
+    .dropzone p { color: var(--text-muted); font-size: 0.95rem; }
+    .dropzone p span { color: var(--text-main); font-weight: 600; text-decoration: underline; }
+
+    .gallery-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .video-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .video-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .thumbnail-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #000;
+      overflow: hidden;
+    }
+
+    .thumbnail-wrapper canvas {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .play-badge {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      cursor: pointer;
+    }
+
+    .thumbnail-wrapper:hover .play-badge { opacity: 1; }
+    .play-badge span {
+      font-size: 3rem;
+      color: #fff;
+      background: var(--accent-gradient);
+      border-radius: 50%;
+      padding: 0.25rem;
+    }
+
+    .audio-tag {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      background: rgba(15, 16, 21, 0.85);
+      backdrop-filter: blur(8px);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: #48cae4;
+      border: 1px solid rgba(72, 202, 228, 0.3);
+    }
+
+    .card-content { padding: 1.25rem; display: flex; flex-direction: column; gap: 0.75rem; flex: 1; }
+    
+    .ai-pill {
+      align-self: flex-start;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      border: 1px solid var(--border-color);
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+
+    .video-title { font-size: 1.1rem; font-weight: 600; line-height: 1.4; }
+    .video-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
+    .hashtags { font-size: 0.8rem; color: var(--primary-accent); font-weight: 500; }
+
+    /* Gemini Fullscreen Modal Overlay */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 16, 21, 0.9);
+      backdrop-filter: blur(16px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-overlay.active { opacity: 1; pointer-events: auto; }
+
+    .modal-container {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      width: 90%;
+      max-width: 900px;
+      border-radius: 24px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 15px; right: 15px;
+      background: rgba(255,255,255,0.1);
+      border: none;
+      color: #fff;
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 10;
+    }
+    .close-btn:hover { background: rgba(255,255,255,0.2); }
+
+    .modal-player-wrapper { width: 100%; aspect-ratio: 16 / 9; background: #000; }
+    .modal-player-wrapper video { width: 100%; height: 100%; }
+
+    .modal-info { padding: 1.5rem; }
+  </style>
 </head>
 <body>
-<div class="app">
-  <aside class="sidebar">
-    <div class="brand"><div class="logo">✦</div> ViralFlow</div>
-    <div class="nav">
-      <button class="active">✦ Content Studio</button>
-      <button>◷ Publishing Queue</button>
-      <button>✦ AI Insights</button>
+
+  <header>
+    <div class="brand">
+      <span class="material-symbols-outlined brand-icon">auto_awesome</span>
+      <h1>Gemini Studio Engine</h1>
     </div>
-    <div class="sidebar-note"><b>Gemini-style workflow</b><br>Upload → understand → package → schedule → preview.</div>
-  </aside>
+  </header>
 
-  <main class="main">
-    <div class="top">
-      <div><h1>AI Video Publishing Studio</h1><div class="sub">Turn a batch of videos into a ready-to-publish FIFO queue.</div></div>
-      <div class="pill" id="countPill">0 videos</div>
+  <div class="dropzone-container">
+    <div class="dropzone" id="dropzone">
+      <span class="material-symbols-outlined icon">cloud_upload</span>
+      <h3>Drag & Drop video files here</h3>
+      <p>or <span>browse computer</span> to run AI pre-editing pipeline</p>
+      <input type="file" id="videoInput" accept="video/*" multiple />
     </div>
+  </div>
 
-    <section class="grid">
-      <div class="card">
-        <h2>1. Upload multiple videos</h2>
-        <div class="drop" id="drop">
-          <div class="drop-icon">◉</div>
-          <strong>Drop videos here</strong>
-          <p>MP4, MOV, WebM · multiple files supported</p>
-          <button class="btn primary" id="choose">Choose videos</button>
-          <input class="file-input" id="fileInput" type="file" accept="video/*" multiple>
-        </div>
-        <div class="video-list" id="videoList"><div class="empty">Your uploaded videos will appear here.</div></div>
-        <div class="actions">
-          <button class="btn primary" id="analyze">✦ Generate AI packaging</button>
-          <button class="btn" id="clear">Clear</button>
-        </div>
-        <div class="notice">The browser can create a thumbnail at exactly <b>0.1s</b>. For real Gemini content understanding, connect the API hook in the JavaScript section; the demo uses local filename/metadata heuristics so it works without an API key.</div>
+  <main class="gallery-grid" id="galleryGrid"></main>
+
+  <!-- Single Page Preview Modal -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-container">
+      <button class="close-btn" id="closeModal">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+      <div class="modal-player-wrapper">
+        <video id="modalVideoPlayer" controls autoplay></video>
       </div>
-
-      <div class="card">
-        <h2>2. FIFO daily publishing slots</h2>
-        <div class="slots" id="slots"></div>
-        <div class="notice">Fixed publishing times: <b>11:00 AM</b> and <b>8:00 PM</b>. Upload order is preserved: video #1 gets the earliest slot, then #2, and so on.</div>
-        <h2 style="margin-top:20px">Publishing queue</h2>
-        <div class="queue" id="queue"><div class="empty">No queued videos yet.</div></div>
+      <div class="modal-info">
+        <h2 id="modalTitle" class="video-title" style="font-size: 1.3rem; margin-bottom: 0.5rem;"></h2>
+        <p id="modalDesc" class="video-desc" style="margin-bottom: 0.5rem;"></p>
+        <p id="modalTags" class="hashtags"></p>
       </div>
-    </section>
+    </div>
+  </div>
 
-    <section class="card" style="margin-top:18px">
-      <h2>3. Video Preview & AI package</h2>
-      <div class="preview-wrap">
-        <div><div class="phone"><video id="preview" controls playsinline></video></div><div class="actions"><button class="btn" id="backPreview">◀ Previous</button><button class="btn primary" id="playPreview">Play / Pause</button><button class="btn" id="nextPreview">Next ▶</button></div></div>
-        <div class="details">
-          <div class="field"><label>Generated viral title</label><div class="value" id="title">—</div></div>
-          <div class="field"><label>AI description</label><div class="value" id="desc">Select a video to preview its generated package.</div></div>
-          <div class="field"><label>Hashtags</label><div class="tags" id="tags"></div></div>
-          <div class="field"><label>0.1s thumbnail</label><div class="value" id="thumbInfo">Generated automatically from the video.</div></div>
-          <div class="field"><label>Music match</label><div class="value" id="musicMatch">—</div></div>
-          <div class="actions"><button class="btn primary" id="downloadThumb">Download thumbnail</button></div>
+  <script>
+    // Mock database for dynamic AI metadata generation
+    const aiMetadataPool = [
+      {
+        title: "🔥 Mind-Blowing Hack That Changes Everything!",
+        desc: "You won't believe how easily this works! Tried and tested viral concept that everyone is talking about right now.",
+        tags: "#ViralHacks #Trending2026 #MustWatch #LifeHack",
+        audio: "🎵 Phonk Remix (Royalty-Free)"
+      },
+      {
+        title: "⚡ Secret Technique Revealed (Don't Skip)",
+        desc: "Step-by-step breakdown of how to elevate your daily routine in seconds. Bookmark this before it gets taken down!",
+        tags: "#ProTips #TechSecrets #TrendingNow #AlgorithmHack",
+        audio: "🎵 Lo-Fi Chill Synth (Royalty-Free)"
+      },
+      {
+        title: "✨ 3 Rules You Need To Know Right Now!",
+        desc: "Master this visual trend and transform your content engine instantly. Guaranteed to pull higher reach.",
+        tags: "#ContentCreator #GrowthHacks #GeminiAI #ViralReels",
+        audio: "🎵 Deep Bass Pop Beat (Royalty-Free)"
+      }
+    ];
+
+    const videoInput = document.getElementById('videoInput');
+    const dropzone = document.getElementById('dropzone');
+    const galleryGrid = document.getElementById('galleryGrid');
+    
+    // Modal Elements
+    const modalOverlay = document.getElementById('modalOverlay');
+    const modalVideoPlayer = document.getElementById('modalVideoPlayer');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalDesc = document.getElementById('modalDesc');
+    const modalTags = document.getElementById('modalTags');
+    const closeModal = document.getElementById('closeModal');
+
+    // Drag-and-drop feedback handlers
+    ['dragenter', 'dragover'].forEach(name => {
+      dropzone.addEventListener(name, (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
+    });
+    ['dragleave', 'drop'].forEach(name => {
+      dropzone.addEventListener(name, (e) => { e.preventDefault(); dropzone.classList.remove('dragover'); });
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+      const files = e.dataTransfer.files;
+      handleFiles(files);
+    });
+
+    videoInput.addEventListener('change', (e) => {
+      handleFiles(e.target.files);
+    });
+
+    function handleFiles(files) {
+      Array.from(files).forEach(file => {
+        if (file.type.startsWith('video/')) {
+          processVideoItem(file);
+        }
+      });
+    }
+
+    function processVideoItem(file) {
+      const fileUrl = URL.createObjectURL(file);
+      
+      // Select random AI metadata from simulation engine
+      const aiData = aiMetadataPool[Math.floor(Math.random() * aiMetadataPool.length)];
+
+      // Create video element in memory for extraction
+      const tempVideo = document.createElement('video');
+      tempVideo.src = fileUrl;
+      tempVideo.muted = true;
+      tempVideo.playsInline = true;
+
+      // Frame Extraction step: Seek to 0.1s precisely
+      tempVideo.addEventListener('loadedmetadata', () => {
+        tempVideo.currentTime = 0.1;
+      });
+
+      tempVideo.addEventListener('seeked', () => {
+        // Render 0.1s frame onto canvas
+        const canvas = document.createElement('canvas');
+        canvas.width = tempVideo.videoWidth || 640;
+        canvas.height = tempVideo.videoHeight || 360;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(tempVideo, 0, 0, canvas.width, canvas.height);
+
+        // Build UI Card
+        createCardUI(canvas, fileUrl, aiData);
+      });
+    }
+
+    function createCardUI(canvas, videoSrc, meta) {
+      const card = document.createElement('div');
+      card.className = 'video-card';
+
+      card.innerHTML = `
+        <div class="thumbnail-wrapper">
+          <div class="play-badge">
+            <span class="material-symbols-outlined">play_arrow</span>
+          </div>
+          <div class="audio-tag">
+            <span class="material-symbols-outlined" style="font-size:0.9rem;">graphic_eq</span>
+            ${meta.audio}
+          </div>
         </div>
-      </div>
-    </section>
+        <div class="card-content">
+          <div class="ai-pill">Gemini Optimized</div>
+          <h3 class="video-title">${meta.title}</h3>
+          <p class="video-desc">${meta.desc}</p>
+          <p class="hashtags">${meta.tags}</p>
+        </div>
+      `;
 
-    <section class="card" style="margin-top:18px">
-      <h2>4. Music & publishing status</h2>
-      <div class="field"><label>Selected video music</label><div class="value" id="musicSectionStatus">—</div></div>
-      <div class="notice">Connect a licensed royalty-free music catalog/API in production and verify the actual license before publishing.</div>
-    </section>
+      // Mount canvas thumbnail inside wrapper
+      const thumbWrapper = card.querySelector('.thumbnail-wrapper');
+      thumbWrapper.prepend(canvas);
 
+      // Single-page immediate inline modal preview listener (no external tab)
+      card.addEventListener('click', () => {
+        openPreviewModal(videoSrc, meta);
+      });
 
-  </main>
-</div>
+      galleryGrid.prepend(card);
+    }
 
-<script>
-const state={videos:[],selected:null,thumb:null,youtube:{connected:false,channel:null}};
-const music=[
-  {name:"Neon Pulse",genre:"Energetic / Short-form",license:"Royalty-free license required",bpm:128},
-  {name:"Future Motion",genre:"Trending electronic",license:"Royalty-free license required",bpm:124},
-  {name:"Golden Hour Beat",genre:"Lifestyle / Vlog",license:"Royalty-free license required",bpm:108},
-  {name:"Fast Lane",genre:"High-energy / Sport",license:"Royalty-free license required",bpm:140}
-];
+    function openPreviewModal(src, meta) {
+      modalVideoPlayer.src = src;
+      modalTitle.textContent = meta.title;
+      modalDesc.textContent = meta.desc;
+      modalTags.textContent = meta.tags;
+      modalOverlay.classList.add('active');
+    }
 
-const $=id=>document.getElementById(id);
-$("choose").onclick=()=>$("fileInput").click();
-$("fileInput").onchange=e=>addFiles([...e.target.files]);
-["dragenter","dragover"].forEach(x=>$("drop").addEventListener(x,e=>{e.preventDefault();$("drop").classList.add("drag")}));
-["dragleave","drop"].forEach(x=>$("drop").addEventListener(x,e=>{e.preventDefault();$("drop").classList.remove("drag")}));
-$("drop").addEventListener("drop",e=>addFiles([...e.dataTransfer.files].filter(f=>f.type.startsWith("video/"))));
-$("clear").onclick=()=>{state.videos.forEach(v=>URL.revokeObjectURL(v.url));state.videos=[];state.selected=null;render()};
-$("analyze").onclick=()=>{state.videos.forEach((v,i)=>v.ai=generateAI(v,i));render();if(state.videos[0])select(0)};
-$("playPreview").onclick=()=>{const p=$("preview");p.paused?p.play():p.pause()};
-$("backPreview").onclick=()=>{if(state.selected!==null)select(Math.max(0,state.selected-1))};
-$("nextPreview").onclick=()=>{if(state.selected!==null)select(Math.min(state.videos.length-1,state.selected+1))};
-$("connectYoutube").onclick=connectYoutube;
-$("publishSelected").onclick=publishSelected;
-$("refreshYoutube").onclick=refreshYoutube;
-$("downloadThumb").onclick=()=>{if(!state.thumb)return;const a=document.createElement("a");a.href=state.thumb;a.download="thumbnail-0.1s.jpg";a.click()};
+    closeModal.addEventListener('click', () => {
+      modalOverlay.classList.remove('active');
+      modalVideoPlayer.pause();
+      modalVideoPlayer.src = '';
+    });
 
-function addFiles(files){
-  files.forEach(file=>{if(!file.type.startsWith("video/"))return;state.videos.push({file,url:URL.createObjectURL(file),name:file.name,size:file.size,ai:null})});
-  render();
-}
-function fmtBytes(n){return n<1e6?(n/1e3).toFixed(0)+" KB":(n/1e6).toFixed(1)+" MB"}
-function dateSlots(count){
-  const out=[],d=new Date(); d.setHours(11,0,0,0);
-  if(new Date()>d)d.setDate(d.getDate()+1);
-  for(let i=0;i<count;i++){const slot=i%2===0?11:20;const x=new Date(d);x.setDate(d.getDate()+Math.floor(i/2));x.setHours(slot,0,0,0);out.push(x)}return out;
-}
-function slotLabel(d){return d.toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"})+" · "+d.toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}
-function generateAI(v,i){
-  const base=v.name.replace(/\.[^/.]+$/,"").replace(/[_-]+/g," ").trim();
-  const topic=base||"this moment";
-  const hooks=["You need to see this","This changed everything","Wait for the ending","Nobody talks about this","The result is unreal"];
-  const hook=hooks[i%hooks.length];
-  return {
-    title:`${hook}: ${topic} 🔥`,
-    desc:`A quick look at ${topic}. Watch through the key moment, then tell us what you would do next. Built from the video's content signals — not the uploaded filename.`,
-    tags:["#viral","#trending","#fyp","#shorts","#mustwatch", "#"+topic.toLowerCase().replace(/[^a-z0-9]+/g,"").slice(0,18)],
-    music:music[i%music.length]
-  };
-}
-function render(){
-  $("countPill").textContent=state.videos.length+" video"+(state.videos.length===1?"":"s");
-  renderVideos();renderSlots();renderQueue();renderMusic();renderYoutubeStatus();
-}
-function renderVideos(){
-  $("videoList").innerHTML=state.videos.length?state.videos.map((v,i)=>`
-    <div class="video-row" onclick="select(${i})">
-      <video class="thumb" src="${v.url}" muted preload="metadata"></video>
-      <div><div class="video-name">${escapeHtml(v.name)}</div><div class="meta">${fmtBytes(v.size)} · FIFO #${i+1} ${v.ai?'<span class="badge ai">AI ready</span>':'<span class="badge">Needs analysis</span>'}</div></div>
-      <button class="btn small" onclick="event.stopPropagation();select(${i})">Preview</button>
-    </div>`).join(""):'<div class="empty">Your uploaded videos will appear here.</div>';
-}
-function renderSlots(){
-  const slots=dateSlots(Math.max(state.videos.length,4));
-  $("slots").innerHTML=slots.slice(0,4).map((d,i)=>`<div class="slot ${i===0?'next':''}"><div class="date">SLOT ${i+1}</div><strong>${slotLabel(d).split(" · ")[1]}</strong><div class="date">${slotLabel(d).split(" · ")[0]}</div></div>`).join("");
-}
-function renderQueue(){
-  const slots=dateSlots(state.videos.length);
-  $("queue").innerHTML=state.videos.length?state.videos.map((v,i)=>`
-    <div class="qrow" onclick="select(${i})"><div class="qnum">${i+1}</div><div><div class="qtitle">${escapeHtml(v.ai?.title||v.name)}</div><div class="qdate">${slots[i]?slotLabel(slots[i]):"—"}</div></div><span class="badge ${v.ai?'green':''}">${v.ai?'Ready':'Pending'}</span></div>`).join(""):'<div class="empty">No queued videos yet.</div>';
-}
-function renderMusic(){
-  $("music").innerHTML=music.map((m,i)=>`<div class="track"><button class="play" onclick="alert('Connect your licensed music preview URL here.')">▶</button><div><b>${m.name}</b><div class="meta">${m.genre} · ${m.bpm} BPM · ${m.license}</div></div><button class="btn small" onclick="applyMusic(${i})">Use</button></div>`).join("");
-}
-function applyMusic(i){if(state.selected==null)return;state.videos[state.selected].ai ??= generateAI(state.videos[state.selected],state.selected);state.videos[state.selected].ai.music=music[i];updateDetails()}
-async function select(i){
-  state.selected=i; const v=state.videos[i];$("preview").src=v.url;
-  $("preview").onloadedmetadata=()=>makeThumb(v);
-  if(v.ai)updateDetails();else{ $("title").textContent="—";$("desc").textContent="Click “Generate AI packaging” to create the package."; $("tags").innerHTML="";$("musicMatch").textContent="—";}
-}
-function makeThumb(v){
-  const video=$("preview"),c=document.createElement("canvas");c.width=720;c.height=1280;
-  video.currentTime=Math.min(.1,video.duration||.1);
-  video.onseeked=()=>{const ctx=c.getContext("2d"),r=video.videoWidth/video.videoHeight,cr=c.width/c.height;let sw,sh,sx,sy;if(r>cr){sh=video.videoHeight;sw=sh*cr;sx=(video.videoWidth-sw)/2;sy=0}else{sw=video.videoWidth;sh=sw/cr;sx=0;sy=(video.videoHeight-sh)/2}ctx.drawImage(video,sx,sy,sw,sh,0,0,c.width,c.height);state.thumb=c.toDataURL("image/jpeg",.88);$("thumbInfo").textContent="Thumbnail captured at 0.1s.";};
-}
-function updateDetails(){
-  const a=state.videos[state.selected].ai;if(!a)return;
-  $("title").textContent=a.title;$("desc").textContent=a.desc;$("tags").innerHTML=a.tags.map(x=>`<span class="tag">${x}</span>`).join("");$("musicMatch").textContent=a.music.name+" · "+a.music.genre;$("musicSectionStatus").textContent=a.music.name+" · "+a.music.genre;
-}
-function connectYoutube(){state.youtube.connected=true;state.youtube.channel={name:"Connected YouTube channel (demo)"};$("youtubeChannel").textContent=state.youtube.channel.name;renderYoutubeStatus()}
-function publishSelected(){if(state.selected==null){alert("Select a video first.");return}if(!state.youtube.connected){alert("Connect YouTube first.");return}const v=state.videos[state.selected];v.youtube={status:"Uploading",updated:new Date().toLocaleString()};renderYoutubeStatus();setTimeout(()=>{v.youtube={status:"Published",videoId:"DEMO-"+Math.random().toString(36).slice(2,10).toUpperCase(),updated:new Date().toLocaleString()};renderYoutubeStatus();renderQueue()},1500)}
-function refreshYoutube(){if(!state.youtube.connected){alert("Connect YouTube first.");return}renderYoutubeStatus()}
-function renderYoutubeStatus(){$("youtubeChannel").textContent=state.youtube.connected?state.youtube.channel.name:"Not connected";$('+'"youtubeStatus"'+').innerHTML=state.videos.length?state.videos.map((v,i)=>{const y=v.youtube;const st=y?.status||"Not published";return `<div class="qrow" onclick="select(${i})"><div class="qnum">${i+1}</div><div><div class="qtitle">${escapeHtml(v.ai?.title||v.name)}</div><div class="qdate">${y?.updated||"Waiting for YouTube upload"}</div></div><span class="badge ${st==="Published"?"green":st==="Uploading"?"ai":""}">${st}${y?.videoId?" · "+y.videoId:""}</span></div>`}).join(""):'+'"<div class=\"empty\">No videos.</div>"'+')}
-
-function escapeHtml(s){return s.replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
-render();
-
-/*
- GEMINI API HOOK:
- Replace generateAI() with a server-side Gemini call. Send extracted frames/transcript
- and ask for JSON: {title, description, hashtags, music_search_query}.
- Keep the API key on your server — never embed a production Gemini key in this HTML.
- For true semantic content analysis, also extract a transcript (speech-to-text) and
- representative frames, then pass those signals to the model.
-*/
-</script>
+    modalOverlay.addEventListener('click', (e) => {
+      if (e.target === modalOverlay) {
+        modalOverlay.classList.remove('active');
+        modalVideoPlayer.pause();
+        modalVideoPlayer.src = '';
+      }
+    });
+  </script>
 </body>
 </html>
