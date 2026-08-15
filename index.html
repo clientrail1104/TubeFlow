@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OmniAI — Universal Voice Assistant</title>
+
+<style>
+:root {
+    --bg: #060914;
+    --panel: rgba(15, 23, 42, .78);
+    --panel2: rgba(30, 41, 59, .55);
+    --border: rgba(148, 163, 184, .16);
+    --text: #f8fafc;
+    --muted: #94a3b8;
+    --blue: #38bdf8;
+    --purple: #8b5cf6;
+    --green: #22c55e;
+    --yellow: #f59e0b;
+    --red: #ef4444;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    color: var(--text);
+    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background:
+        radial-gradient(circle at 15% 10%, rgba(56,189,248,.12), transparent 30%),
+        radial-gradient(circle at 85% 20%, rgba(139,92,246,.15), transparent 30%),
+        radial-gradient(circle at 50% 100%, rgba(34,197,94,.08), transparent 35%),
+        var(--bg);
+}
+
+button,
+input {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+.app {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    min-height: 100vh;
+}
+
+/* SIDEBAR */
+
+.sidebar {
+    border-right: 1px solid var(--border);
+    background: rgba(2, 6, 23, .72);
+    backdrop-filter: blur(20px);
+    padding: 22px 16px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 35px;
+}
+
+.logo-icon {
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    border-radius: 13px;
+    background: linear-gradient(135deg, var(--blue), var(--purple));
+    box-shadow: 0 0 35px rgba(56,189,248,.25);
+    font-size: 20px;
+}
+
+.logo strong {
+    font-size: 18px;
+}
+
+.logo span {
+    display: block;
+    color: var(--muted);
+    font-size: 11px;
+}
+
+.nav {
+    display: grid;
+    gap: 7px;
+}
+
+.nav button {
+    border: 0;
+    color: var(--muted);
+    background: transparent;
+    padding: 12px 13px;
+    border-radius: 10px;
+    text-align: left;
+    transition: .2s;
+}
+
+.nav button:hover,
+.nav button.active {
+    color: white;
+    background: rgba(56,189,248,.1);
+}
+
+.status {
+    margin-top: 35px;
+    padding: 14px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: rgba(15,23,42,.55);
+}
+
+.status-title {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .1em;
+}
+
+.status-row {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    font-size: 13px;
+}
+
+.online {
+    color: var(--green);
+}
+
+/* MAIN */
+
+main {
+    padding: 25px;
+    max-width: 1500px;
+    width: 100%;
+    margin: auto;
+}
+
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 25px;
+}
+
+.topbar h1 {
+    margin: 0;
+    font-size: 25px;
+}
+
+.topbar p {
+    margin: 5px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.top-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.icon-btn {
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    color: white;
+    border-radius: 10px;
+}
+
+/* HERO */
+
+.hero {
+    position: relative;
+    overflow: hidden;
+    min-height: 430px;
+    border: 1px solid var(--border);
+    border-radius: 25px;
+    background:
+        linear-gradient(145deg, rgba(15,23,42,.92), rgba(8,15,31,.86));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+}
+
+.hero::before {
+    content: "";
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle,
+        rgba(56,189,248,.14),
+        rgba(139,92,246,.08) 40%,
+        transparent 70%);
+    animation: breathe 5s ease-in-out infinite;
+}
+
+@keyframes breathe {
+    0%,100% { transform: scale(.9); opacity: .7; }
+    50% { transform: scale(1.1); opacity: 1; }
+}
+
+.orb {
+    position: relative;
+    width: 145px;
+    height: 145px;
+    border-radius: 50%;
+    background:
+        radial-gradient(circle at 35% 30%, #fff, #38bdf8 9%, #2563eb 30%, #4c1d95 65%, #111827);
+    box-shadow:
+        0 0 40px rgba(56,189,248,.4),
+        0 0 100px rgba(139,92,246,.25),
+        inset -20px -25px 50px rgba(0,0,0,.45);
+    display: grid;
+    place-items: center;
+    transition: .3s;
+}
+
+.orb.listening {
+    animation: pulse 1.3s infinite;
+}
+
+@keyframes pulse {
+    0%,100% {
+        transform: scale(1);
+        box-shadow: 0 0 40px rgba(56,189,248,.4),
+                    0 0 100px rgba(139,92,246,.25);
+    }
+    50% {
+        transform: scale(1.08);
+        box-shadow: 0 0 60px rgba(56,189,248,.7),
+                    0 0 140px rgba(139,92,246,.4);
+    }
+}
+
+.mic-symbol {
+    font-size: 42px;
+}
+
+.hero h2 {
+    margin: 25px 0 7px;
+    position: relative;
+}
+
+.hero p {
+    position: relative;
+    color: var(--muted);
+    max-width: 600px;
+}
+
+.voice-button {
+    position: relative;
+    margin-top: 18px;
+    border: 0;
+    border-radius: 999px;
+    padding: 13px 25px;
+    color: white;
+    font-weight: 700;
+    background: linear-gradient(90deg, var(--blue), var(--purple));
+    box-shadow: 0 10px 35px rgba(56,189,248,.18);
+}
+
+/* GRID */
+
+.dashboard {
+    display: grid;
+    grid-template-columns: 1.2fr .8fr;
+    gap: 18px;
+    margin-top: 18px;
+}
+
+.card {
+    border: 1px solid var(--border);
+    background: var(--panel);
+    backdrop-filter: blur(15px);
+    border-radius: 18px;
+    padding: 18px;
+}
+
+.card-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.card-title h3 {
+    margin: 0;
+    font-size: 15px;
+}
+
+.card-title span {
+    font-size: 11px;
+    color: var(--muted);
+}
+
+/* COMMAND */
+
+.command-box {
+    display: flex;
+    gap: 8px;
+}
+
+.command-box input {
+    flex: 1;
+    min-width: 0;
+    border: 1px solid var(--border);
+    background: rgba(2,6,23,.7);
+    color: white;
+    border-radius: 11px;
+    padding: 12px;
+    outline: none;
+}
+
+.command-box input:focus {
+    border-color: rgba(56,189,248,.5);
+}
+
+.send {
+    border: 0;
+    border-radius: 11px;
+    padding: 0 18px;
+    color: white;
+    background: var(--purple);
+}
+
+.result {
+    margin-top: 12px;
+    min-height: 60px;
+    padding: 12px;
+    border-radius: 11px;
+    background: rgba(2,6,23,.45);
+    color: var(--muted);
+    font-size: 13px;
+}
+
+/* CONNECTORS */
+
+.connectors {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 9px;
+}
+
+.connector {
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--panel2);
+}
+
+.connector-icon {
+    font-size: 20px;
+}
+
+.connector-name {
+    margin-top: 7px;
+    font-size: 12px;
+}
+
+.connector-status {
+    color: var(--green);
+    font-size: 10px;
+    margin-top: 4px;
+}
+
+/* ACTIVITY */
+
+.activity {
+    display: grid;
+    gap: 9px;
+}
+
+.activity-item {
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    background: rgba(2,6,23,.35);
+}
+
+.activity-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    margin-top: 5px;
+    flex-shrink: 0;
+}
+
+.activity-text {
+    font-size: 12px;
+}
+
+.activity-time {
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 3px;
+}
+
+/* AUTOMATION */
+
+.automation {
+    margin-top: 18px;
+}
+
+.workflow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.node {
+    border: 1px solid var(--border);
+    background: rgba(15,23,42,.65);
+    border-radius: 11px;
+    padding: 11px 14px;
+    font-size: 12px;
+}
+
+.arrow {
+    color: var(--blue);
+}
+
+/* SECURITY */
+
+.security {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.security-item {
+    padding: 13px;
+    border-radius: 12px;
+    background: rgba(2,6,23,.35);
+}
+
+.security-item strong {
+    display: block;
+    font-size: 13px;
+}
+
+.security-item span {
+    color: var(--muted);
+    font-size: 10px;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 1000px) {
+    .app {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+        display: none;
+    }
+
+    .dashboard {
+        grid-template-columns: 1fr;
+    }
+
+    .security {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    main {
+        padding: 14px;
+    }
+
+    .connectors {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .hero {
+        min-height: 390px;
+    }
+
+    .orb {
+        width: 120px;
+        height: 120px;
+    }
+
+    .security {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="logo">
+            <div class="logo-icon">✦</div>
+            <div>
+                <strong>OmniAI</strong>
+                <span>Universal Agent</span>
+            </div>
+        </div>
+
+        <nav class="nav">
+            <button class="active">◉ Dashboard</button>
+            <button>◌ Voice Assistant</button>
+            <button>☎ Telephony</button>
+            <button>⚡ Automations</button>
+            <button>◎ AI Network</button>
+            <button>◈ Devices</button>
+            <button>◫ Applications</button>
+            <button>◍ Real-Time World</button>
+            <button>⚙ Settings</button>
+        </nav>
+
+        <div class="status">
+            <div class="status-title">System status</div>
+
+            <div class="status-row">
+                <span>AI Core</span>
+                <span class="online">● Online</span>
+            </div>
+
+            <div class="status-row">
+                <span>Voice</span>
+                <span class="online">● Ready</span>
+            </div>
+
+            <div class="status-row">
+                <span>Automation</span>
+                <span class="online">● Active</span>
+            </div>
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN -->
+    <main>
+
+        <div class="topbar">
+            <div>
+                <h1>Universal AI Assistant</h1>
+                <p>Command your authorized digital and physical environment.</p>
+            </div>
+
+            <div class="top-actions">
+                <button class="icon-btn" title="Notifications">🔔</button>
+                <button class="icon-btn" title="Security">🔐</button>
+            </div>
+        </div>
+
+
+        <!-- VOICE HERO -->
+        <section class="hero">
+
+            <div class="orb" id="orb">
+                <div class="mic-symbol">🎙️</div>
+            </div>
+
+            <h2 id="voiceStatus">Ready to listen</h2>
+
+            <p id="voiceText">
+                Say anything you want the assistant to do.
+            </p>
+
+            <button class="voice-button" id="voiceButton">
+                Start Voice
+            </button>
+
+        </section>
+
+
+        <section class="dashboard">
+
+            <!-- COMMAND -->
+            <div class="card">
+
+                <div class="card-title">
+                    <h3>Command Center</h3>
+                    <span>Natural language</span>
+                </div>
+
+                <div class="command-box">
+                    <input
+                        id="commandInput"
+                        placeholder="Tell OmniAI what you want..."
+                    >
+
+                    <button class="send" id="sendButton">
+                        Execute
+                    </button>
+                </div>
+
+                <div class="result" id="result">
+                    Awaiting your command...
+                </div>
+
+            </div>
+
+
+            <!-- LIVE INFORMATION -->
+            <div class="card">
+
+                <div class="card-title">
+                    <h3>Real-Time Intelligence</h3>
+                    <span id="liveStatus">LIVE</span>
+                </div>
+
+                <div class="activity">
+
+                    <div class="activity-item">
+                        <div class="activity-dot"></div>
+                        <div>
+                            <div class="activity-text">
+                                Real-time information layer ready
+                            </div>
+                            <div class="activity-time">
+                                Waiting for data connection
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="activity-item">
+                        <div class="activity-dot"></div>
+                        <div>
+                            <div class="activity-text">
+                                Source verification enabled
+                            </div>
+                            <div class="activity-time">
+                                Anti-hallucination policy active
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="activity-item">
+                        <div class="activity-dot"></div>
+                        <div>
+                            <div class="activity-text">
+                                Action verification enabled
+                            </div>
+                            <div class="activity-time">
+                                Results will be checked
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- CONNECTORS -->
+        <section class="card" style="margin-top:18px">
+
+            <div class="card-title">
+                <h3>Connected Capabilities</h3>
+                <span>Authorized connections only</span>
+            </div>
+
+            <div class="connectors">
+
+                <div class="connector">
+                    <div class="connector-icon">🌐</div>
+                    <div class="connector-name">Internet</div>
+                    <div class="connector-status">Ready</div>
+                </div>
+
+                <div class="connector">
+                    <div class="connector-icon">☎️</div>
+                    <div class="connector-name">Telephony</div>
+                    <div class="connector-status">Ready</div>
+                </div>
+
+                <div class="connector">
+                    <div class="connector-icon">📧</div>
+                    <div class="connector-name">Email</div>
+                    <div class="connector-status">Ready</div>
+                </div>
+
+                <div class="connector">
+                    <div class="connector-icon">📅</div>
+                    <div class="connector-name">Calendar</div>
+                    <div class="connector-status">Ready</div>
+                </div>
+
+                <div class="connector">
+                    <div class="connector-icon">🏠</div>
+                    <div class="connector-name">Smart Home</div>
+                    <div class="connector-status">Ready</div>
+                </div>
+
+                <div class="connector">
+                    <div class="connector-icon">🤖</div>
+                    <div class="connector-name">AI Network</div>
+                    <div class="connector-status">Ready</div>
+                </div>
+
+                <div class="connector">
+                    <div class="connector-icon">🗄️</div>
+                    <div class="connector-name">Databases</div>
+                    <div class="connector-status">Ready</div>
+                </div>
+
+                <div class="connector">
+                    <div class="connector-icon">⚙️</div>
+                    <div class="connector-name">APIs</div>
+                    <div class="connector-status">Ready</div>
+                </div>
+
+                <div class="connector">
+                    <div class="connector-icon">📡</div>
+                    <div class="connector-name">IoT Devices</div>
+                    <div class="connector-status">Ready</div>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- AUTOMATION -->
+        <section class="card automation">
+
+            <div class="card-title">
+                <h3>Automation Engine</h3>
+                <span>Event → Reason → Action → Verify</span>
+            </div>
+
+            <div class="workflow">
+
+                <div class="node">📥 Event detected</div>
+
+                <div class="arrow">→</div>
+
+                <div class="node">🧠 AI understands</div>
+
+                <div class="arrow">→</div>
+
+                <div class="node">📋 Plan created</div>
+
+                <div class="arrow">→</div>
+
+                <div class="node">⚡ Action executed</div>
+
+                <div class="arrow">→</div>
+
+                <div class="node">✓ Result verified</div>
+
+            </div>
+
+        </section>
+
+
+        <!-- SECURITY -->
+        <section class="card" style="margin-top:18px">
+
+            <div class="card-title">
+                <h3>Trust & Verification</h3>
+                <span>Zero-guessing policy</span>
+            </div>
+
+            <div class="security">
+
+                <div class="security-item">
+                    <strong>✓ Source Verification</strong>
+                    <span>Check information before answering</span>
+                </div>
+
+                <div class="security-item">
+                    <strong>✓ Cross Checking</strong>
+                    <span>Compare important information</span>
+                </div>
+
+                <div class="security-item">
+                    <strong>✓ Action Verification</strong>
+                    <span>Confirm actions actually succeeded</span>
+                </div>
+
+                <div class="security-item">
+                    <strong>🔐 Permission Control</strong>
+                    <span>Authorized access only</span>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<script>
+/*
+==========================================================
+ OMNI AI FRONTEND
+==========================================================
+
+This frontend intentionally does NOT contain API keys.
+
+Connect these functions to your backend:
+
+POST /api/agent
+POST /api/voice/session
+POST /api/telephony/call
+GET  /api/realtime
+GET  /api/connectors
+POST /api/automations
+==========================================================
+*/
+
+
+const orb = document.getElementById("orb");
+const voiceButton = document.getElementById("voiceButton");
+const voiceStatus = document.getElementById("voiceStatus");
+const voiceText = document.getElementById("voiceText");
+
+const commandInput = document.getElementById("commandInput");
+const sendButton = document.getElementById("sendButton");
+const result = document.getElementById("result");
+
+let listening = false;
+let recognition = null;
+
+
+/* -----------------------------------------------
+   SPEECH RECOGNITION
+------------------------------------------------ */
+
+if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
+
+    const SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+    recognition = new SpeechRecognition();
+
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.lang = "en-US";
+
+    recognition.onstart = () => {
+
+        listening = true;
+
+        orb.classList.add("listening");
+
+        voiceStatus.textContent = "Listening...";
+
+        voiceText.textContent =
+            "Speak naturally. I'm listening.";
+
+        voiceButton.textContent = "Stop Listening";
+    };
+
+
+    recognition.onresult = event => {
+
+        let transcript = "";
+
+        for (
+            let i = event.resultIndex;
+            i < event.results.length;
+            i++
+        ) {
+
+            transcript +=
+                event.results[i][0].transcript;
+        }
+
+        commandInput.value = transcript;
+    };
+
+
+    recognition.onend = () => {
+
+        listening = false;
+
+        orb.classList.remove("listening");
+
+        voiceStatus.textContent = "Processing...";
+
+        voiceButton.textContent = "Start Voice";
+
+        const command = commandInput.value.trim();
+
+        if (command) {
+
+            executeCommand(command);
+
+        } else {
+
+            voiceStatus.textContent = "Ready to listen";
+
+            voiceText.textContent =
+                "Say anything you want the assistant to do.";
+        }
+    };
+
+
+    recognition.onerror = event => {
+
+        console.error("Speech error:", event.error);
+
+        listening = false;
+
+        orb.classList.remove("listening");
+
+        voiceStatus.textContent = "Voice error";
+
+        voiceText.textContent =
+            "Please try again.";
+    };
+
+}
+
+
+/* -----------------------------------------------
+   VOICE BUTTON
+------------------------------------------------ */
+
+voiceButton.addEventListener("click", () => {
+
+    if (!recognition) {
+
+        alert(
+            "Speech recognition is not supported by this browser."
+        );
+
+        return;
+    }
+
+    if (listening) {
+
+        recognition.stop();
+
+    } else {
+
+        commandInput.value = "";
+
+        recognition.start();
+
+    }
+
+});
+
+
+/* -----------------------------------------------
+   COMMAND EXECUTION
+------------------------------------------------ */
+
+sendButton.addEventListener("click", () => {
+
+    const command = commandInput.value.trim();
+
+    if (!command) {
+
+        result.textContent =
+            "Please enter a command.";
+
+        return;
+    }
+
+    executeCommand(command);
+
+});
+
+
+commandInput.addEventListener("keydown", event => {
+
+    if (event.key === "Enter") {
+
+        sendButton.click();
+
+    }
+
+});
+
+
+async function executeCommand(command) {
+
+    result.innerHTML =
+        `<strong>Command received:</strong><br>
+         ${escapeHTML(command)}
+         <br><br>
+         🧠 AI is planning the required actions...`;
+
+    voiceStatus.textContent = "Thinking...";
+    voiceText.textContent = command;
+
+    /*
+    --------------------------------------------------
+    REAL BACKEND CONNECTION
+    --------------------------------------------------
+
+    Uncomment and connect to your server:
+
+    const response = await fetch("/api/agent", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            command: command
+        })
+    });
+
+    const data = await response.json();
+
+    result.textContent = data.message;
+
+    --------------------------------------------------
+    */
+
+    // Demo response
+
+    setTimeout(() => {
+
+        result.innerHTML =
+            `✓ Request understood.<br><br>
+             <strong>Requested:</strong>
+             ${escapeHTML(command)}
+             <br><br>
+             <span style="color:#94a3b8">
+             Backend AI orchestration is required
+             to execute this command.
+             </span>`;
+
+        voiceStatus.textContent = "Ready";
+
+        voiceText.textContent =
+            "Command processed by the interface.";
+
+    }, 900);
+
+}
+
+
+/* -----------------------------------------------
+   TEXT TO SPEECH
+------------------------------------------------ */
+
+function speak(text) {
+
+    if (!("speechSynthesis" in window)) {
+
+        return;
+    }
+
+    window.speechSynthesis.cancel();
+
+    const utterance =
+        new SpeechSynthesisUtterance(text);
+
+    utterance.rate = 1.0;
+    utterance.pitch = 1.0;
+    utterance.volume = 1.0;
+
+    window.speechSynthesis.speak(utterance);
+}
+
+
+/* -----------------------------------------------
+   SECURITY
+------------------------------------------------ */
+
+function escapeHTML(value) {
+
+    return value
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+
+/* -----------------------------------------------
+   LIVE STATUS DEMO
+------------------------------------------------ */
+
+setInterval(() => {
+
+    const live =
+        document.getElementById("liveStatus");
+
+    live.textContent =
+        "LIVE • " +
+        new Date().toLocaleTimeString();
+
+}, 1000);
+
+</script>
+
+</body>
+</html>
