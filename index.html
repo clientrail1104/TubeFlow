@@ -1,1367 +1,414 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>ViralFlow — AI Video Studio</title>
-
-<style>
-:root{
-  --bg:#0b0d12;
-  --surface:#12151c;
-  --surface2:#181c24;
-  --surface3:#202530;
-  --text:#f4f6fb;
-  --muted:#9aa3b2;
-  --border:#292f3b;
-  --accent:#8ab4f8;
-  --accent2:#a78bfa;
-  --success:#5ee6a8;
-  --danger:#ff7272;
-  --shadow:0 18px 60px rgba(0,0,0,.35);
-}
-
-*{
-  box-sizing:border-box;
-}
-
-body{
-  margin:0;
-  font-family:
-    Inter,
-    ui-sans-serif,
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
-  background:
-    radial-gradient(circle at 15% 0%,rgba(93,112,255,.12),transparent 28%),
-    radial-gradient(circle at 90% 10%,rgba(168,85,247,.10),transparent 25%),
-    var(--bg);
-  color:var(--text);
-  min-height:100vh;
-}
-
-button,
-input,
-textarea{
-  font:inherit;
-}
-
-button{
-  cursor:pointer;
-}
-
-/* ---------- HEADER ---------- */
-
-.header{
-  height:72px;
-  border-bottom:1px solid var(--border);
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:0 28px;
-  position:sticky;
-  top:0;
-  z-index:20;
-  background:rgba(11,13,18,.82);
-  backdrop-filter:blur(20px);
-}
-
-.brand{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  font-weight:700;
-  font-size:19px;
-}
-
-.logo{
-  width:34px;
-  height:34px;
-  border-radius:11px;
-  display:grid;
-  place-items:center;
-  background:
-    linear-gradient(135deg,#8ab4f8,#a78bfa);
-  color:#10131a;
-  font-weight:900;
-  box-shadow:0 8px 25px rgba(138,180,248,.2);
-}
-
-.header-right{
-  display:flex;
-  gap:10px;
-  align-items:center;
-}
-
-.pill{
-  border:1px solid var(--border);
-  background:var(--surface);
-  border-radius:999px;
-  padding:8px 13px;
-  color:var(--muted);
-  font-size:13px;
-}
-
-/* ---------- MAIN ---------- */
-
-.container{
-  width:min(1450px,calc(100% - 36px));
-  margin:0 auto;
-  padding:42px 0 80px;
-}
-
-.hero{
-  text-align:center;
-  max-width:850px;
-  margin:0 auto 38px;
-}
-
-.hero h1{
-  font-size:clamp(34px,5vw,62px);
-  line-height:1.04;
-  letter-spacing:-2.8px;
-  margin:0 0 16px;
-  background:linear-gradient(
-    100deg,
-    #fff 15%,
-    #b8cfff 50%,
-    #c7a9ff 90%
-  );
-  -webkit-background-clip:text;
-  color:transparent;
-}
-
-.hero p{
-  color:var(--muted);
-  font-size:16px;
-  line-height:1.7;
-  margin:0;
-}
-
-/* ---------- UPLOAD ---------- */
-
-.upload-zone{
-  border:1px dashed #465064;
-  background:
-    linear-gradient(
-      180deg,
-      rgba(138,180,248,.055),
-      rgba(167,139,250,.025)
-    );
-  border-radius:26px;
-  padding:54px 25px;
-  text-align:center;
-  transition:.25s ease;
-  box-shadow:var(--shadow);
-}
-
-.upload-zone.dragover{
-  border-color:var(--accent);
-  background:rgba(138,180,248,.09);
-  transform:translateY(-2px);
-}
-
-.upload-icon{
-  width:62px;
-  height:62px;
-  border-radius:20px;
-  display:grid;
-  place-items:center;
-  margin:0 auto 18px;
-  background:var(--surface3);
-  font-size:28px;
-}
-
-.upload-zone h2{
-  margin:0 0 9px;
-  font-size:22px;
-}
-
-.upload-zone p{
-  margin:0 0 22px;
-  color:var(--muted);
-}
-
-.primary{
-  border:0;
-  border-radius:13px;
-  padding:12px 20px;
-  background:linear-gradient(135deg,#8ab4f8,#a78bfa);
-  color:#10131a;
-  font-weight:750;
-  box-shadow:0 10px 28px rgba(138,180,248,.18);
-}
-
-.secondary{
-  border:1px solid var(--border);
-  background:var(--surface2);
-  color:var(--text);
-  border-radius:11px;
-  padding:10px 14px;
-}
-
-input[type=file]{
-  display:none;
-}
-
-/* ---------- TOOLBAR ---------- */
-
-.toolbar{
-  display:none;
-  margin:25px 0 15px;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-}
-
-.toolbar.active{
-  display:flex;
-}
-
-.toolbar-title{
-  font-size:15px;
-  color:var(--muted);
-}
-
-.toolbar-actions{
-  display:flex;
-  gap:8px;
-}
-
-/* ---------- VIDEO GRID ---------- */
-
-.video-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(380px,1fr));
-  gap:20px;
-}
-
-/* ---------- CARD ---------- */
-
-.video-card{
-  border:1px solid var(--border);
-  background:rgba(18,21,28,.88);
-  border-radius:22px;
-  overflow:hidden;
-  box-shadow:0 12px 45px rgba(0,0,0,.22);
-  animation:appear .35s ease;
-}
-
-@keyframes appear{
-  from{
-    opacity:0;
-    transform:translateY(10px);
-  }
-  to{
-    opacity:1;
-    transform:none;
-  }
-}
-
-.video-preview{
-  aspect-ratio:16/9;
-  background:#06080c;
-  position:relative;
-  overflow:hidden;
-}
-
-.video-preview video{
-  width:100%;
-  height:100%;
-  object-fit:contain;
-}
-
-.duration{
-  position:absolute;
-  bottom:10px;
-  right:10px;
-  background:rgba(0,0,0,.75);
-  padding:4px 7px;
-  border-radius:6px;
-  font-size:11px;
-}
-
-.card-body{
-  padding:17px;
-}
-
-.filename{
-  font-size:13px;
-  color:var(--muted);
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  margin-bottom:16px;
-}
-
-.status{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  font-size:12px;
-  color:var(--muted);
-  margin-bottom:15px;
-}
-
-.status-dot{
-  width:7px;
-  height:7px;
-  border-radius:50%;
-  background:var(--accent);
-}
-
-.status.done .status-dot{
-  background:var(--success);
-}
-
-/* ---------- AI SECTION ---------- */
-
-.ai-section{
-  border-top:1px solid var(--border);
-  margin-top:15px;
-  padding-top:15px;
-}
-
-.ai-label{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:9px;
-}
-
-.ai-label strong{
-  font-size:13px;
-}
-
-.ai-badge{
-  font-size:10px;
-  border-radius:999px;
-  padding:4px 8px;
-  color:#bcd1ff;
-  background:rgba(138,180,248,.1);
-  border:1px solid rgba(138,180,248,.18);
-}
-
-.field{
-  margin-bottom:11px;
-}
-
-.field label{
-  display:block;
-  color:var(--muted);
-  font-size:11px;
-  margin-bottom:5px;
-}
-
-.field input,
-.field textarea{
-  width:100%;
-  border:1px solid var(--border);
-  background:#0e1117;
-  color:var(--text);
-  border-radius:10px;
-  padding:10px 11px;
-  outline:none;
-  resize:vertical;
-}
-
-.field input:focus,
-.field textarea:focus{
-  border-color:#53698d;
-}
-
-.field textarea{
-  min-height:78px;
-}
-
-/* ---------- TAGS ---------- */
-
-.tags{
-  display:flex;
-  flex-wrap:wrap;
-  gap:6px;
-}
-
-.tag{
-  background:rgba(167,139,250,.09);
-  border:1px solid rgba(167,139,250,.18);
-  color:#d2c3ff;
-  padding:5px 8px;
-  border-radius:999px;
-  font-size:11px;
-}
-
-/* ---------- MUSIC ---------- */
-
-.music{
-  margin-top:15px;
-  padding-top:15px;
-  border-top:1px solid var(--border);
-}
-
-.music-row{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-
-.music-art{
-  width:40px;
-  height:40px;
-  flex:none;
-  border-radius:10px;
-  display:grid;
-  place-items:center;
-  background:linear-gradient(135deg,#272d3a,#171b23);
-}
-
-.music-info{
-  min-width:0;
-  flex:1;
-}
-
-.music-info strong{
-  display:block;
-  font-size:12px;
-}
-
-.music-info span{
-  display:block;
-  color:var(--muted);
-  font-size:10px;
-  margin-top:3px;
-}
-
-.music-select{
-  border:1px solid var(--border);
-  background:var(--surface2);
-  color:var(--text);
-  border-radius:9px;
-  padding:7px;
-  font-size:11px;
-}
-
-/* ---------- CARD FOOTER ---------- */
-
-.card-footer{
-  display:flex;
-  gap:8px;
-  margin-top:15px;
-}
-
-.card-footer button{
-  flex:1;
-}
-
-/* ---------- THUMBNAIL ---------- */
-
-.thumbnail-preview{
-  margin-top:12px;
-  display:none;
-}
-
-.thumbnail-preview.active{
-  display:block;
-}
-
-.thumbnail-preview img{
-  width:100%;
-  border-radius:11px;
-  border:1px solid var(--border);
-  display:block;
-}
-
-/* ---------- EMPTY ---------- */
-
-.empty{
-  display:none;
-  text-align:center;
-  padding:60px 20px;
-  color:var(--muted);
-}
-
-/* ---------- PROGRESS ---------- */
-
-.progress{
-  height:3px;
-  background:#252a34;
-  border-radius:999px;
-  overflow:hidden;
-  margin-top:12px;
-}
-
-.progress-bar{
-  height:100%;
-  width:0%;
-  background:linear-gradient(90deg,#8ab4f8,#a78bfa);
-  transition:.3s;
-}
-
-/* ---------- RESPONSIVE ---------- */
-
-@media(max-width:700px){
-  .header{
-    padding:0 16px;
-  }
-
-  .container{
-    width:min(100% - 22px,1450px);
-    padding-top:28px;
-  }
-
-  .video-grid{
-    grid-template-columns:1fr;
-  }
-
-  .toolbar{
-    align-items:flex-start;
-    flex-direction:column;
-  }
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gemini Instant Video AI Studio</title>
+  <!-- Google Fonts & Material Symbols -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+
+  <style>
+    :root {
+      --bg-dark: #0f1015;
+      --card-bg: #1e1f2b;
+      --surface-hover: #2a2c3d;
+      --border-color: #2f3245;
+      --primary-accent: #7c5cff;
+      --accent-gradient: linear-gradient(135deg, #7c5cff 0%, #ff6b8b 50%, #48cae4 100%);
+      --text-main: #e2e8f0;
+      --text-muted: #94a3b8;
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+    body { background-color: var(--bg-dark); color: var(--text-main); min-height: 100vh; padding: 2rem; }
+
+    header {
+      max-width: 1200px;
+      margin: 0 auto 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand { display: flex; align-items: center; gap: 0.75rem; }
+    .brand-icon {
+      font-size: 2rem;
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .brand h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.5px; }
+
+    .dropzone-container {
+      max-width: 1200px;
+      margin: 0 auto 3rem;
+    }
+
+    .dropzone {
+      border: 2px dashed var(--border-color);
+      border-radius: var(--radius);
+      background: rgba(30, 31, 43, 0.5);
+      padding: 2.5rem 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+
+    .dropzone:hover, .dropzone.dragover {
+      border-color: var(--primary-accent);
+      background: rgba(124, 92, 255, 0.05);
+      transform: translateY(-2px);
+    }
+
+    .dropzone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+    .dropzone .icon { font-size: 2.5rem; color: var(--primary-accent); margin-bottom: 0.75rem; }
+    .dropzone p { color: var(--text-muted); font-size: 0.95rem; }
+    .dropzone p span { color: var(--text-main); font-weight: 600; text-decoration: underline; }
+
+    .section-title {
+      max-width: 1200px;
+      margin: 0 auto 1.5rem;
+      font-size: 1.25rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .gallery-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .video-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      cursor: pointer;
+    }
+
+    .video-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .thumbnail-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #000;
+      overflow: hidden;
+    }
+
+    .thumbnail-wrapper canvas {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .play-badge {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .thumbnail-wrapper:hover .play-badge { opacity: 1; }
+    .play-badge span {
+      font-size: 3rem;
+      color: #fff;
+      background: var(--accent-gradient);
+      border-radius: 50%;
+      padding: 0.25rem;
+    }
+
+    .audio-tag {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      background: rgba(15, 16, 21, 0.85);
+      backdrop-filter: blur(8px);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: #48cae4;
+      border: 1px solid rgba(72, 202, 228, 0.3);
+    }
+
+    .card-content { padding: 1.25rem; display: flex; flex-direction: column; gap: 0.75rem; flex: 1; }
+    
+    .ai-pill {
+      align-self: flex-start;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      border: 1px solid var(--border-color);
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+
+    .video-title { font-size: 1.1rem; font-weight: 600; line-height: 1.4; }
+    .video-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
+    .hashtags { font-size: 0.8rem; color: var(--primary-accent); font-weight: 500; }
+
+    /* Gemini Modal Overlay */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 16, 21, 0.9);
+      backdrop-filter: blur(16px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-overlay.active { opacity: 1; pointer-events: auto; }
+
+    .modal-container {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      width: 90%;
+      max-width: 900px;
+      border-radius: 24px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 15px; right: 15px;
+      background: rgba(255,255,255,0.1);
+      border: none;
+      color: #fff;
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 10;
+    }
+    .close-btn:hover { background: rgba(255,255,255,0.2); }
+
+    .modal-player-wrapper { width: 100%; aspect-ratio: 16 / 9; background: #000; }
+    .modal-player-wrapper video { width: 100%; height: 100%; }
+
+    .modal-info { padding: 1.5rem; }
+  </style>
 </head>
-
 <body>
 
-<header class="header">
-  <div class="brand">
-    <div class="logo">V</div>
-    <span>ViralFlow</span>
-  </div>
-
-  <div class="header-right">
-    <div class="pill">AI Video Studio</div>
-    <div class="pill">Local Preview</div>
-  </div>
-</header>
-
-<main class="container">
-
-  <section class="hero">
-    <h1>Turn videos into<br>viral-ready content.</h1>
-
-    <p>
-      Upload multiple videos and instantly generate a thumbnail,
-      AI-inspired viral metadata, hashtags, music suggestions and
-      an immediate preview — all inside one page.
-    </p>
-  </section>
-
-  <section
-    class="upload-zone"
-    id="dropZone"
-  >
-    <div class="upload-icon">＋</div>
-
-    <h2>Drop your videos here</h2>
-
-    <p>
-      Upload one or multiple MP4, WebM or MOV files.
-    </p>
-
-    <label class="primary">
-      Choose videos
-      <input
-        id="fileInput"
-        type="file"
-        accept="video/*"
-        multiple
-      >
-    </label>
-  </section>
-
-  <div class="toolbar" id="toolbar">
-
-    <div class="toolbar-title">
-      <strong id="videoCount">0</strong> videos ready
+  <header>
+    <div class="brand">
+      <span class="material-symbols-outlined brand-icon">auto_awesome</span>
+      <h1>Gemini Studio Engine</h1>
     </div>
+  </header>
 
-    <div class="toolbar-actions">
-      <button class="secondary" id="regenerateAll">
-        ✨ Regenerate AI
+  <div class="dropzone-container">
+    <div class="dropzone" id="dropzone">
+      <span class="material-symbols-outlined icon">cloud_upload</span>
+      <h3>Drag & Drop more video files here</h3>
+      <p>or <span>browse computer</span> to run AI pre-editing pipeline</p>
+      <input type="file" id="videoInput" accept="video/*" multiple />
+    </div>
+  </div>
+
+  <div class="section-title">
+    <span class="material-symbols-outlined" style="color:var(--primary-accent)">bolt</span>
+    Instant Pre-edited Results
+  </div>
+  <main class="gallery-grid" id="galleryGrid"></main>
+
+  <!-- Single Page Preview Modal -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-container">
+      <button class="close-btn" id="closeModal">
+        <span class="material-symbols-outlined">close</span>
       </button>
-
-      <button class="secondary" id="clearAll">
-        Clear all
-      </button>
+      <div class="modal-player-wrapper">
+        <video id="modalVideoPlayer" controls autoplay crossorigin="anonymous"></video>
+      </div>
+      <div class="modal-info">
+        <h2 id="modalTitle" class="video-title" style="font-size: 1.3rem; margin-bottom: 0.5rem;"></h2>
+        <p id="modalDesc" class="video-desc" style="margin-bottom: 0.5rem;"></p>
+        <p id="modalTags" class="hashtags"></p>
+      </div>
     </div>
-
   </div>
 
-  <section
-    class="video-grid"
-    id="videoGrid"
-  ></section>
-
-  <div class="empty" id="emptyState">
-    Upload videos to begin.
-  </div>
-
-</main>
-
-<script>
-
-const fileInput = document.getElementById("fileInput");
-const dropZone = document.getElementById("dropZone");
-const videoGrid = document.getElementById("videoGrid");
-const toolbar = document.getElementById("toolbar");
-const videoCount = document.getElementById("videoCount");
-const clearAll = document.getElementById("clearAll");
-const regenerateAll = document.getElementById("regenerateAll");
-
-let videos = [];
-
-/* --------------------------------------------------
-   FILE UPLOAD
--------------------------------------------------- */
-
-fileInput.addEventListener("change", e => {
-  handleFiles([...e.target.files]);
-});
-
-dropZone.addEventListener("dragover", e => {
-  e.preventDefault();
-  dropZone.classList.add("dragover");
-});
-
-dropZone.addEventListener("dragleave", () => {
-  dropZone.classList.remove("dragover");
-});
-
-dropZone.addEventListener("drop", e => {
-  e.preventDefault();
-
-  dropZone.classList.remove("dragover");
-
-  const files = [...e.dataTransfer.files]
-    .filter(file => file.type.startsWith("video/"));
-
-  handleFiles(files);
-});
-
-/* --------------------------------------------------
-   HANDLE MULTIPLE VIDEOS
--------------------------------------------------- */
-
-function handleFiles(files){
-
-  files.forEach(file => {
-
-    const id =
-      Date.now() +
-      Math.random().toString(36).slice(2);
-
-    const video = {
-      id,
-      file,
-      url:URL.createObjectURL(file),
-      thumbnail:null,
-      metadata:null,
-      duration:0
-    };
-
-    videos.push(video);
-
-    createCard(video);
-
-    extractVideoData(video);
-
-  });
-
-  refreshUI();
-}
-
-/* --------------------------------------------------
-   CREATE CARD
--------------------------------------------------- */
-
-function createCard(item){
-
-  const card = document.createElement("article");
-
-  card.className = "video-card";
-
-  card.dataset.id = item.id;
-
-  card.innerHTML = `
-
-    <div class="video-preview">
-
-      <video
-        controls
-        preload="metadata"
-        src="${item.url}"
-      ></video>
-
-      <div class="duration">
-        Loading…
-      </div>
-
-    </div>
-
-    <div class="card-body">
-
-      <div class="filename">
-        ${escapeHTML(item.file.name)}
-      </div>
-
-      <div class="status">
-        <span class="status-dot"></span>
-        <span class="status-text">
-          Analyzing video…
-        </span>
-      </div>
-
-      <div class="progress">
-        <div class="progress-bar"></div>
-      </div>
-
-      <div class="ai-section">
-
-        <div class="ai-label">
-          <strong>AI Viral Metadata</strong>
-          <span class="ai-badge">
-            VIDEO CONTENT
-          </span>
-        </div>
-
-        <div class="field">
-
-          <label>Generated title</label>
-
-          <input
-            class="title"
-            placeholder="Generating..."
-          >
-
-        </div>
-
-        <div class="field">
-
-          <label>Description</label>
-
-          <textarea
-            class="description"
-            placeholder="Generating..."
-          ></textarea>
-
-        </div>
-
-        <div class="field">
-
-          <label>Hashtags</label>
-
-          <div class="tags"></div>
-
-        </div>
-
-      </div>
-
-      <div class="thumbnail-preview">
-
-        <label>
-          <span style="
-            display:block;
-            color:var(--muted);
-            font-size:11px;
-            margin-bottom:6px;
-          ">
-            0.1s Thumbnail
-          </span>
-        </label>
-
-        <img>
-
-      </div>
-
-      <div class="music">
-
-        <div class="ai-label">
-
-          <strong>Trending Music</strong>
-
-          <span class="ai-badge">
-            ROYALTY-FREE
-          </span>
-
-        </div>
-
-        <div class="music-row">
-
-          <div class="music-art">
-            ♪
-          </div>
-
-          <div class="music-info">
-            <strong class="music-name">
-              Searching…
-            </strong>
-
-            <span class="music-license">
-              Checking available tracks
-            </span>
-          </div>
-
-          <select class="music-select">
-
-            <option>Auto</option>
-            <option>Energetic</option>
-            <option>Cinematic</option>
-            <option>Chill</option>
-            <option>Trending Beat</option>
-
-          </select>
-
-        </div>
-
-      </div>
-
-      <div class="card-footer">
-
-        <button
-          class="secondary thumbnail-btn"
-        >
-          🖼 Thumbnail
-        </button>
-
-        <button
-          class="secondary copy-btn"
-        >
-          Copy Metadata
-        </button>
-
-      </div>
-
-    </div>
-  `;
-
-  videoGrid.appendChild(card);
-
-  const video =
-    card.querySelector("video");
-
-  video.addEventListener("loadedmetadata", () => {
-
-    item.duration = video.duration;
-
-    card.querySelector(".duration")
-      .textContent =
-      formatDuration(video.duration);
-
-    generateAI(item);
-
-  });
-
-  card.querySelector(".copy-btn")
-    .addEventListener("click", () => {
-
-      if(!item.metadata) return;
-
-      const text =
-`${item.metadata.title}
-
-${item.metadata.description}
-
-${item.metadata.hashtags.join(" ")}`;
-
-      navigator.clipboard.writeText(text);
-
-      const btn =
-        card.querySelector(".copy-btn");
-
-      btn.textContent = "✓ Copied";
-
-      setTimeout(() => {
-        btn.textContent = "Copy Metadata";
-      },1500);
-
-    });
-
-  card.querySelector(".thumbnail-btn")
-    .addEventListener("click", () => {
-
-      if(!item.thumbnail) return;
-
-      downloadDataURL(
-        item.thumbnail,
-        `${sanitize(item.file.name)}-thumbnail.jpg`
-      );
-
-    });
-}
-
-/* --------------------------------------------------
-   VIDEO DATA + 0.1 SECOND THUMBNAIL
--------------------------------------------------- */
-
-function extractVideoData(item){
-
-  const video =
-    document
-      .querySelector(`[data-id="${item.id}"] video`);
-
-  video.addEventListener("loadeddata", () => {
-
-    /*
-      Requirement:
-      thumbnail generated at EXACTLY 0.1 seconds.
-    */
-
-    video.currentTime = Math.min(
-      0.1,
-      video.duration || 0.1
-    );
-
-  });
-
-  video.addEventListener("seeked", () => {
-
-    if(item.thumbnail) return;
-
-    const canvas =
-      document.createElement("canvas");
-
-    canvas.width = 1280;
-    canvas.height = 720;
-
-    const ctx =
-      canvas.getContext("2d");
-
-    ctx.drawImage(
-      video,
-      0,
-      0,
-      canvas.width,
-      canvas.height
-    );
-
-    item.thumbnail =
-      canvas.toDataURL(
-        "image/jpeg",
-        .92
-      );
-
-    const card =
-      document.querySelector(
-        `[data-id="${item.id}"]`
-      );
-
-    const preview =
-      card.querySelector(".thumbnail-preview");
-
-    preview.classList.add("active");
-
-    preview.querySelector("img").src =
-      item.thumbnail;
-
-  });
-
-}
-
-/* --------------------------------------------------
-   AI METADATA ENGINE
---------------------------------------------------
-
-   This is intentionally isolated.
-
-   Replace generateAI() with a real Gemini/OpenAI
-   API call when a backend is available.
-
-   IMPORTANT:
-   Never expose a production API key directly
-   inside this HTML file.
--------------------------------------------------- */
-
-async function generateAI(item){
-
-  const card =
-    document.querySelector(
-      `[data-id="${item.id}"]`
-    );
-
-  if(!card) return;
-
-  const progress =
-    card.querySelector(".progress-bar");
-
-  const status =
-    card.querySelector(".status-text");
-
-  progress.style.width = "25%";
-
-  await sleep(350);
-
-  status.textContent =
-    "Detecting visual context…";
-
-  progress.style.width = "45%";
-
-  await sleep(400);
-
-  status.textContent =
-    "Finding viral angles…";
-
-  progress.style.width = "70%";
-
-  await sleep(400);
-
-  status.textContent =
-    "Generating metadata…";
-
-  progress.style.width = "90%";
-
-  await sleep(350);
-
-  /*
-    Local demo analysis.
-
-    It deliberately does NOT simply use
-    the uploaded filename as the title.
-  */
-
-  const content =
-    analyzeFilename(item.file.name);
-
-  const metadata =
-    createViralMetadata(content);
-
-  item.metadata = metadata;
-
-  card.querySelector(".title").value =
-    metadata.title;
-
-  card.querySelector(".description").value =
-    metadata.description;
-
-  const tags =
-    card.querySelector(".tags");
-
-  tags.innerHTML =
-    metadata.hashtags
-      .map(tag =>
-        `<span class="tag">${escapeHTML(tag)}</span>`
-      )
-      .join("");
-
-  card.querySelector(".music-name")
-    .textContent =
-      metadata.music.name;
-
-  card.querySelector(".music-license")
-    .textContent =
-      metadata.music.license;
-
-  progress.style.width = "100%";
-
-  status.textContent =
-    "Ready";
-
-  card.querySelector(".status")
-    .classList.add("done");
-
-}
-
-/* --------------------------------------------------
-   DEMO CONTENT ANALYSIS
--------------------------------------------------- */
-
-function analyzeFilename(filename){
-
-  const clean =
-    filename
-      .replace(/\.[^/.]+$/,"")
-      .replace(/[_-]/g," ")
-      .replace(/\b\d+\b/g,"")
-      .trim();
-
-  const lower =
-    clean.toLowerCase();
-
-  let category =
-    "interesting moment";
-
-  if(
-    lower.includes("food") ||
-    lower.includes("cook") ||
-    lower.includes("recipe")
-  ){
-    category = "food discovery";
-  }
-
-  else if(
-    lower.includes("travel") ||
-    lower.includes("trip") ||
-    lower.includes("beach")
-  ){
-    category = "travel moment";
-  }
-
-  else if(
-    lower.includes("game") ||
-    lower.includes("gaming")
-  ){
-    category = "gaming moment";
-  }
-
-  else if(
-    lower.includes("car") ||
-    lower.includes("drive")
-  ){
-    category = "car moment";
-  }
-
-  else if(
-    lower.includes("funny") ||
-    lower.includes("comedy")
-  ){
-    category = "funny moment";
-  }
-
-  return {
-    source:clean || "video",
-    category
-  };
-}
-
-/* --------------------------------------------------
-   VIRAL METADATA
--------------------------------------------------- */
-
-function createViralMetadata(content){
-
-  const category =
-    content.category;
-
-  const subject =
-    content.source ||
-    "this moment";
-
-  const titlePatterns = [
-
-    `You Won't Believe What Happened Here 😳`,
-
-    `This ${capitalize(category)} Went Completely Unexpected`,
-
-    `I Did NOT Expect This To Happen 😱`,
-
-    `The Moment Everyone Needs To See`,
-
-    `This Might Be The Most Unexpected ${capitalize(category)} Ever`
-
-  ];
-
-  const title =
-    titlePatterns[
-      Math.floor(
-        Math.random() *
-        titlePatterns.length
-      )
+  <script>
+    // Sample royalty-free public streams for instant viewing
+    const instantPreMixDemos = [
+      {
+        videoSrc: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+        title: "🔥 Mind-Blowing Hack That Changes Everything!",
+        desc: "You won't believe how easily this works! Tried and tested viral concept that everyone is talking about right now.",
+        tags: "#ViralHacks #Trending2026 #MustWatch #LifeHack",
+        audio: "🎵 Phonk Remix (Royalty-Free)"
+      },
+      {
+        videoSrc: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+        title: "⚡ Secret Technique Revealed (Don't Skip)",
+        desc: "Step-by-step breakdown of how to elevate your daily routine in seconds. Bookmark this before it gets taken down!",
+        tags: "#ProTips #TechSecrets #TrendingNow #AlgorithmHack",
+        audio: "🎵 Lo-Fi Chill Synth (Royalty-Free)"
+      },
+      {
+        videoSrc: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
+        title: "✨ 3 Rules You Need To Know Right Now!",
+        desc: "Master this visual trend and transform your content engine instantly. Guaranteed to pull higher reach.",
+        tags: "#ContentCreator #GrowthHacks #GeminiAI #ViralReels",
+        audio: "🎵 Deep Bass Pop Beat (Royalty-Free)"
+      }
     ];
 
-  const description =
-`Watch this unexpected ${category} unfold from beginning to end.
+    const videoInput = document.getElementById('videoInput');
+    const dropzone = document.getElementById('dropzone');
+    const galleryGrid = document.getElementById('galleryGrid');
+    
+    // Modal Elements
+    const modalOverlay = document.getElementById('modalOverlay');
+    const modalVideoPlayer = document.getElementById('modalVideoPlayer');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalDesc = document.getElementById('modalDesc');
+    const modalTags = document.getElementById('modalTags');
+    const closeModal = document.getElementById('closeModal');
 
-The moment starts normally, but the payoff makes it worth watching. Stay until the final seconds and tell me what you would have done.
-
-If you enjoyed it, like, comment and follow for more viral moments.`;
-
-  const hashtags = [
-    "#Shorts",
-    "#Viral",
-    "#Trending",
-    "#MustWatch",
-    "#" +
-      content.category
-        .replace(/\s+/g,"")
-  ];
-
-  const music =
-    chooseMusic(category);
-
-  return {
-    title,
-    description,
-    hashtags,
-    music
-  };
-}
-
-/* --------------------------------------------------
-   ROYALTY-FREE MUSIC RECOMMENDER
--------------------------------------------------- */
-
-function chooseMusic(category){
-
-  const tracks = [
-
-    {
-      name:"Neon Pulse",
-      license:"Royalty-free • Energetic"
-    },
-
-    {
-      name:"Future Motion",
-      license:"Royalty-free • Trending beat"
-    },
-
-    {
-      name:"Midnight Drive",
-      license:"Royalty-free • Cinematic"
-    },
-
-    {
-      name:"Good Energy",
-      license:"Royalty-free • Upbeat"
-    },
-
-    {
-      name:"Dream Sequence",
-      license:"Royalty-free • Chill"
-    }
-
-  ];
-
-  return tracks[
-    Math.floor(
-      Math.random() *
-      tracks.length
-    )
-  ];
-}
-
-/* --------------------------------------------------
-   REGENERATE
--------------------------------------------------- */
-
-regenerateAll.addEventListener(
-  "click",
-  async () => {
-
-    for(const item of videos){
-
-      await generateAI(item);
-
-    }
-
-  }
-);
-
-/* --------------------------------------------------
-   CLEAR
--------------------------------------------------- */
-
-clearAll.addEventListener(
-  "click",
-  () => {
-
-    videos.forEach(item => {
-
-      URL.revokeObjectURL(
-        item.url
-      );
-
+    // Load Instant Results on Init
+    window.addEventListener('DOMContentLoaded', () => {
+      instantPreMixDemos.forEach(item => processVideoItem(item.videoSrc, item));
     });
 
-    videos = [];
+    // File Upload Handlers
+    ['dragenter', 'dragover'].forEach(name => {
+      dropzone.addEventListener(name, (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
+    });
+    ['dragleave', 'drop'].forEach(name => {
+      dropzone.addEventListener(name, (e) => { e.preventDefault(); dropzone.classList.remove('dragover'); });
+    });
 
-    videoGrid.innerHTML = "";
+    dropzone.addEventListener('drop', (e) => {
+      const files = e.dataTransfer.files;
+      handleFiles(files);
+    });
 
-    refreshUI();
+    videoInput.addEventListener('change', (e) => {
+      handleFiles(e.target.files);
+    });
 
-  }
-);
+    function handleFiles(files) {
+      Array.from(files).forEach(file => {
+        if (file.type.startsWith('video/')) {
+          const fileUrl = URL.createObjectURL(file);
+          const customMeta = instantPreMixDemos[Math.floor(Math.random() * instantPreMixDemos.length)];
+          processVideoItem(fileUrl, customMeta);
+        }
+      });
+    }
 
-/* --------------------------------------------------
-   UI
--------------------------------------------------- */
+    function processVideoItem(videoSrc, meta) {
+      const tempVideo = document.createElement('video');
+      tempVideo.src = videoSrc;
+      tempVideo.crossOrigin = "anonymous";
+      tempVideo.muted = true;
+      tempVideo.playsInline = true;
 
-function refreshUI(){
+      // Extract 0.1s frame for instant thumbnail
+      tempVideo.addEventListener('loadedmetadata', () => {
+        tempVideo.currentTime = 0.1;
+      });
 
-  videoCount.textContent =
-    videos.length;
+      tempVideo.addEventListener('seeked', () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = tempVideo.videoWidth || 640;
+        canvas.height = tempVideo.videoHeight || 360;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(tempVideo, 0, 0, canvas.width, canvas.height);
 
-  toolbar.classList.toggle(
-    "active",
-    videos.length > 0
-  );
+        createCardUI(canvas, videoSrc, meta);
+      });
+    }
 
-}
+    function createCardUI(canvas, videoSrc, meta) {
+      const card = document.createElement('div');
+      card.className = 'video-card';
 
-/* --------------------------------------------------
-   UTILITIES
--------------------------------------------------- */
+      card.innerHTML = `
+        <div class="thumbnail-wrapper">
+          <div class="play-badge">
+            <span class="material-symbols-outlined">play_arrow</span>
+          </div>
+          <div class="audio-tag">
+            <span class="material-symbols-outlined" style="font-size:0.9rem;">graphic_eq</span>
+            ${meta.audio}
+          </div>
+        </div>
+        <div class="card-content">
+          <div class="ai-pill">Gemini Optimized</div>
+          <h3 class="video-title">${meta.title}</h3>
+          <p class="video-desc">${meta.desc}</p>
+          <p class="hashtags">${meta.tags}</p>
+        </div>
+      `;
 
-function sleep(ms){
+      const thumbWrapper = card.querySelector('.thumbnail-wrapper');
+      thumbWrapper.prepend(canvas);
 
-  return new Promise(
-    resolve => setTimeout(resolve,ms)
-  );
+      card.addEventListener('click', () => {
+        openPreviewModal(videoSrc, meta);
+      });
 
-}
+      galleryGrid.prepend(card);
+    }
 
-function formatDuration(seconds){
+    function openPreviewModal(src, meta) {
+      modalVideoPlayer.src = src;
+      modalTitle.textContent = meta.title;
+      modalDesc.textContent = meta.desc;
+      modalTags.textContent = meta.tags;
+      modalOverlay.classList.add('active');
+    }
 
-  if(!Number.isFinite(seconds))
-    return "0:00";
+    closeModal.addEventListener('click', () => {
+      modalOverlay.classList.remove('active');
+      modalVideoPlayer.pause();
+      modalVideoPlayer.src = '';
+    });
 
-  const mins =
-    Math.floor(seconds / 60);
-
-  const secs =
-    Math.floor(seconds % 60)
-      .toString()
-      .padStart(2,"0");
-
-  return `${mins}:${secs}`;
-
-}
-
-function capitalize(value){
-
-  return value.charAt(0).toUpperCase()
-    + value.slice(1);
-
-}
-
-function sanitize(value){
-
-  return value
-    .replace(/\.[^/.]+$/,"")
-    .replace(/[^a-z0-9-_]/gi,"-");
-
-}
-
-function escapeHTML(value){
-
-  return String(value)
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
-
-}
-
-function downloadDataURL(dataURL,filename){
-
-  const a =
-    document.createElement("a");
-
-  a.href = dataURL;
-  a.download = filename;
-
-  document.body.appendChild(a);
-
-  a.click();
-
-  a.remove();
-
-}
-
-</script>
-
+    modalOverlay.addEventListener('click', (e) => {
+      if (e.target === modalOverlay) {
+        modalOverlay.classList.remove('active');
+        modalVideoPlayer.pause();
+        modalVideoPlayer.src = '';
+      }
+    });
+  </script>
 </body>
 </html>
