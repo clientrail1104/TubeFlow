@@ -1,33 +1,1635 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>ViralFlow — Instant Video Studio</title>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+:root{
+  --bg:#08090d;
+  --panel:#11131a;
+  --panel2:#181b24;
+  --panel3:#20242e;
+  --border:#292e3a;
+  --text:#f5f7fb;
+  --muted:#929aa9;
+  --blue:#8ab4f8;
+  --purple:#b28cff;
+  --green:#62e6a5;
+  --red:#ff7474;
+}
+
+html,
+body{
+  margin:0;
+  min-height:100%;
+}
+
+body{
+  background:
+    radial-gradient(
+      circle at 15% 0%,
+      rgba(72,94,180,.18),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 90% 10%,
+      rgba(146,75,190,.14),
+      transparent 28%
+    ),
+    var(--bg);
+
+  color:var(--text);
+
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+}
+
+button,
+input,
+textarea,
+select{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+.header{
+  height:68px;
+
+  padding:0 25px;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  position:sticky;
+  top:0;
+  z-index:100;
+
+  border-bottom:1px solid var(--border);
+
+  background:rgba(8,9,13,.82);
+
+  backdrop-filter:blur(22px);
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:11px;
+
+  font-size:17px;
+  font-weight:750;
+}
+
+.logo{
+  width:35px;
+  height:35px;
+
+  border-radius:11px;
+
+  display:grid;
+  place-items:center;
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--blue),
+      var(--purple)
+    );
+
+  color:#101116;
+
+  font-weight:900;
+}
+
+.header-right{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.badge{
+  border:1px solid var(--border);
+
+  background:rgba(255,255,255,.025);
+
+  color:var(--muted);
+
+  padding:7px 11px;
+
+  border-radius:999px;
+
+  font-size:11px;
+}
+
+.container{
+  width:min(
+    1420px,
+    calc(100% - 32px)
+  );
+
+  margin:auto;
+
+  padding:
+    30px
+    0
+    80px;
+}
+
+.hero{
+  max-width:800px;
+
+  margin:
+    18px
+    auto
+    34px;
+
+  text-align:center;
+}
+
+.hero h1{
+  margin:0 0 15px;
+
+  font-size:
+    clamp(
+      38px,
+      6vw,
+      66px
+    );
+
+  line-height:.98;
+
+  letter-spacing:-3.5px;
+
+  background:
+    linear-gradient(
+      100deg,
+      #ffffff,
+      #b9ceff 48%,
+      #d0b8ff
+    );
+
+  -webkit-background-clip:text;
+
+  color:transparent;
+}
+
+.hero p{
+  margin:0;
+
+  color:var(--muted);
+
+  font-size:15px;
+
+  line-height:1.7;
+}
+
+/* UPLOAD */
+
+.upload{
+  border:1px dashed #4a5368;
+
+  border-radius:25px;
+
+  padding:
+    48px
+    20px;
+
+  text-align:center;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(138,180,248,.05),
+      rgba(178,140,255,.02)
+    );
+
+  transition:.2s;
+}
+
+.upload.drag{
+  border-color:var(--blue);
+
+  background:
+    rgba(138,180,248,.09);
+
+  transform:translateY(-2px);
+}
+
+.upload-icon{
+  width:58px;
+  height:58px;
+
+  margin:
+    0
+    auto
+    15px;
+
+  display:grid;
+  place-items:center;
+
+  border-radius:18px;
+
+  background:var(--panel2);
+
+  font-size:28px;
+}
+
+.upload h2{
+  margin:0 0 8px;
+
+  font-size:21px;
+}
+
+.upload p{
+  margin:
+    0
+    0
+    20px;
+
+  color:var(--muted);
+
+  font-size:13px;
+}
+
+.primary{
+  display:inline-flex;
+
+  align-items:center;
+  justify-content:center;
+
+  border:0;
+
+  padding:
+    11px
+    18px;
+
+  border-radius:12px;
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--blue),
+      var(--purple)
+    );
+
+  color:#0c0e13;
+
+  font-size:13px;
+
+  font-weight:800;
+
+  box-shadow:
+    0 10px 30px
+    rgba(138,180,248,.15);
+}
+
+input[type=file]{
+  display:none;
+}
+
+/* WORKSPACE */
+
+.workspace{
+  display:none;
+
+  grid-template-columns:
+    minmax(300px,430px)
+    minmax(0,1fr);
+
+  gap:20px;
+
+  margin-top:23px;
+}
+
+.workspace.active{
+  display:grid;
+}
+
+/* PANELS */
+
+.preview-panel,
+.editor-panel{
+  border:
+    1px solid var(--border);
+
+  background:
+    rgba(17,19,26,.92);
+
+  border-radius:22px;
+
+  overflow:hidden;
+
+  box-shadow:
+    0 20px 70px
+    rgba(0,0,0,.18);
+}
+
+.panel-head{
+  min-height:51px;
+
+  padding:
+    0
+    16px;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:space-between;
+
+  border-bottom:
+    1px solid var(--border);
+}
+
+.panel-head strong{
+  font-size:13px;
+}
+
+.live{
+  display:flex;
+
+  align-items:center;
+
+  gap:6px;
+
+  color:var(--green);
+
+  font-size:10px;
+
+  font-weight:700;
+}
+
+.live:before{
+  content:"";
+
+  width:6px;
+  height:6px;
+
+  border-radius:50%;
+
+  background:var(--green);
+
+  box-shadow:
+    0 0 10px
+    var(--green);
+}
+
+/* PREVIEW */
+
+.phone{
+  display:flex;
+
+  justify-content:center;
+
+  padding:20px;
+
+  background:#06070a;
+}
+
+.phone-frame{
+  width:
+    min(
+      100%,
+      330px
+    );
+
+  aspect-ratio:9/16;
+
+  position:relative;
+
+  overflow:hidden;
+
+  border-radius:19px;
+
+  background:#000;
+
+  box-shadow:
+    0 30px 80px
+    rgba(0,0,0,.55);
+}
+
+#previewCanvas{
+  display:block;
+
+  width:100%;
+  height:100%;
+}
+
+.preview-controls{
+  display:flex;
+
+  gap:7px;
+
+  padding:13px;
+}
+
+.control{
+  flex:1;
+
+  border:
+    1px solid var(--border);
+
+  background:var(--panel2);
+
+  color:var(--text);
+
+  border-radius:10px;
+
+  padding:10px;
+
+  font-size:12px;
+}
+
+.control.active{
+  background:
+    linear-gradient(
+      135deg,
+      var(--blue),
+      var(--purple)
+    );
+
+  color:#0d0f13;
+
+  border-color:transparent;
+
+  font-weight:750;
+}
+
+/* EDITOR */
+
+.editor{
+  padding:17px;
+}
+
+.section{
+  margin-bottom:21px;
+}
+
+.section-title{
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
+  margin-bottom:9px;
+}
+
+.section-title strong{
+  font-size:13px;
+}
+
+.section-title span{
+  color:var(--muted);
+
+  font-size:10px;
+}
+
+.field{
+  margin-bottom:10px;
+}
+
+.field label{
+  display:block;
+
+  margin-bottom:5px;
+
+  color:var(--muted);
+
+  font-size:10px;
+}
+
+.field input,
+.field textarea{
+  width:100%;
+
+  border:
+    1px solid var(--border);
+
+  background:#0b0d12;
+
+  color:var(--text);
+
+  outline:none;
+
+  border-radius:10px;
+
+  padding:10px;
+
+  font-size:12px;
+}
+
+.field textarea{
+  min-height:85px;
+
+  resize:vertical;
+}
+
+.field input:focus,
+.field textarea:focus{
+  border-color:#53698d;
+}
+
+/* TAGS */
+
+.tags{
+  display:flex;
+
+  flex-wrap:wrap;
+
+  gap:6px;
+}
+
+.tag{
+  border:
+    1px solid
+    rgba(178,140,255,.2);
+
+  background:
+    rgba(178,140,255,.08);
+
+  color:#cdbfff;
+
+  border-radius:999px;
+
+  padding:
+    5px
+    8px;
+
+  font-size:10px;
+}
+
+/* MUSIC */
+
+.music{
+  display:flex;
+
+  align-items:center;
+
+  gap:10px;
+
+  padding:11px;
+
+  border:
+    1px solid var(--border);
+
+  border-radius:13px;
+
+  background:
+    rgba(255,255,255,.018);
+}
+
+.music-icon{
+  width:40px;
+  height:40px;
+
+  flex:none;
+
+  display:grid;
+  place-items:center;
+
+  border-radius:11px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #292e3b,
+      #171a22
+    );
+
+  font-size:19px;
+}
+
+.music-info{
+  flex:1;
+
+  min-width:0;
+}
+
+.music-info strong{
+  display:block;
+
+  font-size:11px;
+
+  white-space:nowrap;
+
+  overflow:hidden;
+
+  text-overflow:ellipsis;
+}
+
+.music-info span{
+  display:block;
+
+  margin-top:3px;
+
+  color:var(--muted);
+
+  font-size:9px;
+}
+
+.music select{
+  border:
+    1px solid var(--border);
+
+  background:var(--panel2);
+
+  color:var(--text);
+
+  padding:7px;
+
+  border-radius:8px;
+
+  font-size:10px;
+}
+
+/* CLIPS */
+
+.clips{
+  display:flex;
+
+  gap:9px;
+
+  overflow-x:auto;
+
+  padding:
+    2px
+    1px
+    5px;
+}
+
+.clip{
+  position:relative;
+
+  min-width:145px;
+
+  border:
+    1px solid var(--border);
+
+  border-radius:12px;
+
+  overflow:hidden;
+
+  background:var(--panel);
+
+  transition:.18s;
+}
+
+.clip:hover{
+  border-color:#444c5e;
+}
+
+.clip-image{
+  position:relative;
+
+  width:100%;
+}
+
+.clip img{
+  display:block;
+
+  width:100%;
+
+  aspect-ratio:16/9;
+
+  object-fit:cover;
+}
+
+/* SMALL DOWNLOAD BUTTON */
+
+.clip-download{
+  position:absolute;
+
+  right:7px;
+  top:7px;
+
+  width:29px;
+  height:29px;
+
+  display:grid;
+  place-items:center;
+
+  padding:0;
+
+  border:
+    1px solid
+    rgba(255,255,255,.18);
+
+  border-radius:8px;
+
+  background:
+    rgba(0,0,0,.72);
+
+  color:#fff;
+
+  font-size:16px;
+
+  line-height:1;
+
+  opacity:0;
+
+  transform:scale(.88);
+
+  transition:
+    opacity .18s,
+    transform .18s,
+    background .18s;
+
+  backdrop-filter:blur(9px);
+}
+
+.clip:hover .clip-download{
+  opacity:1;
+
+  transform:scale(1);
+}
+
+.clip-download:hover{
+  background:
+    linear-gradient(
+      135deg,
+      var(--blue),
+      var(--purple)
+    );
+
+  color:#08090d;
+}
+
+.clip-download:active{
+  transform:scale(.92);
+}
+
+/* READY */
+
+.ready{
+  position:absolute;
+
+  left:7px;
+  top:7px;
+
+  padding:
+    4px
+    7px;
+
+  border-radius:6px;
+
+  background:
+    rgba(0,0,0,.68);
+
+  color:var(--green);
+
+  font-size:8px;
+
+  font-weight:750;
+
+  opacity:0;
+
+  transition:.18s;
+}
+
+.clip.ready .ready{
+  opacity:1;
+}
+
+.clip-info{
+  padding:8px;
+}
+
+.clip-info strong{
+  display:block;
+
+  font-size:10px;
+
+  white-space:nowrap;
+
+  overflow:hidden;
+
+  text-overflow:ellipsis;
+}
+
+.clip-info span{
+  display:block;
+
+  margin-top:3px;
+
+  color:var(--muted);
+
+  font-size:9px;
+}
+
+/* ACTIONS */
+
+.actions{
+  display:flex;
+
+  gap:8px;
+
+  margin-top:20px;
+}
+
+.secondary{
+  flex:1;
+
+  border:
+    1px solid var(--border);
+
+  background:var(--panel2);
+
+  color:var(--text);
+
+  border-radius:10px;
+
+  padding:10px;
+
+  font-size:11px;
+}
+
+.secondary:hover{
+  border-color:#4a5365;
+}
+
+.green{
+  color:var(--green);
+
+  background:
+    rgba(98,230,165,.07);
+
+  border-color:
+    rgba(98,230,165,.2);
+}
+
+/* READY STATUS */
+
+.ready-message{
+  display:flex;
+
+  align-items:center;
+
+  gap:6px;
+
+  margin-top:12px;
+
+  color:var(--green);
+
+  font-size:10px;
+}
+
+/* MOBILE */
+
+@media(max-width:850px){
+
+  .workspace.active{
+    grid-template-columns:1fr;
+  }
+
+}
+
+@media(max-width:600px){
+
+  .header{
+    padding:
+      0
+      14px;
+  }
+
+  .header-right .badge{
+    display:none;
+  }
+
+  .container{
+    width:
+      calc(100% - 20px);
+  }
+
+  .hero h1{
+    letter-spacing:-2.5px;
+  }
+
+  .upload{
+    padding:
+      38px
+      15px;
+  }
+
+  .clip-download{
+    opacity:1;
+
+    transform:scale(1);
+  }
+
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+
+  <div class="brand">
+
+    <div class="logo">
+      V
+    </div>
+
+    <span>
+      ViralFlow
+    </span>
+
+  </div>
+
+  <div class="header-right">
+
+    <div class="badge">
+      AI Video Studio
+    </div>
+
+    <div class="badge">
+      Instant Preview
+    </div>
+
+  </div>
+
+</header>
+
+
+<main class="container">
+
+  <section class="hero">
+
+    <h1>
+      Upload.<br>
+      Mix. Preview.
+    </h1>
+
+    <p>
+      Upload multiple videos and instantly watch your
+      vertical premixed video directly on this page.
+    </p>
+
+  </section>
+
+
+  <!-- UPLOAD -->
+
+  <section
+    class="upload"
+    id="upload"
+  >
+
+    <div class="upload-icon">
+      🎬
+    </div>
+
+    <h2>
+      Drop multiple videos here
+    </h2>
+
+    <p>
+      MP4, WebM or MOV • Local browser preview
+    </p>
+
+    <label class="primary">
+
+      Choose Videos
+
+      <input
+        id="files"
+        type="file"
+        multiple
+        accept="video/*"
+      >
+
+    </label>
+
+  </section>
+
+
+  <!-- WORKSPACE -->
+
+  <section
+    class="workspace"
+    id="workspace"
+  >
+
+
+    <!-- PREVIEW PANEL -->
+
+    <div class="preview-panel">
+
+      <div class="panel-head">
+
+        <strong>
+          Premixed Preview
+        </strong>
+
+        <span class="live">
+          LIVE
+        </span>
+
+      </div>
+
+
+      <div class="phone">
+
+        <div class="phone-frame">
+
+          <canvas
+            id="previewCanvas"
+          ></canvas>
+
+        </div>
+
+      </div>
+
+
+      <div class="preview-controls">
+
+        <button
+          class="control active"
+          id="play"
+        >
+          ▶ Play
+        </button>
+
+        <button
+          class="control"
+          id="pause"
+        >
+          ❚❚ Pause
+        </button>
+
+        <button
+          class="control"
+          id="restart"
+        >
+          ↻
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- EDITOR PANEL -->
+
+    <div class="editor-panel">
+
+      <div class="panel-head">
+
+        <strong>
+          AI Viral Content
+        </strong>
+
+        <span class="badge">
+          Generated
+        </span>
+
+      </div>
+
+
+      <div class="editor">
+
+
+        <!-- TITLE -->
+
+        <div class="section">
+
+          <div class="section-title">
+
+            <strong>
+              Viral title
+            </strong>
+
+            <span>
+              Based on video context
+            </span>
+
+          </div>
+
+          <div class="field">
+
+            <input
+              id="title"
+              type="text"
+              value="You Won't Believe What Happens Next 😳"
+            >
+
+          </div>
+
+        </div>
+
+
+        <!-- DESCRIPTION -->
+
+        <div class="section">
+
+          <div class="section-title">
+
+            <strong>
+              Description
+            </strong>
+
+            <span>
+              AI generated
+            </span>
+
+          </div>
+
+          <div class="field">
+
+            <textarea
+              id="description"
+            >Watch this unexpected moment unfold from beginning to end. Stay until the final seconds — the payoff is worth it.</textarea>
+
+          </div>
+
+        </div>
+
+
+        <!-- HASHTAGS -->
+
+        <div class="section">
+
+          <div class="section-title">
+
+            <strong>
+              Hashtags
+            </strong>
+
+            <span>
+              Trending style
+            </span>
+
+          </div>
+
+          <div class="tags">
+
+            <span class="tag">
+              #Shorts
+            </span>
+
+            <span class="tag">
+              #Viral
+            </span>
+
+            <span class="tag">
+              #Trending
+            </span>
+
+            <span class="tag">
+              #MustWatch
+            </span>
+
+            <span class="tag">
+              #FYP
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <!-- MUSIC -->
+
+        <div class="section">
+
+          <div class="section-title">
+
+            <strong>
+              Background Music
+            </strong>
+
+            <span>
+              Royalty-free
+            </span>
+
+          </div>
+
+
+          <div class="music">
+
+            <div class="music-icon">
+              ♫
+            </div>
+
+            <div class="music-info">
+
+              <strong id="musicName">
+                Neon Pulse
+              </strong>
+
+              <span>
+                Royalty-free • Energetic
+              </span>
+
+            </div>
+
+            <select
+              id="musicSelect"
+            >
+
+              <option value="none">
+                None
+              </option>
+
+              <option
+                value="pulse"
+                selected
+              >
+                Neon Pulse
+              </option>
+
+              <option value="energy">
+                Good Energy
+              </option>
+
+              <option value="cinematic">
+                Cinematic
+              </option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+
+        <!-- CLIPS -->
+
+        <div class="section">
+
+          <div class="section-title">
+
+            <strong>
+              Ready Videos
+            </strong>
+
+            <span id="clipCount">
+              0
+            </span>
+
+          </div>
+
+
+          <div
+            class="clips"
+            id="clips"
+          ></div>
+
+
+          <div
+            class="ready-message"
+            id="readyMessage"
+            style="display:none"
+          >
+
+            ✓
+            All uploaded videos are ready
+
+          </div>
+
+        </div>
+
+
+        <!-- ACTIONS -->
+
+        <div class="actions">
+
+          <button
+            class="secondary"
+            id="regenerate"
+          >
+            ✨ Regenerate AI
+          </button>
+
+          <button
+            class="secondary green"
+            id="downloadThumb"
+          >
+            🖼 Thumbnail
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+</main>
+
+
 <script>
+
+/* ==================================================
+   STATE
+================================================== */
+
+const fileInput =
+  document.getElementById("files");
+
+const upload =
+  document.getElementById("upload");
+
+const workspace =
+  document.getElementById("workspace");
+
+const canvas =
+  document.getElementById("previewCanvas");
+
+const ctx =
+  canvas.getContext("2d");
+
+const clipsElement =
+  document.getElementById("clips");
+
+const clipCount =
+  document.getElementById("clipCount");
+
+const readyMessage =
+  document.getElementById("readyMessage");
+
+const titleInput =
+  document.getElementById("title");
+
+const descriptionInput =
+  document.getElementById("description");
+
+const playButton =
+  document.getElementById("play");
+
+const pauseButton =
+  document.getElementById("pause");
+
+const restartButton =
+  document.getElementById("restart");
+
+const musicSelect =
+  document.getElementById("musicSelect");
+
+const musicName =
+  document.getElementById("musicName");
+
+let clips = [];
+
+let currentClip = 0;
+
+let playing = false;
+
+let thumbnail = null;
+
+let animationID = null;
+
+
+/* ==================================================
+   CANVAS
+================================================== */
+
+canvas.width = 720;
+canvas.height = 1280;
+
+
+/* ==================================================
+   FILE INPUT
+================================================== */
+
+fileInput.addEventListener(
+  "change",
+  event => {
+
+    addVideos(
+      [...event.target.files]
+    );
+
+  }
+);
+
+
+/* ==================================================
+   DRAG & DROP
+================================================== */
+
+upload.addEventListener(
+  "dragover",
+  event => {
+
+    event.preventDefault();
+
+    upload.classList.add(
+      "drag"
+    );
+
+  }
+);
+
+
+upload.addEventListener(
+  "dragleave",
+  () => {
+
+    upload.classList.remove(
+      "drag"
+    );
+
+  }
+);
+
+
+upload.addEventListener(
+  "drop",
+  event => {
+
+    event.preventDefault();
+
+    upload.classList.remove(
+      "drag"
+    );
+
+    const files =
+      [...event.dataTransfer.files]
+      .filter(
+        file =>
+          file.type.startsWith(
+            "video/"
+          )
+      );
+
+    addVideos(files);
+
+  }
+);
+
+
+/* ==================================================
+   ADD VIDEOS
+================================================== */
+
+function addVideos(files){
+
+  if(!files.length)
+    return;
+
+  /*
+    Release previous object URLs.
+  */
+
+  clips.forEach(
+    clip => {
+
+      if(clip.url){
+
+        URL.revokeObjectURL(
+          clip.url
+        );
+
+      }
+
+    }
+  );
+
+  clips = [];
+
+  files.forEach(
+    file => {
+
+      const url =
+        URL.createObjectURL(
+          file
+        );
+
+      const video =
+        document.createElement(
+          "video"
+        );
+
+      video.src = url;
+
+      video.muted = true;
+
+      video.playsInline = true;
+
+      video.preload = "auto";
+
+      clips.push({
+
+        file,
+
+        url,
+
+        video,
+
+        duration:0,
+
+        thumbnail:null
+
+      });
+
+    }
+  );
+
+  workspace.classList.add(
+    "active"
+  );
+
+  clipCount.textContent =
+    clips.length;
+
+  loadClips();
+
+}
+
+
+/* ==================================================
+   LOAD CLIPS
+================================================== */
+
 async function loadClips(){
 
   clipsElement.innerHTML = "";
 
-  for(let i=0;i<clips.length;i++){
+  readyMessage.style.display =
+    "none";
 
-    const clip = clips[i];
+  for(
+    let i=0;
+    i<clips.length;
+    i++
+  ){
 
-    await waitMetadata(clip.video);
+    const clip =
+      clips[i];
 
-    clip.duration = clip.video.duration;
-
-    clip.thumbnail = captureFrame(
-      clip.video,
-      .1
+    await waitMetadata(
+      clip.video
     );
 
+
+    clip.duration =
+      clip.video.duration;
+
+
+    /*
+      Generate exact 0.1s thumbnail.
+    */
+
+    clip.thumbnail =
+      await captureFrame(
+        clip.video,
+        0.1
+      );
+
+
     if(i === 0){
-      thumbnail = clip.thumbnail;
+
+      thumbnail =
+        clip.thumbnail;
+
     }
 
-    const div = document.createElement("div");
 
-    div.className = "clip";
+    /*
+      Create ready card.
+    */
 
-    div.innerHTML = `
-      <div style="position:relative">
+    const card =
+      document.createElement(
+        "div"
+      );
 
-        <img src="${clip.thumbnail}">
+    card.className =
+      "clip ready";
+
+
+    card.innerHTML = `
+
+      <div class="clip-image">
+
+        <img
+          src="${clip.thumbnail}"
+          alt="Video thumbnail"
+        >
+
+        <span class="ready">
+          READY
+        </span>
 
         <button
           class="clip-download"
@@ -42,58 +1644,992 @@ async function loadClips(){
       <div class="clip-info">
 
         <strong>
-          ${escapeHTML(clip.file.name)}
+          ${escapeHTML(
+            clip.file.name
+          )}
         </strong>
 
         <span>
-          ${formatTime(clip.duration)} • Ready
+          ${formatTime(
+            clip.duration
+          )} • Ready
         </span>
 
       </div>
     `;
 
-    clipsElement.appendChild(div);
+
+    clipsElement.appendChild(
+      card
+    );
+
 
     /*
-      Download the individual ready video
+      Individual video download.
     */
 
     const downloadButton =
-      div.querySelector(".clip-download");
+      card.querySelector(
+        ".clip-download"
+      );
+
 
     downloadButton.addEventListener(
       "click",
-      () => {
+      event => {
 
-        const a =
-          document.createElement("a");
+        event.preventDefault();
 
-        a.href = clip.video.src;
+        event.stopPropagation();
 
-        a.download =
-          clip.file.name;
-
-        document.body.appendChild(a);
-
-        a.click();
-
-        a.remove();
+        downloadVideo(
+          clip
+        );
 
       }
     );
 
   }
 
+
+  readyMessage.style.display =
+    "flex";
+
+
+  /*
+    Start immediate preview.
+  */
+
   currentClip = 0;
+
+  clips.forEach(
+    clip => {
+
+      clip.video.currentTime = 0;
+
+    }
+  );
 
   playing = true;
 
-  clips[0].video.currentTime = 0;
+  clips[0].video
+    .play()
+    .catch(
+      () => {}
+    );
 
-  clips[0].video.play().catch(()=>{});
-
-  playButton.classList.add("active");
+  playButton.classList.add(
+    "active"
+  );
 
   render();
+
 }
+
+
+/* ==================================================
+   VIDEO METADATA
+================================================== */
+
+function waitMetadata(video){
+
+  return new Promise(
+    resolve => {
+
+      if(
+        video.readyState >= 1
+      ){
+
+        resolve();
+
+        return;
+
+      }
+
+      video.addEventListener(
+        "loadedmetadata",
+        resolve,
+        {
+          once:true
+        }
+      );
+
+    }
+  );
+
+}
+
+
+/* ==================================================
+   0.1 SECOND THUMBNAIL
+================================================== */
+
+function captureFrame(
+  video,
+  time
+){
+
+  return new Promise(
+    resolve => {
+
+      const oldTime =
+        video.currentTime;
+
+
+      const draw = () => {
+
+        const temp =
+          document.createElement(
+            "canvas"
+          );
+
+        temp.width = 720;
+
+        temp.height = 1280;
+
+        const tempCtx =
+          temp.getContext(
+            "2d"
+          );
+
+
+        tempCtx.fillStyle =
+          "#000";
+
+        tempCtx.fillRect(
+          0,
+          0,
+          720,
+          1280
+        );
+
+
+        if(
+          video.videoWidth &&
+          video.videoHeight
+        ){
+
+          const ratio =
+            Math.max(
+              720 /
+                video.videoWidth,
+
+              1280 /
+                video.videoHeight
+            );
+
+
+          const width =
+            video.videoWidth *
+            ratio;
+
+          const height =
+            video.videoHeight *
+            ratio;
+
+
+          tempCtx.drawImage(
+            video,
+
+            (720-width)/2,
+
+            (1280-height)/2,
+
+            width,
+            height
+          );
+
+        }
+
+
+        video.currentTime =
+          oldTime;
+
+
+        resolve(
+          temp.toDataURL(
+            "image/jpeg",
+            .92
+          )
+        );
+
+      };
+
+
+      /*
+        Wait until 0.1s is actually seeked.
+      */
+
+      const seekHandler =
+        () => {
+
+          video.removeEventListener(
+            "seeked",
+            seekHandler
+          );
+
+          draw();
+
+        };
+
+
+      video.addEventListener(
+        "seeked",
+        seekHandler
+      );
+
+
+      video.currentTime =
+        Math.min(
+          time,
+          Math.max(
+            0,
+            video.duration
+              - 0.01
+          )
+        );
+
+    }
+  );
+
+}
+
+
+/* ==================================================
+   DOWNLOAD INDIVIDUAL VIDEO
+================================================== */
+
+function downloadVideo(clip){
+
+  const link =
+    document.createElement(
+      "a"
+    );
+
+  link.href =
+    clip.url;
+
+  link.download =
+    clip.file.name;
+
+  document.body.appendChild(
+    link
+  );
+
+  link.click();
+
+  link.remove();
+
+}
+
+
+/* ==================================================
+   LIVE PREMIX PREVIEW
+================================================== */
+
+function render(){
+
+  if(!clips.length)
+    return;
+
+
+  const clip =
+    clips[currentClip];
+
+  const video =
+    clip.video;
+
+
+  /*
+    Black background.
+  */
+
+  ctx.fillStyle =
+    "#000";
+
+  ctx.fillRect(
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
+
+
+  /*
+    Fill vertical frame.
+  */
+
+  if(
+    video.readyState >= 2 &&
+    video.videoWidth &&
+    video.videoHeight
+  ){
+
+    const scale =
+      Math.max(
+
+        canvas.width /
+          video.videoWidth,
+
+        canvas.height /
+          video.videoHeight
+
+      );
+
+
+    const width =
+      video.videoWidth *
+      scale;
+
+    const height =
+      video.videoHeight *
+      scale;
+
+
+    ctx.drawImage(
+
+      video,
+
+      (canvas.width-width)/2,
+
+      (canvas.height-height)/2,
+
+      width,
+
+      height
+
+    );
+
+  }
+
+
+  /*
+    TOP DARK GRADIENT.
+  */
+
+  const topGradient =
+    ctx.createLinearGradient(
+      0,
+      0,
+      0,
+      450
+    );
+
+
+  topGradient.addColorStop(
+    0,
+    "rgba(0,0,0,.75)"
+  );
+
+  topGradient.addColorStop(
+    .65,
+    "rgba(0,0,0,.15)"
+  );
+
+  topGradient.addColorStop(
+    1,
+    "rgba(0,0,0,0)"
+  );
+
+
+  ctx.fillStyle =
+    topGradient;
+
+  ctx.fillRect(
+    0,
+    0,
+    canvas.width,
+    450
+  );
+
+
+  /*
+    TITLE.
+  */
+
+  ctx.textAlign =
+    "center";
+
+  ctx.fillStyle =
+    "#fff";
+
+  ctx.font =
+    "800 52px Arial";
+
+  ctx.shadowColor =
+    "rgba(0,0,0,.65)";
+
+  ctx.shadowBlur =
+    10;
+
+
+  wrapText(
+    titleInput.value,
+    canvas.width/2,
+    120,
+    600,
+    62
+  );
+
+
+  ctx.shadowBlur = 0;
+
+
+  /*
+    BOTTOM GRADIENT.
+  */
+
+  const bottomGradient =
+    ctx.createLinearGradient(
+      0,
+      canvas.height-400,
+      0,
+      canvas.height
+    );
+
+
+  bottomGradient.addColorStop(
+    0,
+    "rgba(0,0,0,0)"
+  );
+
+  bottomGradient.addColorStop(
+    1,
+    "rgba(0,0,0,.75)"
+  );
+
+
+  ctx.fillStyle =
+    bottomGradient;
+
+  ctx.fillRect(
+    0,
+    canvas.height-400,
+    canvas.width,
+    400
+  );
+
+
+  /*
+    HASHTAGS.
+  */
+
+  ctx.fillStyle =
+    "#fff";
+
+  ctx.font =
+    "700 27px Arial";
+
+  ctx.textAlign =
+    "center";
+
+  ctx.fillText(
+    "#Shorts  #Viral  #Trending",
+    canvas.width/2,
+    canvas.height-100
+  );
+
+
+  /*
+    PLAYBACK.
+  */
+
+  if(playing){
+
+    if(video.paused){
+
+      video.play()
+        .catch(
+          () => {}
+        );
+
+    }
+
+
+    if(
+      video.duration &&
+      video.currentTime >=
+      video.duration-.06
+    ){
+
+      video.pause();
+
+
+      if(
+        currentClip <
+        clips.length-1
+      ){
+
+        currentClip++;
+
+      }else{
+
+        currentClip = 0;
+
+      }
+
+
+      clips[
+        currentClip
+      ].video.currentTime = 0;
+
+      clips[
+        currentClip
+      ].video.play()
+        .catch(
+          () => {}
+        );
+
+    }
+
+  }else{
+
+    video.pause();
+
+  }
+
+
+  animationID =
+    requestAnimationFrame(
+      render
+    );
+
+}
+
+
+/* ==================================================
+   PLAY
+================================================== */
+
+playButton.addEventListener(
+  "click",
+  () => {
+
+    if(!clips.length)
+      return;
+
+    playing = true;
+
+    clips[
+      currentClip
+    ].video
+      .play()
+      .catch(
+        () => {}
+      );
+
+    playButton.classList.add(
+      "active"
+    );
+
+    pauseButton.classList.remove(
+      "active"
+    );
+
+  }
+);
+
+
+/* ==================================================
+   PAUSE
+================================================== */
+
+pauseButton.addEventListener(
+  "click",
+  () => {
+
+    playing = false;
+
+    clips.forEach(
+      clip => {
+
+        clip.video.pause();
+
+      }
+    );
+
+    playButton.classList.remove(
+      "active"
+    );
+
+    pauseButton.classList.add(
+      "active"
+    );
+
+  }
+);
+
+
+/* ==================================================
+   RESTART
+================================================== */
+
+restartButton.addEventListener(
+  "click",
+  () => {
+
+    if(!clips.length)
+      return;
+
+
+    clips.forEach(
+      clip => {
+
+        clip.video.currentTime = 0;
+
+      }
+    );
+
+
+    currentClip = 0;
+
+    playing = true;
+
+
+    clips[0].video
+      .play()
+      .catch(
+        () => {}
+      );
+
+
+    playButton.classList.add(
+      "active"
+    );
+
+    pauseButton.classList.remove(
+      "active"
+    );
+
+  }
+);
+
+
+/* ==================================================
+   MUSIC SELECT
+================================================== */
+
+musicSelect.addEventListener(
+  "change",
+  () => {
+
+    const musicNames = {
+
+      none:
+        "No background music",
+
+      pulse:
+        "Neon Pulse",
+
+      energy:
+        "Good Energy",
+
+      cinematic:
+        "Cinematic Rise"
+
+    };
+
+
+    musicName.textContent =
+      musicNames[
+        musicSelect.value
+      ];
+
+  }
+);
+
+
+/* ==================================================
+   AI REGENERATION
+================================================== */
+
+document
+.getElementById(
+  "regenerate"
+)
+.addEventListener(
+  "click",
+  () => {
+
+    const titles = [
+
+      "You Won't Believe What Happens Next 😳",
+
+      "This Went Completely Unexpected 😱",
+
+      "Everyone Needs To See This 🔥",
+
+      "Wait Until The Final Seconds 👀",
+
+      "This Is Why You Never Look Away 😂",
+
+      "The Ending Changes Everything 🤯",
+
+      "Nobody Saw This Coming 😮"
+
+    ];
+
+
+    titleInput.value =
+      titles[
+        Math.floor(
+          Math.random() *
+          titles.length
+        )
+      ];
+
+
+    const descriptions = [
+
+      "Watch this unexpected moment unfold from beginning to end. Stay until the final seconds — the payoff is worth it.",
+
+      "This starts normally and then takes a completely unexpected turn. Watch the full clip and tell us what you think.",
+
+      "One of those moments you have to watch twice. Stay until the end and share your reaction."
+
+    ];
+
+
+    descriptionInput.value =
+      descriptions[
+        Math.floor(
+          Math.random() *
+          descriptions.length
+        )
+      ];
+
+  }
+);
+
+
+/* ==================================================
+   DOWNLOAD THUMBNAIL
+================================================== */
+
+document
+.getElementById(
+  "downloadThumb"
+)
+.addEventListener(
+  "click",
+  () => {
+
+    if(!thumbnail)
+      return;
+
+
+    const link =
+      document.createElement(
+        "a"
+      );
+
+
+    link.href =
+      thumbnail;
+
+
+    link.download =
+      "viralflow-0.1s-thumbnail.jpg";
+
+
+    document.body.appendChild(
+      link
+    );
+
+
+    link.click();
+
+
+    link.remove();
+
+  }
+);
+
+
+/* ==================================================
+   LIVE TITLE PREVIEW
+================================================== */
+
+titleInput.addEventListener(
+  "input",
+  () => {
+
+    /*
+      Canvas automatically redraws
+      the current title on the next frame.
+    */
+
+  }
+);
+
+
+/* ==================================================
+   TEXT WRAP
+================================================== */
+
+function wrapText(
+  text,
+  x,
+  y,
+  maxWidth,
+  lineHeight
+){
+
+  const words =
+    text.split(/\s+/);
+
+  const lines = [];
+
+  let line = "";
+
+
+  for(
+    let i=0;
+    i<words.length;
+    i++
+  ){
+
+    const test =
+      line +
+      words[i] +
+      " ";
+
+
+    const width =
+      ctx.measureText(
+        test
+      ).width;
+
+
+    if(
+      width > maxWidth &&
+      line
+    ){
+
+      lines.push(
+        line.trim()
+      );
+
+      line =
+        words[i] +
+        " ";
+
+    }else{
+
+      line =
+        test;
+
+    }
+
+  }
+
+
+  if(line)
+    lines.push(
+      line.trim()
+    );
+
+
+  const startY =
+    y -
+    (
+      (lines.length-1) *
+      lineHeight /
+      2
+    );
+
+
+  lines.forEach(
+    (line,index) => {
+
+      ctx.fillText(
+        line,
+        x,
+        startY +
+        index*lineHeight
+      );
+
+    }
+  );
+
+}
+
+
+/* ==================================================
+   HELPERS
+================================================== */
+
+function formatTime(
+  seconds
+){
+
+  if(
+    !Number.isFinite(
+      seconds
+    )
+  ){
+
+    return "0:00";
+
+  }
+
+
+  const minutes =
+    Math.floor(
+      seconds/60
+    );
+
+
+  const secondsPart =
+    Math.floor(
+      seconds%60
+    )
+    .toString()
+    .padStart(
+      2,
+      "0"
+    );
+
+
+  return (
+    minutes +
+    ":" +
+    secondsPart
+  );
+
+}
+
+
+function escapeHTML(
+  value
+){
+
+  return String(value)
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+
+}
+
 </script>
+
+</body>
+</html>
+```
