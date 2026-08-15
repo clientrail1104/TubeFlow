@@ -1,1114 +1,821 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OmniAI — Universal Voice Assistant</title>
-
-<style>
-:root {
-    --bg: #060914;
-    --panel: rgba(15, 23, 42, .78);
-    --panel2: rgba(30, 41, 59, .55);
-    --border: rgba(148, 163, 184, .16);
-    --text: #f8fafc;
-    --muted: #94a3b8;
-    --blue: #38bdf8;
-    --purple: #8b5cf6;
-    --green: #22c55e;
-    --yellow: #f59e0b;
-    --red: #ef4444;
-}
-
-* {
-    box-sizing: border-box;
-}
-
-body {
-    margin: 0;
-    min-height: 100vh;
-    color: var(--text);
-    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background:
-        radial-gradient(circle at 15% 10%, rgba(56,189,248,.12), transparent 30%),
-        radial-gradient(circle at 85% 20%, rgba(139,92,246,.15), transparent 30%),
-        radial-gradient(circle at 50% 100%, rgba(34,197,94,.08), transparent 35%),
-        var(--bg);
-}
-
-button,
-input {
-    font: inherit;
-}
-
-button {
-    cursor: pointer;
-}
-
-.app {
-    display: grid;
-    grid-template-columns: 250px 1fr;
-    min-height: 100vh;
-}
-
-/* SIDEBAR */
-
-.sidebar {
-    border-right: 1px solid var(--border);
-    background: rgba(2, 6, 23, .72);
-    backdrop-filter: blur(20px);
-    padding: 22px 16px;
-}
-
-.logo {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 35px;
-}
-
-.logo-icon {
-    width: 42px;
-    height: 42px;
-    display: grid;
-    place-items: center;
-    border-radius: 13px;
-    background: linear-gradient(135deg, var(--blue), var(--purple));
-    box-shadow: 0 0 35px rgba(56,189,248,.25);
-    font-size: 20px;
-}
-
-.logo strong {
-    font-size: 18px;
-}
-
-.logo span {
-    display: block;
-    color: var(--muted);
-    font-size: 11px;
-}
-
-.nav {
-    display: grid;
-    gap: 7px;
-}
-
-.nav button {
-    border: 0;
-    color: var(--muted);
-    background: transparent;
-    padding: 12px 13px;
-    border-radius: 10px;
-    text-align: left;
-    transition: .2s;
-}
-
-.nav button:hover,
-.nav button.active {
-    color: white;
-    background: rgba(56,189,248,.1);
-}
-
-.status {
-    margin-top: 35px;
-    padding: 14px;
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    background: rgba(15,23,42,.55);
-}
-
-.status-title {
-    font-size: 11px;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: .1em;
-}
-
-.status-row {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 10px;
-    font-size: 13px;
-}
-
-.online {
-    color: var(--green);
-}
-
-/* MAIN */
-
-main {
-    padding: 25px;
-    max-width: 1500px;
-    width: 100%;
-    margin: auto;
-}
-
-.topbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 25px;
-}
-
-.topbar h1 {
-    margin: 0;
-    font-size: 25px;
-}
-
-.topbar p {
-    margin: 5px 0 0;
-    color: var(--muted);
-    font-size: 13px;
-}
-
-.top-actions {
-    display: flex;
-    gap: 8px;
-}
-
-.icon-btn {
-    width: 40px;
-    height: 40px;
-    border: 1px solid var(--border);
-    background: var(--panel);
-    color: white;
-    border-radius: 10px;
-}
-
-/* HERO */
-
-.hero {
-    position: relative;
-    overflow: hidden;
-    min-height: 430px;
-    border: 1px solid var(--border);
-    border-radius: 25px;
-    background:
-        linear-gradient(145deg, rgba(15,23,42,.92), rgba(8,15,31,.86));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    text-align: center;
-}
-
-.hero::before {
-    content: "";
-    position: absolute;
-    width: 500px;
-    height: 500px;
-    border-radius: 50%;
-    background: radial-gradient(circle,
-        rgba(56,189,248,.14),
-        rgba(139,92,246,.08) 40%,
-        transparent 70%);
-    animation: breathe 5s ease-in-out infinite;
-}
-
-@keyframes breathe {
-    0%,100% { transform: scale(.9); opacity: .7; }
-    50% { transform: scale(1.1); opacity: 1; }
-}
-
-.orb {
-    position: relative;
-    width: 145px;
-    height: 145px;
-    border-radius: 50%;
-    background:
-        radial-gradient(circle at 35% 30%, #fff, #38bdf8 9%, #2563eb 30%, #4c1d95 65%, #111827);
-    box-shadow:
-        0 0 40px rgba(56,189,248,.4),
-        0 0 100px rgba(139,92,246,.25),
-        inset -20px -25px 50px rgba(0,0,0,.45);
-    display: grid;
-    place-items: center;
-    transition: .3s;
-}
-
-.orb.listening {
-    animation: pulse 1.3s infinite;
-}
-
-@keyframes pulse {
-    0%,100% {
-        transform: scale(1);
-        box-shadow: 0 0 40px rgba(56,189,248,.4),
-                    0 0 100px rgba(139,92,246,.25);
-    }
-    50% {
-        transform: scale(1.08);
-        box-shadow: 0 0 60px rgba(56,189,248,.7),
-                    0 0 140px rgba(139,92,246,.4);
-    }
-}
-
-.mic-symbol {
-    font-size: 42px;
-}
-
-.hero h2 {
-    margin: 25px 0 7px;
-    position: relative;
-}
-
-.hero p {
-    position: relative;
-    color: var(--muted);
-    max-width: 600px;
-}
-
-.voice-button {
-    position: relative;
-    margin-top: 18px;
-    border: 0;
-    border-radius: 999px;
-    padding: 13px 25px;
-    color: white;
-    font-weight: 700;
-    background: linear-gradient(90deg, var(--blue), var(--purple));
-    box-shadow: 0 10px 35px rgba(56,189,248,.18);
-}
-
-/* GRID */
-
-.dashboard {
-    display: grid;
-    grid-template-columns: 1.2fr .8fr;
-    gap: 18px;
-    margin-top: 18px;
-}
-
-.card {
-    border: 1px solid var(--border);
-    background: var(--panel);
-    backdrop-filter: blur(15px);
-    border-radius: 18px;
-    padding: 18px;
-}
-
-.card-title {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-.card-title h3 {
-    margin: 0;
-    font-size: 15px;
-}
-
-.card-title span {
-    font-size: 11px;
-    color: var(--muted);
-}
-
-/* COMMAND */
-
-.command-box {
-    display: flex;
-    gap: 8px;
-}
-
-.command-box input {
-    flex: 1;
-    min-width: 0;
-    border: 1px solid var(--border);
-    background: rgba(2,6,23,.7);
-    color: white;
-    border-radius: 11px;
-    padding: 12px;
-    outline: none;
-}
-
-.command-box input:focus {
-    border-color: rgba(56,189,248,.5);
-}
-
-.send {
-    border: 0;
-    border-radius: 11px;
-    padding: 0 18px;
-    color: white;
-    background: var(--purple);
-}
-
-.result {
-    margin-top: 12px;
-    min-height: 60px;
-    padding: 12px;
-    border-radius: 11px;
-    background: rgba(2,6,23,.45);
-    color: var(--muted);
-    font-size: 13px;
-}
-
-/* CONNECTORS */
-
-.connectors {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 9px;
-}
-
-.connector {
-    padding: 12px;
-    border-radius: 12px;
-    border: 1px solid var(--border);
-    background: var(--panel2);
-}
-
-.connector-icon {
-    font-size: 20px;
-}
-
-.connector-name {
-    margin-top: 7px;
-    font-size: 12px;
-}
-
-.connector-status {
-    color: var(--green);
-    font-size: 10px;
-    margin-top: 4px;
-}
-
-/* ACTIVITY */
-
-.activity {
-    display: grid;
-    gap: 9px;
-}
-
-.activity-item {
-    display: flex;
-    gap: 10px;
-    padding: 10px;
-    border-radius: 10px;
-    background: rgba(2,6,23,.35);
-}
-
-.activity-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--green);
-    margin-top: 5px;
-    flex-shrink: 0;
-}
-
-.activity-text {
-    font-size: 12px;
-}
-
-.activity-time {
-    font-size: 10px;
-    color: var(--muted);
-    margin-top: 3px;
-}
-
-/* AUTOMATION */
-
-.automation {
-    margin-top: 18px;
-}
-
-.workflow {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-
-.node {
-    border: 1px solid var(--border);
-    background: rgba(15,23,42,.65);
-    border-radius: 11px;
-    padding: 11px 14px;
-    font-size: 12px;
-}
-
-.arrow {
-    color: var(--blue);
-}
-
-/* SECURITY */
-
-.security {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-}
-
-.security-item {
-    padding: 13px;
-    border-radius: 12px;
-    background: rgba(2,6,23,.35);
-}
-
-.security-item strong {
-    display: block;
-    font-size: 13px;
-}
-
-.security-item span {
-    color: var(--muted);
-    font-size: 10px;
-}
-
-/* RESPONSIVE */
-
-@media (max-width: 1000px) {
-    .app {
-        grid-template-columns: 1fr;
-    }
-
-    .sidebar {
-        display: none;
-    }
-
-    .dashboard {
-        grid-template-columns: 1fr;
-    }
-
-    .security {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 600px) {
-    main {
-        padding: 14px;
-    }
-
-    .connectors {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .hero {
-        min-height: 390px;
-    }
-
-    .orb {
-        width: 120px;
-        height: 120px;
-    }
-
-    .security {
-        grid-template-columns: 1fr;
-    }
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CreatorPilot | YouTube Automation</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f7fb;
+            color: #1f2937;
+        }
+
+        header {
+            background: #111827;
+            color: white;
+            padding: 18px 35px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .logo span {
+            color: #ef4444;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .dot {
+            width: 9px;
+            height: 9px;
+            background: #22c55e;
+            border-radius: 50%;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 35px auto;
+            padding: 0 20px;
+        }
+
+        .page-title {
+            margin-bottom: 25px;
+        }
+
+        .page-title h1 {
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        .page-title p {
+            color: #6b7280;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 14px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+            margin-bottom: 25px;
+        }
+
+        .card h2 {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            border-color: #ef4444;
+        }
+
+        textarea {
+            min-height: 130px;
+            resize: vertical;
+        }
+
+        .upload-box {
+            border: 2px dashed #d1d5db;
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .upload-box:hover {
+            border-color: #ef4444;
+            background: #fff7f7;
+        }
+
+        .upload-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .upload-box p {
+            color: #6b7280;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 8px;
+            padding: 12px 18px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #dc2626;
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .btn-ai {
+            background: #111827;
+            color: white;
+            margin-top: 10px;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .thumbnail-preview {
+            background: #111827;
+            height: 180px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #9ca3af;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+
+        .thumbnail-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .automation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #f9fafb;
+            border-radius: 10px;
+        }
+
+        .switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+        }
+
+        .switch input {
+            display: none;
+        }
+
+        .slider {
+            position: absolute;
+            inset: 0;
+            background: #d1d5db;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        .slider:before {
+            content: "";
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            left: 3px;
+            top: 3px;
+            background: white;
+            border-radius: 50%;
+            transition: 0.2s;
+        }
+
+        input:checked + .slider {
+            background: #22c55e;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+
+        .schedule-box {
+            background: #f9fafb;
+            padding: 18px;
+            border-radius: 10px;
+        }
+
+        .youtube-btn {
+            width: 100%;
+            background: #ef4444;
+            color: white;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        .youtube-btn:hover {
+            background: #dc2626;
+        }
+
+        .queue-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 13px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .queue-item:last-child {
+            border-bottom: none;
+        }
+
+        .queue-title {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .queue-time {
+            color: #6b7280;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        .badge {
+            padding: 5px 9px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .scheduled {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        .processing {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        @media (max-width: 850px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-<div class="app">
+<header>
+    <div class="logo">
+        Creator<span>Pilot</span>
+    </div>
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
+    <div class="status">
+        <div class="dot"></div>
+        System Ready
+    </div>
+</header>
 
-        <div class="logo">
-            <div class="logo-icon">✦</div>
-            <div>
-                <strong>OmniAI</strong>
-                <span>Universal Agent</span>
-            </div>
-        </div>
+<main class="container">
 
-        <nav class="nav">
-            <button class="active">◉ Dashboard</button>
-            <button>◌ Voice Assistant</button>
-            <button>☎ Telephony</button>
-            <button>⚡ Automations</button>
-            <button>◎ AI Network</button>
-            <button>◈ Devices</button>
-            <button>◫ Applications</button>
-            <button>◍ Real-Time World</button>
-            <button>⚙ Settings</button>
-        </nav>
+    <div class="page-title">
+        <h1>YouTube Content Automation</h1>
+        <p>Upload, optimize and schedule your videos automatically.</p>
+    </div>
 
-        <div class="status">
-            <div class="status-title">System status</div>
+    <div class="grid">
 
-            <div class="status-row">
-                <span>AI Core</span>
-                <span class="online">● Online</span>
-            </div>
+        <!-- MAIN CONTENT -->
+        <div>
 
-            <div class="status-row">
-                <span>Voice</span>
-                <span class="online">● Ready</span>
-            </div>
-
-            <div class="status-row">
-                <span>Automation</span>
-                <span class="online">● Active</span>
-            </div>
-        </div>
-
-    </aside>
-
-
-    <!-- MAIN -->
-    <main>
-
-        <div class="topbar">
-            <div>
-                <h1>Universal AI Assistant</h1>
-                <p>Command your authorized digital and physical environment.</p>
-            </div>
-
-            <div class="top-actions">
-                <button class="icon-btn" title="Notifications">🔔</button>
-                <button class="icon-btn" title="Security">🔐</button>
-            </div>
-        </div>
-
-
-        <!-- VOICE HERO -->
-        <section class="hero">
-
-            <div class="orb" id="orb">
-                <div class="mic-symbol">🎙️</div>
-            </div>
-
-            <h2 id="voiceStatus">Ready to listen</h2>
-
-            <p id="voiceText">
-                Say anything you want the assistant to do.
-            </p>
-
-            <button class="voice-button" id="voiceButton">
-                Start Voice
-            </button>
-
-        </section>
-
-
-        <section class="dashboard">
-
-            <!-- COMMAND -->
+            <!-- VIDEO UPLOAD -->
             <div class="card">
+                <h2>🎬 Video / Shorts</h2>
 
-                <div class="card-title">
-                    <h3>Command Center</h3>
-                    <span>Natural language</span>
-                </div>
+                <div class="upload-box"
+                     onclick="document.getElementById('videoFile').click()">
 
-                <div class="command-box">
+                    <div class="upload-icon">⬆️</div>
+
+                    <p>
+                        Drag & drop your video or click to upload
+                    </p>
+
+                    <button class="btn btn-secondary">
+                        Select Video
+                    </button>
+
                     <input
-                        id="commandInput"
-                        placeholder="Tell OmniAI what you want..."
+                        type="file"
+                        id="videoFile"
+                        accept="video/*"
+                        hidden
+                        onchange="showVideoName(this)"
                     >
 
-                    <button class="send" id="sendButton">
-                        Execute
-                    </button>
                 </div>
 
-                <div class="result" id="result">
-                    Awaiting your command...
-                </div>
-
+                <p id="videoName"
+                   style="margin-top:12px;color:#6b7280;font-size:13px;">
+                </p>
             </div>
 
 
-            <!-- LIVE INFORMATION -->
+            <!-- THUMBNAIL -->
             <div class="card">
 
-                <div class="card-title">
-                    <h3>Real-Time Intelligence</h3>
-                    <span id="liveStatus">LIVE</span>
+                <h2>🖼️ Thumbnail</h2>
+
+                <div class="thumbnail-preview" id="thumbnailPreview">
+                    Thumbnail Preview
                 </div>
 
-                <div class="activity">
+                <input
+                    type="file"
+                    id="thumbnail"
+                    accept="image/*"
+                    onchange="previewThumbnail(this)"
+                >
 
-                    <div class="activity-item">
-                        <div class="activity-dot"></div>
-                        <div>
-                            <div class="activity-text">
-                                Real-time information layer ready
-                            </div>
-                            <div class="activity-time">
-                                Waiting for data connection
-                            </div>
-                        </div>
+            </div>
+
+
+            <!-- AI CONTENT -->
+            <div class="card">
+
+                <h2>🤖 AI Content Optimization</h2>
+
+                <div class="form-group">
+
+                    <label>Video Title</label>
+
+                    <input
+                        type="text"
+                        id="title"
+                        placeholder="Enter title or let AI generate it..."
+                    >
+
+                    <button
+                        class="btn btn-ai"
+                        onclick="generateTitle()">
+
+                        ✨ Generate Trending Title
+
+                    </button>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Description</label>
+
+                    <textarea
+                        id="description"
+                        placeholder="Your optimized YouTube description...">
+                    </textarea>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Hashtags</label>
+
+                    <input
+                        type="text"
+                        id="hashtags"
+                        placeholder="#youtube #shorts #trending"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- MUSIC -->
+            <div class="card">
+
+                <h2>🎵 Background Music</h2>
+
+                <div class="form-group">
+
+                    <label>Select Music</label>
+
+                    <select id="music">
+
+                        <option value="">
+                            No Music
+                        </option>
+
+                        <option value="upbeat">
+                            Upbeat Corporate
+                        </option>
+
+                        <option value="lofi">
+                            Lo-Fi Chill
+                        </option>
+
+                        <option value="cinematic">
+                            Cinematic
+                        </option>
+
+                        <option value="energetic">
+                            Energetic
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <small style="color:#6b7280;">
+                    Use only music with licensing that permits your intended YouTube use.
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <!-- SIDEBAR -->
+        <div>
+
+            <!-- AUTOMATION -->
+            <div class="card">
+
+                <h2>⚙️ Automation</h2>
+
+                <div class="automation">
+
+                    <div>
+                        <strong>Automatic Publishing</strong>
+
+                        <p style="font-size:12px;color:#6b7280;margin-top:4px;">
+                            Upload and publish automatically
+                        </p>
                     </div>
 
-                    <div class="activity-item">
-                        <div class="activity-dot"></div>
-                        <div>
-                            <div class="activity-text">
-                                Source verification enabled
-                            </div>
-                            <div class="activity-time">
-                                Anti-hallucination policy active
-                            </div>
-                        </div>
+                    <label class="switch">
+
+                        <input
+                            type="checkbox"
+                            id="autoPublish"
+                            checked
+                        >
+
+                        <span class="slider"></span>
+
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <!-- SCHEDULE -->
+            <div class="card">
+
+                <h2>📅 Schedule Publishing</h2>
+
+                <div class="schedule-box">
+
+                    <div class="form-group">
+
+                        <label>Publish Date</label>
+
+                        <input
+                            type="date"
+                            id="publishDate"
+                        >
+
                     </div>
 
-                    <div class="activity-item">
-                        <div class="activity-dot"></div>
-                        <div>
-                            <div class="activity-text">
-                                Action verification enabled
-                            </div>
-                            <div class="activity-time">
-                                Results will be checked
-                            </div>
-                        </div>
+                    <div class="form-group">
+
+                        <label>Publish Time</label>
+
+                        <input
+                            type="time"
+                            id="publishTime"
+                            value="18:00"
+                        >
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>Timezone</label>
+
+                        <select id="timezone">
+
+                            <option value="Asia/Kuala_Lumpur">
+                                Malaysia (GMT+8)
+                            </option>
+
+                            <option value="Asia/Singapore">
+                                Singapore (GMT+8)
+                            </option>
+
+                            <option value="Asia/Tokyo">
+                                Japan (GMT+9)
+                            </option>
+
+                            <option value="America/New_York">
+                                New York
+                            </option>
+
+                            <option value="America/Los_Angeles">
+                                Los Angeles
+                            </option>
+
+                        </select>
+
                     </div>
 
                 </div>
 
             </div>
 
-        </section>
 
+            <!-- PRESET -->
+            <div class="card">
 
-        <!-- CONNECTORS -->
-        <section class="card" style="margin-top:18px">
+                <h2>⏱️ Publishing Preset</h2>
 
-            <div class="card-title">
-                <h3>Connected Capabilities</h3>
-                <span>Authorized connections only</span>
-            </div>
+                <div class="form-group">
 
-            <div class="connectors">
+                    <label>Preset Schedule</label>
 
-                <div class="connector">
-                    <div class="connector-icon">🌐</div>
-                    <div class="connector-name">Internet</div>
-                    <div class="connector-status">Ready</div>
-                </div>
+                    <select id="preset">
 
-                <div class="connector">
-                    <div class="connector-icon">☎️</div>
-                    <div class="connector-name">Telephony</div>
-                    <div class="connector-status">Ready</div>
-                </div>
+                        <option value="daily">
+                            Daily — 6:00 PM
+                        </option>
 
-                <div class="connector">
-                    <div class="connector-icon">📧</div>
-                    <div class="connector-name">Email</div>
-                    <div class="connector-status">Ready</div>
-                </div>
+                        <option value="weekdays">
+                            Weekdays — 6:00 PM
+                        </option>
 
-                <div class="connector">
-                    <div class="connector-icon">📅</div>
-                    <div class="connector-name">Calendar</div>
-                    <div class="connector-status">Ready</div>
-                </div>
+                        <option value="mwf">
+                            Mon / Wed / Fri — 7:00 PM
+                        </option>
 
-                <div class="connector">
-                    <div class="connector-icon">🏠</div>
-                    <div class="connector-name">Smart Home</div>
-                    <div class="connector-status">Ready</div>
-                </div>
+                        <option value="weekend">
+                            Saturday / Sunday — 10:00 AM
+                        </option>
 
-                <div class="connector">
-                    <div class="connector-icon">🤖</div>
-                    <div class="connector-name">AI Network</div>
-                    <div class="connector-status">Ready</div>
-                </div>
+                    </select>
 
-                <div class="connector">
-                    <div class="connector-icon">🗄️</div>
-                    <div class="connector-name">Databases</div>
-                    <div class="connector-status">Ready</div>
-                </div>
-
-                <div class="connector">
-                    <div class="connector-icon">⚙️</div>
-                    <div class="connector-name">APIs</div>
-                    <div class="connector-status">Ready</div>
-                </div>
-
-                <div class="connector">
-                    <div class="connector-icon">📡</div>
-                    <div class="connector-name">IoT Devices</div>
-                    <div class="connector-status">Ready</div>
                 </div>
 
             </div>
 
-        </section>
 
+            <!-- PUBLISH -->
+            <div class="card">
 
-        <!-- AUTOMATION -->
-        <section class="card automation">
+                <h2>🚀 Publish</h2>
 
-            <div class="card-title">
-                <h3>Automation Engine</h3>
-                <span>Event → Reason → Action → Verify</span>
-            </div>
+                <button
+                    class="youtube-btn"
+                    onclick="scheduleVideo()">
 
-            <div class="workflow">
+                    ▶ Schedule to YouTube
 
-                <div class="node">📥 Event detected</div>
+                </button>
 
-                <div class="arrow">→</div>
+                <button
+                    class="btn btn-secondary"
+                    style="width:100%;margin-top:10px;"
+                    onclick="saveDraft()">
 
-                <div class="node">🧠 AI understands</div>
+                    Save as Draft
 
-                <div class="arrow">→</div>
-
-                <div class="node">📋 Plan created</div>
-
-                <div class="arrow">→</div>
-
-                <div class="node">⚡ Action executed</div>
-
-                <div class="arrow">→</div>
-
-                <div class="node">✓ Result verified</div>
+                </button>
 
             </div>
 
-        </section>
+        </div>
+
+    </div>
 
 
-        <!-- SECURITY -->
-        <section class="card" style="margin-top:18px">
+    <!-- QUEUE -->
+    <div class="card">
 
-            <div class="card-title">
-                <h3>Trust & Verification</h3>
-                <span>Zero-guessing policy</span>
-            </div>
+        <h2>📋 Publishing Queue</h2>
 
-            <div class="security">
+        <div id="queue">
 
-                <div class="security-item">
-                    <strong>✓ Source Verification</strong>
-                    <span>Check information before answering</span>
+            <div class="queue-item">
+
+                <div>
+                    <div class="queue-title">
+                        10 AI Tools You Should Know
+                    </div>
+
+                    <div class="queue-time">
+                        Today · 6:00 PM
+                    </div>
                 </div>
 
-                <div class="security-item">
-                    <strong>✓ Cross Checking</strong>
-                    <span>Compare important information</span>
-                </div>
-
-                <div class="security-item">
-                    <strong>✓ Action Verification</strong>
-                    <span>Confirm actions actually succeeded</span>
-                </div>
-
-                <div class="security-item">
-                    <strong>🔐 Permission Control</strong>
-                    <span>Authorized access only</span>
-                </div>
+                <span class="badge scheduled">
+                    Scheduled
+                </span>
 
             </div>
 
-        </section>
 
-    </main>
+            <div class="queue-item">
 
-</div>
+                <div>
+                    <div class="queue-title">
+                        How AI Is Changing Business
+                    </div>
+
+                    <div class="queue-time">
+                        Tomorrow · 6:00 PM
+                    </div>
+                </div>
+
+                <span class="badge processing">
+                    Processing
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
 
 
 <script>
-/*
-==========================================================
- OMNI AI FRONTEND
-==========================================================
 
-This frontend intentionally does NOT contain API keys.
+    function showVideoName(input) {
 
-Connect these functions to your backend:
+        const fileName = document.getElementById("videoName");
 
-POST /api/agent
-POST /api/voice/session
-POST /api/telephony/call
-GET  /api/realtime
-GET  /api/connectors
-POST /api/automations
-==========================================================
-*/
+        if (input.files.length > 0) {
 
+            fileName.textContent =
+                "Selected: " + input.files[0].name;
 
-const orb = document.getElementById("orb");
-const voiceButton = document.getElementById("voiceButton");
-const voiceStatus = document.getElementById("voiceStatus");
-const voiceText = document.getElementById("voiceText");
-
-const commandInput = document.getElementById("commandInput");
-const sendButton = document.getElementById("sendButton");
-const result = document.getElementById("result");
-
-let listening = false;
-let recognition = null;
-
-
-/* -----------------------------------------------
-   SPEECH RECOGNITION
------------------------------------------------- */
-
-if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
-
-    const SpeechRecognition =
-        window.SpeechRecognition ||
-        window.webkitSpeechRecognition;
-
-    recognition = new SpeechRecognition();
-
-    recognition.continuous = false;
-    recognition.interimResults = true;
-    recognition.lang = "en-US";
-
-    recognition.onstart = () => {
-
-        listening = true;
-
-        orb.classList.add("listening");
-
-        voiceStatus.textContent = "Listening...";
-
-        voiceText.textContent =
-            "Speak naturally. I'm listening.";
-
-        voiceButton.textContent = "Stop Listening";
-    };
-
-
-    recognition.onresult = event => {
-
-        let transcript = "";
-
-        for (
-            let i = event.resultIndex;
-            i < event.results.length;
-            i++
-        ) {
-
-            transcript +=
-                event.results[i][0].transcript;
         }
 
-        commandInput.value = transcript;
-    };
+    }
 
 
-    recognition.onend = () => {
+    function previewThumbnail(input) {
 
-        listening = false;
+        const preview =
+            document.getElementById("thumbnailPreview");
 
-        orb.classList.remove("listening");
+        if (input.files.length > 0) {
 
-        voiceStatus.textContent = "Processing...";
+            const file = input.files[0];
 
-        voiceButton.textContent = "Start Voice";
+            const reader = new FileReader();
 
-        const command = commandInput.value.trim();
+            reader.onload = function(e) {
 
-        if (command) {
+                preview.innerHTML =
+                    `<img src="${e.target.result}" alt="Thumbnail">`;
 
-            executeCommand(command);
+            };
 
-        } else {
+            reader.readAsDataURL(file);
 
-            voiceStatus.textContent = "Ready to listen";
-
-            voiceText.textContent =
-                "Say anything you want the assistant to do.";
         }
-    };
+
+    }
 
 
-    recognition.onerror = event => {
+    function generateTitle() {
 
-        console.error("Speech error:", event.error);
+        const titles = [
 
-        listening = false;
+            "10 AI Tools That Will Change Your Workflow in 2026",
 
-        orb.classList.remove("listening");
+            "You Won't Believe What AI Can Do Now",
 
-        voiceStatus.textContent = "Voice error";
+            "The Future of AI Is Here — Here's What You Need to Know",
 
-        voiceText.textContent =
-            "Please try again.";
-    };
+            "5 AI Tools Everyone Should Be Using",
 
-}
+            "This AI Tool Is Going Viral — Here's Why"
+
+        ];
+
+        const randomTitle =
+            titles[Math.floor(Math.random() * titles.length)];
+
+        document.getElementById("title").value =
+            randomTitle;
+
+    }
 
 
-/* -----------------------------------------------
-   VOICE BUTTON
------------------------------------------------- */
+    function scheduleVideo() {
 
-voiceButton.addEventListener("click", () => {
+        const title =
+            document.getElementById("title").value;
 
-    if (!recognition) {
+        const date =
+            document.getElementById("publishDate").value;
+
+        const time =
+            document.getElementById("publishTime").value;
+
+        if (!title) {
+
+            alert("Please enter or generate a video title.");
+
+            return;
+
+        }
+
+        if (!date || !time) {
+
+            alert("Please select a publishing date and time.");
+
+            return;
+
+        }
 
         alert(
-            "Speech recognition is not supported by this browser."
+            "Video scheduled successfully!\n\n" +
+            "Title: " + title +
+            "\nDate: " + date +
+            "\nTime: " + time
         );
 
-        return;
     }
 
-    if (listening) {
 
-        recognition.stop();
+    function saveDraft() {
 
-    } else {
-
-        commandInput.value = "";
-
-        recognition.start();
+        alert("Video saved as draft.");
 
     }
-
-});
-
-
-/* -----------------------------------------------
-   COMMAND EXECUTION
------------------------------------------------- */
-
-sendButton.addEventListener("click", () => {
-
-    const command = commandInput.value.trim();
-
-    if (!command) {
-
-        result.textContent =
-            "Please enter a command.";
-
-        return;
-    }
-
-    executeCommand(command);
-
-});
-
-
-commandInput.addEventListener("keydown", event => {
-
-    if (event.key === "Enter") {
-
-        sendButton.click();
-
-    }
-
-});
-
-
-async function executeCommand(command) {
-
-    result.innerHTML =
-        `<strong>Command received:</strong><br>
-         ${escapeHTML(command)}
-         <br><br>
-         🧠 AI is planning the required actions...`;
-
-    voiceStatus.textContent = "Thinking...";
-    voiceText.textContent = command;
-
-    /*
-    --------------------------------------------------
-    REAL BACKEND CONNECTION
-    --------------------------------------------------
-
-    Uncomment and connect to your server:
-
-    const response = await fetch("/api/agent", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            command: command
-        })
-    });
-
-    const data = await response.json();
-
-    result.textContent = data.message;
-
-    --------------------------------------------------
-    */
-
-    // Demo response
-
-    setTimeout(() => {
-
-        result.innerHTML =
-            `✓ Request understood.<br><br>
-             <strong>Requested:</strong>
-             ${escapeHTML(command)}
-             <br><br>
-             <span style="color:#94a3b8">
-             Backend AI orchestration is required
-             to execute this command.
-             </span>`;
-
-        voiceStatus.textContent = "Ready";
-
-        voiceText.textContent =
-            "Command processed by the interface.";
-
-    }, 900);
-
-}
-
-
-/* -----------------------------------------------
-   TEXT TO SPEECH
------------------------------------------------- */
-
-function speak(text) {
-
-    if (!("speechSynthesis" in window)) {
-
-        return;
-    }
-
-    window.speechSynthesis.cancel();
-
-    const utterance =
-        new SpeechSynthesisUtterance(text);
-
-    utterance.rate = 1.0;
-    utterance.pitch = 1.0;
-    utterance.volume = 1.0;
-
-    window.speechSynthesis.speak(utterance);
-}
-
-
-/* -----------------------------------------------
-   SECURITY
------------------------------------------------- */
-
-function escapeHTML(value) {
-
-    return value
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-}
-
-
-/* -----------------------------------------------
-   LIVE STATUS DEMO
------------------------------------------------- */
-
-setInterval(() => {
-
-    const live =
-        document.getElementById("liveStatus");
-
-    live.textContent =
-        "LIVE • " +
-        new Date().toLocaleTimeString();
-
-}, 1000);
 
 </script>
 
