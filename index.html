@@ -1,414 +1,1403 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Gemini Instant Video AI Studio</title>
-  <!-- Google Fonts & Material Symbols -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>ViralFlow — Instant Video Studio</title>
 
-  <style>
-    :root {
-      --bg-dark: #0f1015;
-      --card-bg: #1e1f2b;
-      --surface-hover: #2a2c3d;
-      --border-color: #2f3245;
-      --primary-accent: #7c5cff;
-      --accent-gradient: linear-gradient(135deg, #7c5cff 0%, #ff6b8b 50%, #48cae4 100%);
-      --text-main: #e2e8f0;
-      --text-muted: #94a3b8;
-      --radius: 16px;
-    }
+<style>
+*{box-sizing:border-box}
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
-    body { background-color: var(--bg-dark); color: var(--text-main); min-height: 100vh; padding: 2rem; }
+:root{
+  --bg:#08090d;
+  --panel:#11131a;
+  --panel2:#181b24;
+  --border:#282d39;
+  --text:#f5f7fb;
+  --muted:#949cac;
+  --blue:#8ab4f8;
+  --purple:#b28cff;
+  --green:#62e6a5;
+}
 
-    header {
-      max-width: 1200px;
-      margin: 0 auto 2.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
+body{
+  margin:0;
+  background:
+    radial-gradient(circle at 20% 0%,#18203a 0,transparent 32%),
+    radial-gradient(circle at 90% 10%,#281b3b 0,transparent 28%),
+    var(--bg);
+  color:var(--text);
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
 
-    .brand { display: flex; align-items: center; gap: 0.75rem; }
-    .brand-icon {
-      font-size: 2rem;
-      background: var(--accent-gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    .brand h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.5px; }
+button,input{
+  font:inherit;
+}
 
-    .dropzone-container {
-      max-width: 1200px;
-      margin: 0 auto 3rem;
-    }
+button{
+  cursor:pointer;
+}
 
-    .dropzone {
-      border: 2px dashed var(--border-color);
-      border-radius: var(--radius);
-      background: rgba(30, 31, 43, 0.5);
-      padding: 2.5rem 2rem;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-    }
+.header{
+  height:68px;
+  padding:0 26px;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:sticky;
+  top:0;
+  z-index:50;
+  background:rgba(8,9,13,.82);
+  backdrop-filter:blur(20px);
+}
 
-    .dropzone:hover, .dropzone.dragover {
-      border-color: var(--primary-accent);
-      background: rgba(124, 92, 255, 0.05);
-      transform: translateY(-2px);
-    }
+.brand{
+  display:flex;
+  align-items:center;
+  gap:11px;
+  font-weight:750;
+}
 
-    .dropzone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
-    .dropzone .icon { font-size: 2.5rem; color: var(--primary-accent); margin-bottom: 0.75rem; }
-    .dropzone p { color: var(--text-muted); font-size: 0.95rem; }
-    .dropzone p span { color: var(--text-main); font-weight: 600; text-decoration: underline; }
+.logo{
+  width:34px;
+  height:34px;
+  border-radius:11px;
+  display:grid;
+  place-items:center;
+  color:#101116;
+  background:linear-gradient(135deg,var(--blue),var(--purple));
+  font-weight:900;
+}
 
-    .section-title {
-      max-width: 1200px;
-      margin: 0 auto 1.5rem;
-      font-size: 1.25rem;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
+.badge{
+  border:1px solid var(--border);
+  color:var(--muted);
+  padding:7px 12px;
+  border-radius:999px;
+  font-size:12px;
+}
 
-    .gallery-grid {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-      gap: 1.5rem;
-    }
+.container{
+  width:min(1400px,calc(100% - 32px));
+  margin:auto;
+  padding:32px 0 70px;
+}
 
-    .video-card {
-      background: var(--card-bg);
-      border-radius: var(--radius);
-      border: 1px solid var(--border-color);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-      cursor: pointer;
-    }
+.hero{
+  text-align:center;
+  max-width:800px;
+  margin:20px auto 35px;
+}
 
-    .video-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
-    }
+.hero h1{
+  font-size:clamp(36px,5vw,62px);
+  line-height:1;
+  letter-spacing:-3px;
+  margin:0 0 16px;
+  background:linear-gradient(100deg,#fff,#b9ceff,#d0b8ff);
+  -webkit-background-clip:text;
+  color:transparent;
+}
 
-    .thumbnail-wrapper {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 16 / 9;
-      background: #000;
-      overflow: hidden;
-    }
+.hero p{
+  color:var(--muted);
+  line-height:1.7;
+}
 
-    .thumbnail-wrapper canvas {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+.upload{
+  border:1px dashed #495166;
+  border-radius:24px;
+  padding:45px 20px;
+  text-align:center;
+  background:rgba(255,255,255,.025);
+  transition:.2s;
+}
 
-    .play-badge {
-      position: absolute;
-      inset: 0;
-      background: rgba(0,0,0,0.3);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      transition: opacity 0.2s ease;
-    }
+.upload.drag{
+  border-color:var(--blue);
+  background:rgba(138,180,248,.08);
+}
 
-    .thumbnail-wrapper:hover .play-badge { opacity: 1; }
-    .play-badge span {
-      font-size: 3rem;
-      color: #fff;
-      background: var(--accent-gradient);
-      border-radius: 50%;
-      padding: 0.25rem;
-    }
+.upload-icon{
+  font-size:34px;
+  margin-bottom:12px;
+}
 
-    .audio-tag {
-      position: absolute;
-      bottom: 10px;
-      left: 10px;
-      background: rgba(15, 16, 21, 0.85);
-      backdrop-filter: blur(8px);
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 0.75rem;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      color: #48cae4;
-      border: 1px solid rgba(72, 202, 228, 0.3);
-    }
+.upload h2{
+  margin:0 0 8px;
+}
 
-    .card-content { padding: 1.25rem; display: flex; flex-direction: column; gap: 0.75rem; flex: 1; }
-    
-    .ai-pill {
-      align-self: flex-start;
-      font-size: 0.7rem;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      background: var(--accent-gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      border: 1px solid var(--border-color);
-      padding: 2px 8px;
-      border-radius: 6px;
-    }
+.upload p{
+  color:var(--muted);
+  margin-bottom:20px;
+}
 
-    .video-title { font-size: 1.1rem; font-weight: 600; line-height: 1.4; }
-    .video-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
-    .hashtags { font-size: 0.8rem; color: var(--primary-accent); font-weight: 500; }
+.primary{
+  border:0;
+  border-radius:12px;
+  padding:12px 20px;
+  background:linear-gradient(135deg,var(--blue),var(--purple));
+  color:#101116;
+  font-weight:800;
+}
 
-    /* Gemini Modal Overlay */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 16, 21, 0.9);
-      backdrop-filter: blur(16px);
-      z-index: 1000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-    }
+input[type=file]{
+  display:none;
+}
 
-    .modal-overlay.active { opacity: 1; pointer-events: auto; }
+.workspace{
+  display:none;
+  grid-template-columns:minmax(320px,430px) 1fr;
+  gap:22px;
+  margin-top:25px;
+}
 
-    .modal-container {
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      width: 90%;
-      max-width: 900px;
-      border-radius: 24px;
-      overflow: hidden;
-      position: relative;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
-    }
+.workspace.active{
+  display:grid;
+}
 
-    .close-btn {
-      position: absolute;
-      top: 15px; right: 15px;
-      background: rgba(255,255,255,0.1);
-      border: none;
-      color: #fff;
-      width: 36px; height: 36px;
-      border-radius: 50%;
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      z-index: 10;
-    }
-    .close-btn:hover { background: rgba(255,255,255,0.2); }
+.preview-panel,
+.editor-panel{
+  border:1px solid var(--border);
+  background:rgba(17,19,26,.92);
+  border-radius:22px;
+  overflow:hidden;
+}
 
-    .modal-player-wrapper { width: 100%; aspect-ratio: 16 / 9; background: #000; }
-    .modal-player-wrapper video { width: 100%; height: 100%; }
+.panel-head{
+  padding:15px 17px;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
 
-    .modal-info { padding: 1.5rem; }
-  </style>
+.panel-head strong{
+  font-size:14px;
+}
+
+.live{
+  color:var(--green);
+  font-size:11px;
+  display:flex;
+  align-items:center;
+  gap:5px;
+}
+
+.live:before{
+  content:"";
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:var(--green);
+}
+
+.phone{
+  padding:20px;
+  display:flex;
+  justify-content:center;
+  background:#07080b;
+}
+
+.phone-frame{
+  width:min(100%,330px);
+  aspect-ratio:9/16;
+  border-radius:18px;
+  overflow:hidden;
+  background:#000;
+  position:relative;
+  box-shadow:0 25px 70px rgba(0,0,0,.5);
+}
+
+#previewCanvas{
+  width:100%;
+  height:100%;
+  display:block;
+}
+
+.preview-controls{
+  padding:14px;
+  display:flex;
+  gap:8px;
+}
+
+.control{
+  flex:1;
+  border:1px solid var(--border);
+  background:var(--panel2);
+  color:var(--text);
+  padding:10px;
+  border-radius:10px;
+}
+
+.control.active{
+  background:linear-gradient(135deg,var(--blue),var(--purple));
+  color:#111;
+}
+
+.editor{
+  padding:18px;
+}
+
+.section{
+  margin-bottom:22px;
+}
+
+.section-title{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:10px;
+}
+
+.section-title span{
+  color:var(--muted);
+  font-size:11px;
+}
+
+.field{
+  margin-bottom:12px;
+}
+
+label{
+  color:var(--muted);
+  display:block;
+  font-size:11px;
+  margin-bottom:6px;
+}
+
+input[type=text]{
+  width:100%;
+  padding:11px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background:#0b0d12;
+  color:var(--text);
+  outline:none;
+}
+
+textarea{
+  width:100%;
+  min-height:90px;
+  resize:vertical;
+  padding:11px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background:#0b0d12;
+  color:var(--text);
+  outline:none;
+}
+
+.tags{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
+
+.tag{
+  padding:6px 9px;
+  border-radius:999px;
+  background:#1d1930;
+  border:1px solid #372e55;
+  color:#ccbfff;
+  font-size:11px;
+}
+
+.music{
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:12px;
+  display:flex;
+  gap:12px;
+  align-items:center;
+}
+
+.music-icon{
+  width:42px;
+  height:42px;
+  border-radius:12px;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(135deg,#292d3b,#181b25);
+  font-size:20px;
+}
+
+.music-info{
+  flex:1;
+}
+
+.music-info strong{
+  font-size:12px;
+  display:block;
+}
+
+.music-info span{
+  font-size:10px;
+  color:var(--muted);
+}
+
+.music select{
+  background:var(--panel2);
+  border:1px solid var(--border);
+  color:var(--text);
+  padding:7px;
+  border-radius:8px;
+}
+
+.clips{
+  margin-top:25px;
+  display:flex;
+  gap:10px;
+  overflow-x:auto;
+  padding-bottom:5px;
+}
+
+.clip{
+  min-width:150px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  overflow:hidden;
+  background:var(--panel);
+}
+
+.clip img{
+  width:100%;
+  aspect-ratio:16/9;
+  object-fit:cover;
+  display:block;
+}
+
+.clip-info{
+  padding:8px;
+}
+
+.clip-info strong{
+  display:block;
+  font-size:11px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.clip-info span{
+  color:var(--muted);
+  font-size:10px;
+}
+
+.actions{
+  display:flex;
+  gap:8px;
+  margin-top:20px;
+}
+
+.secondary{
+  flex:1;
+  padding:11px;
+  border:1px solid var(--border);
+  background:var(--panel2);
+  color:var(--text);
+  border-radius:10px;
+}
+
+.green{
+  background:rgba(98,230,165,.1);
+  border-color:rgba(98,230,165,.25);
+  color:var(--green);
+}
+
+@media(max-width:850px){
+  .workspace.active{
+    grid-template-columns:1fr;
+  }
+}
+</style>
 </head>
+
 <body>
 
-  <header>
-    <div class="brand">
-      <span class="material-symbols-outlined brand-icon">auto_awesome</span>
-      <h1>Gemini Studio Engine</h1>
-    </div>
-  </header>
-
-  <div class="dropzone-container">
-    <div class="dropzone" id="dropzone">
-      <span class="material-symbols-outlined icon">cloud_upload</span>
-      <h3>Drag & Drop more video files here</h3>
-      <p>or <span>browse computer</span> to run AI pre-editing pipeline</p>
-      <input type="file" id="videoInput" accept="video/*" multiple />
-    </div>
+<header class="header">
+  <div class="brand">
+    <div class="logo">V</div>
+    ViralFlow
   </div>
 
-  <div class="section-title">
-    <span class="material-symbols-outlined" style="color:var(--primary-accent)">bolt</span>
-    Instant Pre-edited Results
+  <div class="badge">
+    Instant AI Video Studio
   </div>
-  <main class="gallery-grid" id="galleryGrid"></main>
+</header>
 
-  <!-- Single Page Preview Modal -->
-  <div class="modal-overlay" id="modalOverlay">
-    <div class="modal-container">
-      <button class="close-btn" id="closeModal">
-        <span class="material-symbols-outlined">close</span>
+<main class="container">
+
+<section class="hero">
+  <h1>Upload.<br>Mix. Preview.</h1>
+  <p>
+    Drop multiple videos and instantly watch your premixed
+    vertical video directly on this page.
+  </p>
+</section>
+
+<section class="upload" id="upload">
+
+  <div class="upload-icon">🎬</div>
+
+  <h2>Drop multiple videos here</h2>
+
+  <p>
+    MP4, WebM or MOV • Your videos stay in your browser
+  </p>
+
+  <label class="primary">
+    Choose Videos
+    <input
+      id="files"
+      type="file"
+      multiple
+      accept="video/*"
+    >
+  </label>
+
+</section>
+
+<section class="workspace" id="workspace">
+
+  <!-- PREVIEW -->
+
+  <div class="preview-panel">
+
+    <div class="panel-head">
+      <strong>Premixed Preview</strong>
+      <span class="live">LIVE</span>
+    </div>
+
+    <div class="phone">
+
+      <div class="phone-frame">
+
+        <canvas id="previewCanvas"></canvas>
+
+      </div>
+
+    </div>
+
+    <div class="preview-controls">
+
+      <button
+        class="control active"
+        id="play"
+      >
+        ▶ Play
       </button>
-      <div class="modal-player-wrapper">
-        <video id="modalVideoPlayer" controls autoplay crossorigin="anonymous"></video>
-      </div>
-      <div class="modal-info">
-        <h2 id="modalTitle" class="video-title" style="font-size: 1.3rem; margin-bottom: 0.5rem;"></h2>
-        <p id="modalDesc" class="video-desc" style="margin-bottom: 0.5rem;"></p>
-        <p id="modalTags" class="hashtags"></p>
-      </div>
+
+      <button
+        class="control"
+        id="pause"
+      >
+        ❚❚ Pause
+      </button>
+
+      <button
+        class="control"
+        id="restart"
+      >
+        ↻
+      </button>
+
     </div>
+
   </div>
 
-  <script>
-    // Sample royalty-free public streams for instant viewing
-    const instantPreMixDemos = [
-      {
-        videoSrc: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-        title: "🔥 Mind-Blowing Hack That Changes Everything!",
-        desc: "You won't believe how easily this works! Tried and tested viral concept that everyone is talking about right now.",
-        tags: "#ViralHacks #Trending2026 #MustWatch #LifeHack",
-        audio: "🎵 Phonk Remix (Royalty-Free)"
-      },
-      {
-        videoSrc: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
-        title: "⚡ Secret Technique Revealed (Don't Skip)",
-        desc: "Step-by-step breakdown of how to elevate your daily routine in seconds. Bookmark this before it gets taken down!",
-        tags: "#ProTips #TechSecrets #TrendingNow #AlgorithmHack",
-        audio: "🎵 Lo-Fi Chill Synth (Royalty-Free)"
-      },
-      {
-        videoSrc: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
-        title: "✨ 3 Rules You Need To Know Right Now!",
-        desc: "Master this visual trend and transform your content engine instantly. Guaranteed to pull higher reach.",
-        tags: "#ContentCreator #GrowthHacks #GeminiAI #ViralReels",
-        audio: "🎵 Deep Bass Pop Beat (Royalty-Free)"
+  <!-- EDITOR -->
+
+  <div class="editor-panel">
+
+    <div class="panel-head">
+      <strong>AI Viral Content</strong>
+      <span class="badge">Generated</span>
+    </div>
+
+    <div class="editor">
+
+      <div class="section">
+
+        <div class="section-title">
+          <strong>Viral title</strong>
+          <span>Based on video context</span>
+        </div>
+
+        <div class="field">
+          <input
+            id="title"
+            type="text"
+            value="You Won't Believe What Happens Next 😳"
+          >
+        </div>
+
+      </div>
+
+      <div class="section">
+
+        <div class="section-title">
+          <strong>Description</strong>
+          <span>AI generated</span>
+        </div>
+
+        <textarea id="description">Watch this unexpected moment unfold from beginning to end. Stay until the final seconds — the payoff is worth it.</textarea>
+
+      </div>
+
+      <div class="section">
+
+        <div class="section-title">
+          <strong>Hashtags</strong>
+          <span>Trending style</span>
+        </div>
+
+        <div class="tags">
+          <span class="tag">#Shorts</span>
+          <span class="tag">#Viral</span>
+          <span class="tag">#Trending</span>
+          <span class="tag">#MustWatch</span>
+          <span class="tag">#FYP</span>
+        </div>
+
+      </div>
+
+      <div class="section">
+
+        <div class="section-title">
+          <strong>Background Music</strong>
+          <span>Royalty-free</span>
+        </div>
+
+        <div class="music">
+
+          <div class="music-icon">♫</div>
+
+          <div class="music-info">
+            <strong id="musicName">
+              Neon Pulse
+            </strong>
+
+            <span>
+              Royalty-free • Energetic
+            </span>
+          </div>
+
+          <select id="musicSelect">
+            <option value="none">None</option>
+            <option value="pulse" selected>Neon Pulse</option>
+            <option value="energy">Good Energy</option>
+            <option value="cinematic">Cinematic</option>
+          </select>
+
+        </div>
+
+      </div>
+
+      <div class="section">
+
+        <div class="section-title">
+          <strong>Uploaded clips</strong>
+          <span id="clipCount">0</span>
+        </div>
+
+        <div
+          class="clips"
+          id="clips"
+        ></div>
+
+      </div>
+
+      <div class="actions">
+
+        <button
+          class="secondary"
+          id="regenerate"
+        >
+          ✨ Regenerate
+        </button>
+
+        <button
+          class="secondary green"
+          id="downloadThumb"
+        >
+          🖼 Thumbnail
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+</main>
+
+<script>
+
+const fileInput =
+  document.getElementById("files");
+
+const upload =
+  document.getElementById("upload");
+
+const workspace =
+  document.getElementById("workspace");
+
+const canvas =
+  document.getElementById("previewCanvas");
+
+const ctx =
+  canvas.getContext("2d");
+
+const titleInput =
+  document.getElementById("title");
+
+const descriptionInput =
+  document.getElementById("description");
+
+const clipsElement =
+  document.getElementById("clips");
+
+const clipCount =
+  document.getElementById("clipCount");
+
+const playButton =
+  document.getElementById("play");
+
+const pauseButton =
+  document.getElementById("pause");
+
+const restartButton =
+  document.getElementById("restart");
+
+const musicSelect =
+  document.getElementById("musicSelect");
+
+const musicName =
+  document.getElementById("musicName");
+
+let clips = [];
+
+let currentClip = 0;
+
+let playing = false;
+
+let previewStart = 0;
+
+let animationID = null;
+
+let thumbnail = null;
+
+
+/* ------------------------------------------------
+   UPLOAD
+------------------------------------------------ */
+
+fileInput.addEventListener("change", e => {
+
+  const files =
+    [...e.target.files];
+
+  addVideos(files);
+
+});
+
+
+/* ------------------------------------------------
+   DRAG DROP
+------------------------------------------------ */
+
+upload.addEventListener("dragover", e => {
+
+  e.preventDefault();
+
+  upload.classList.add("drag");
+
+});
+
+upload.addEventListener("dragleave", () => {
+
+  upload.classList.remove("drag");
+
+});
+
+upload.addEventListener("drop", e => {
+
+  e.preventDefault();
+
+  upload.classList.remove("drag");
+
+  addVideos(
+    [...e.dataTransfer.files]
+      .filter(f => f.type.startsWith("video/"))
+  );
+
+});
+
+
+/* ------------------------------------------------
+   ADD VIDEOS
+------------------------------------------------ */
+
+function addVideos(files){
+
+  clips.forEach(c => {
+    if(c.url)
+      URL.revokeObjectURL(c.url);
+  });
+
+  clips = [];
+
+  files.forEach(file => {
+
+    const video =
+      document.createElement("video");
+
+    video.src =
+      URL.createObjectURL(file);
+
+    video.muted = true;
+
+    video.playsInline = true;
+
+    video.preload = "auto";
+
+    clips.push({
+      file,
+      video,
+      duration:0,
+      thumbnail:null
+    });
+
+  });
+
+  if(!clips.length)
+    return;
+
+  workspace.classList.add("active");
+
+  clipCount.textContent =
+    clips.length;
+
+  loadClips();
+
+}
+
+
+/* ------------------------------------------------
+   LOAD CLIPS
+------------------------------------------------ */
+
+async function loadClips(){
+
+  clipsElement.innerHTML = "";
+
+  for(let i=0;i<clips.length;i++){
+
+    const clip =
+      clips[i];
+
+    await waitMetadata(
+      clip.video
+    );
+
+    clip.duration =
+      clip.video.duration;
+
+    clip.thumbnail =
+      captureFrame(
+        clip.video,
+        .1
+      );
+
+    if(i === 0)
+      thumbnail =
+        clip.thumbnail;
+
+    const div =
+      document.createElement("div");
+
+    div.className = "clip";
+
+    div.innerHTML = `
+
+      <img src="${clip.thumbnail}">
+
+      <div class="clip-info">
+
+        <strong>
+          ${escapeHTML(clip.file.name)}
+        </strong>
+
+        <span>
+          ${formatTime(clip.duration)}
+        </span>
+
+      </div>
+
+    `;
+
+    clipsElement.appendChild(div);
+
+  }
+
+  /*
+    Immediately begin the mixed preview.
+  */
+
+  currentClip = 0;
+
+  playing = true;
+
+  previewStart = performance.now();
+
+  playButton.classList.add("active");
+
+  render();
+
+}
+
+
+/* ------------------------------------------------
+   VIDEO METADATA
+------------------------------------------------ */
+
+function waitMetadata(video){
+
+  return new Promise(resolve => {
+
+    if(video.readyState >= 1){
+
+      resolve();
+
+      return;
+
+    }
+
+    video.addEventListener(
+      "loadedmetadata",
+      resolve,
+      {once:true}
+    );
+
+  });
+
+}
+
+
+/* ------------------------------------------------
+   0.1 SECOND THUMBNAIL
+------------------------------------------------ */
+
+function captureFrame(video,time){
+
+  const temp =
+    document.createElement("canvas");
+
+  temp.width = 720;
+
+  temp.height = 1280;
+
+  const tempCtx =
+    temp.getContext("2d");
+
+  /*
+    For the thumbnail requirement,
+    use a frame captured at 0.1 seconds.
+  */
+
+  const oldTime =
+    video.currentTime;
+
+  video.currentTime =
+    Math.min(.1,video.duration || .1);
+
+  tempCtx.fillStyle="#000";
+
+  tempCtx.fillRect(
+    0,
+    0,
+    temp.width,
+    temp.height
+  );
+
+  const ratio =
+    Math.max(
+      temp.width/video.videoWidth,
+      temp.height/video.videoHeight
+    );
+
+  const w =
+    video.videoWidth * ratio;
+
+  const h =
+    video.videoHeight * ratio;
+
+  tempCtx.drawImage(
+    video,
+    (temp.width-w)/2,
+    (temp.height-h)/2,
+    w,
+    h
+  );
+
+  video.currentTime =
+    oldTime;
+
+  return temp.toDataURL(
+    "image/jpeg",
+    .9
+  );
+
+}
+
+
+/* ------------------------------------------------
+   CANVAS
+------------------------------------------------ */
+
+canvas.width = 720;
+
+canvas.height = 1280;
+
+
+/* ------------------------------------------------
+   LIVE MIXER
+------------------------------------------------ */
+
+function render(){
+
+  if(!clips.length)
+    return;
+
+  const clip =
+    clips[currentClip];
+
+  const video =
+    clip.video;
+
+  /*
+    Draw video vertically cropped.
+  */
+
+  ctx.fillStyle="#000";
+
+  ctx.fillRect(
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
+
+  if(video.readyState >= 2){
+
+    const ratio =
+      Math.max(
+        canvas.width/video.videoWidth,
+        canvas.height/video.videoHeight
+      );
+
+    const w =
+      video.videoWidth * ratio;
+
+    const h =
+      video.videoHeight * ratio;
+
+    ctx.drawImage(
+      video,
+      (canvas.width-w)/2,
+      (canvas.height-h)/2,
+      w,
+      h
+    );
+
+  }
+
+  /*
+    Top gradient.
+  */
+
+  const gradient =
+    ctx.createLinearGradient(
+      0,0,
+      0,430
+    );
+
+  gradient.addColorStop(
+    0,
+    "rgba(0,0,0,.65)"
+  );
+
+  gradient.addColorStop(
+    1,
+    "rgba(0,0,0,0)"
+  );
+
+  ctx.fillStyle =
+    gradient;
+
+  ctx.fillRect(
+    0,
+    0,
+    canvas.width,
+    430
+  );
+
+
+  /*
+    TITLE
+  */
+
+  ctx.fillStyle="#fff";
+
+  ctx.font=
+    "bold 55px Arial";
+
+  ctx.textAlign="center";
+
+  wrapText(
+    titleInput.value,
+    canvas.width/2,
+    115,
+    600,
+    65
+  );
+
+
+  /*
+    BOTTOM HASHTAGS
+  */
+
+  ctx.font=
+    "bold 28px Arial";
+
+  ctx.fillStyle=
+    "rgba(255,255,255,.9)";
+
+  ctx.fillText(
+    "#Shorts  #Viral  #Trending",
+    canvas.width/2,
+    canvas.height-100
+  );
+
+
+  /*
+    PLAYBACK
+  */
+
+  if(playing){
+
+    if(video.paused)
+      video.play().catch(()=>{});
+
+    if(video.currentTime >= video.duration-.05){
+
+      video.pause();
+
+      if(currentClip < clips.length-1){
+
+        currentClip++;
+
+        clips[currentClip]
+          .video
+          .currentTime = 0;
+
+      }else{
+
+        currentClip = 0;
+
+        clips[0].video.currentTime = 0;
+
       }
+
+    }
+
+  }else{
+
+    video.pause();
+
+  }
+
+  animationID =
+    requestAnimationFrame(render);
+
+}
+
+
+/* ------------------------------------------------
+   PLAY
+------------------------------------------------ */
+
+playButton.addEventListener(
+  "click",
+  () => {
+
+    playing = true;
+
+    clips[currentClip]
+      .video
+      .play()
+      .catch(()=>{});
+
+    playButton.classList.add("active");
+
+    render();
+
+  }
+);
+
+
+/* ------------------------------------------------
+   PAUSE
+------------------------------------------------ */
+
+pauseButton.addEventListener(
+  "click",
+  () => {
+
+    playing = false;
+
+    clips.forEach(c =>
+      c.video.pause()
+    );
+
+    playButton.classList.remove(
+      "active"
+    );
+
+  }
+);
+
+
+/* ------------------------------------------------
+   RESTART
+------------------------------------------------ */
+
+restartButton.addEventListener(
+  "click",
+  () => {
+
+    currentClip = 0;
+
+    clips.forEach(c => {
+
+      c.video.currentTime = 0;
+
+    });
+
+    playing = true;
+
+  }
+);
+
+
+/* ------------------------------------------------
+   MUSIC SELECT
+------------------------------------------------ */
+
+musicSelect.addEventListener(
+  "change",
+  () => {
+
+    const names = {
+
+      none:"No background music",
+
+      pulse:"Neon Pulse",
+
+      energy:"Good Energy",
+
+      cinematic:"Cinematic Rise"
+
+    };
+
+    musicName.textContent =
+      names[musicSelect.value];
+
+    /*
+      Actual music mixing requires an audio
+      source or Web Audio/FFmpeg pipeline.
+
+      The visual preview remains immediate.
+    */
+
+  }
+);
+
+
+/* ------------------------------------------------
+   TITLE LIVE UPDATE
+------------------------------------------------ */
+
+titleInput.addEventListener(
+  "input",
+  () => {}
+);
+
+
+/* ------------------------------------------------
+   REGENERATE
+------------------------------------------------ */
+
+document
+.getElementById("regenerate")
+.addEventListener(
+  "click",
+  () => {
+
+    const titles = [
+
+      "You Won't Believe What Happens Next 😳",
+
+      "This Went Completely Unexpected 😱",
+
+      "Everyone Needs To See This 🔥",
+
+      "Wait Until The Final Seconds 👀",
+
+      "This Is Why You Never Look Away 😂"
+
     ];
 
-    const videoInput = document.getElementById('videoInput');
-    const dropzone = document.getElementById('dropzone');
-    const galleryGrid = document.getElementById('galleryGrid');
-    
-    // Modal Elements
-    const modalOverlay = document.getElementById('modalOverlay');
-    const modalVideoPlayer = document.getElementById('modalVideoPlayer');
-    const modalTitle = document.getElementById('modalTitle');
-    const modalDesc = document.getElementById('modalDesc');
-    const modalTags = document.getElementById('modalTags');
-    const closeModal = document.getElementById('closeModal');
+    titleInput.value =
+      titles[
+        Math.floor(
+          Math.random()*titles.length
+        )
+      ];
 
-    // Load Instant Results on Init
-    window.addEventListener('DOMContentLoaded', () => {
-      instantPreMixDemos.forEach(item => processVideoItem(item.videoSrc, item));
-    });
+  }
+);
 
-    // File Upload Handlers
-    ['dragenter', 'dragover'].forEach(name => {
-      dropzone.addEventListener(name, (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
-    });
-    ['dragleave', 'drop'].forEach(name => {
-      dropzone.addEventListener(name, (e) => { e.preventDefault(); dropzone.classList.remove('dragover'); });
-    });
 
-    dropzone.addEventListener('drop', (e) => {
-      const files = e.dataTransfer.files;
-      handleFiles(files);
-    });
+/* ------------------------------------------------
+   DOWNLOAD 0.1S THUMBNAIL
+------------------------------------------------ */
 
-    videoInput.addEventListener('change', (e) => {
-      handleFiles(e.target.files);
-    });
+document
+.getElementById("downloadThumb")
+.addEventListener(
+  "click",
+  () => {
 
-    function handleFiles(files) {
-      Array.from(files).forEach(file => {
-        if (file.type.startsWith('video/')) {
-          const fileUrl = URL.createObjectURL(file);
-          const customMeta = instantPreMixDemos[Math.floor(Math.random() * instantPreMixDemos.length)];
-          processVideoItem(fileUrl, customMeta);
-        }
-      });
+    if(!thumbnail)
+      return;
+
+    const a =
+      document.createElement("a");
+
+    a.href = thumbnail;
+
+    a.download =
+      "viralflow-0.1s-thumbnail.jpg";
+
+    a.click();
+
+  }
+);
+
+
+/* ------------------------------------------------
+   TEXT WRAP
+------------------------------------------------ */
+
+function wrapText(
+  text,
+  x,
+  y,
+  maxWidth,
+  lineHeight
+){
+
+  const words =
+    text.split(" ");
+
+  let line="";
+
+  const lines=[];
+
+  for(let n=0;n<words.length;n++){
+
+    const testLine =
+      line + words[n] + " ";
+
+    const metrics =
+      ctx.measureText(testLine);
+
+    if(
+      metrics.width > maxWidth &&
+      n > 0
+    ){
+
+      lines.push(line);
+
+      line =
+        words[n] + " ";
+
+    }else{
+
+      line =
+        testLine;
+
     }
 
-    function processVideoItem(videoSrc, meta) {
-      const tempVideo = document.createElement('video');
-      tempVideo.src = videoSrc;
-      tempVideo.crossOrigin = "anonymous";
-      tempVideo.muted = true;
-      tempVideo.playsInline = true;
+  }
 
-      // Extract 0.1s frame for instant thumbnail
-      tempVideo.addEventListener('loadedmetadata', () => {
-        tempVideo.currentTime = 0.1;
-      });
+  lines.push(line);
 
-      tempVideo.addEventListener('seeked', () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = tempVideo.videoWidth || 640;
-        canvas.height = tempVideo.videoHeight || 360;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(tempVideo, 0, 0, canvas.width, canvas.height);
+  lines.forEach(
+    (line,i) => {
 
-        createCardUI(canvas, videoSrc, meta);
-      });
+      ctx.fillText(
+        line.trim(),
+        x,
+        y+i*lineHeight
+      );
+
     }
+  );
 
-    function createCardUI(canvas, videoSrc, meta) {
-      const card = document.createElement('div');
-      card.className = 'video-card';
+}
 
-      card.innerHTML = `
-        <div class="thumbnail-wrapper">
-          <div class="play-badge">
-            <span class="material-symbols-outlined">play_arrow</span>
-          </div>
-          <div class="audio-tag">
-            <span class="material-symbols-outlined" style="font-size:0.9rem;">graphic_eq</span>
-            ${meta.audio}
-          </div>
-        </div>
-        <div class="card-content">
-          <div class="ai-pill">Gemini Optimized</div>
-          <h3 class="video-title">${meta.title}</h3>
-          <p class="video-desc">${meta.desc}</p>
-          <p class="hashtags">${meta.tags}</p>
-        </div>
-      `;
 
-      const thumbWrapper = card.querySelector('.thumbnail-wrapper');
-      thumbWrapper.prepend(canvas);
+/* ------------------------------------------------
+   HELPERS
+------------------------------------------------ */
 
-      card.addEventListener('click', () => {
-        openPreviewModal(videoSrc, meta);
-      });
+function formatTime(seconds){
 
-      galleryGrid.prepend(card);
-    }
+  if(!Number.isFinite(seconds))
+    return "0:00";
 
-    function openPreviewModal(src, meta) {
-      modalVideoPlayer.src = src;
-      modalTitle.textContent = meta.title;
-      modalDesc.textContent = meta.desc;
-      modalTags.textContent = meta.tags;
-      modalOverlay.classList.add('active');
-    }
+  const min =
+    Math.floor(seconds/60);
 
-    closeModal.addEventListener('click', () => {
-      modalOverlay.classList.remove('active');
-      modalVideoPlayer.pause();
-      modalVideoPlayer.src = '';
-    });
+  const sec =
+    Math.floor(seconds%60)
+      .toString()
+      .padStart(2,"0");
 
-    modalOverlay.addEventListener('click', (e) => {
-      if (e.target === modalOverlay) {
-        modalOverlay.classList.remove('active');
-        modalVideoPlayer.pause();
-        modalVideoPlayer.src = '';
-      }
-    });
-  </script>
+  return `${min}:${sec}`;
+
+}
+
+function escapeHTML(value){
+
+  return String(value)
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
+}
+
+</script>
+
 </body>
 </html>
+```
