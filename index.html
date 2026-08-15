@@ -1,63 +1,85 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Video Studio</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>Gemini AI Video Studio</title>
 
 <style>
 :root{
-  --bg:#0b0b0f;
-  --panel:#13141a;
-  --panel2:#191a21;
+  --bg:#08090d;
+  --surface:#111319;
+  --surface2:#171922;
+  --surface3:#1d1f29;
   --border:rgba(255,255,255,.09);
-  --text:#f4f4f5;
-  --muted:#999ca8;
+  --text:#f5f7fb;
+  --muted:#9297a6;
   --blue:#8ab4f8;
-  --purple:#a78bfa;
-  --cyan:#67e8f9;
-  --green:#81c995;
-  --shadow:0 20px 60px rgba(0,0,0,.35);
+  --purple:#b69cff;
+  --cyan:#72e5ff;
+  --green:#80d99a;
+  --danger:#ff8585;
+  --radius:24px;
 }
 
 *{
   box-sizing:border-box;
 }
 
+html{
+  scroll-behavior:smooth;
+}
+
 body{
   margin:0;
+  min-height:100vh;
   background:
-    radial-gradient(circle at 15% 0%,rgba(126,87,194,.13),transparent 30%),
-    radial-gradient(circle at 90% 10%,rgba(66,133,244,.10),transparent 28%),
+    radial-gradient(
+      circle at 10% 0%,
+      rgba(126,87,194,.18),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 90% 5%,
+      rgba(66,133,244,.12),
+      transparent 28%
+    ),
     var(--bg);
   color:var(--text);
-  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  min-height:100vh;
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
 }
 
-button,input{
-  font:inherit;
-}
-
-button{
-  cursor:pointer;
-}
-
-.app{
-  max-width:1500px;
-  margin:auto;
-  padding:22px;
-}
-
-/* HEADER */
+/* ================================
+   HEADER
+================================ */
 
 .header{
+  position:sticky;
+  top:0;
+  z-index:50;
+  backdrop-filter:blur(20px);
+  background:rgba(8,9,13,.78);
+  border-bottom:1px solid rgba(255,255,255,.05);
+}
+
+.header-inner{
+  max-width:1500px;
+  margin:auto;
+  min-height:72px;
+  padding:0 24px;
+
   display:flex;
   align-items:center;
   justify-content:space-between;
   gap:20px;
-  margin-bottom:24px;
 }
 
 .brand{
@@ -67,190 +89,375 @@ button{
 }
 
 .logo{
-  width:40px;
-  height:40px;
-  border-radius:13px;
+  width:42px;
+  height:42px;
+
   display:grid;
   place-items:center;
-  background:linear-gradient(135deg,#8ab4f8,#a78bfa,#67e8f9);
-  color:#111;
+
+  border-radius:14px;
+
+  color:#101116;
   font-weight:900;
-  box-shadow:0 0 30px rgba(138,180,248,.25);
+  font-size:21px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #8ab4f8,
+      #b69cff,
+      #72e5ff
+    );
+
+  box-shadow:
+    0 0 30px rgba(138,180,248,.2);
 }
 
-.brand h1{
-  margin:0;
-  font-size:20px;
-  letter-spacing:-.4px;
+.brand-title{
+  font-weight:750;
+  font-size:17px;
 }
 
-.brand span{
-  display:block;
+.brand-subtitle{
   color:var(--muted);
-  font-size:12px;
+  font-size:11px;
   margin-top:2px;
 }
 
-.header-actions{
+.header-right{
   display:flex;
-  gap:9px;
+  gap:8px;
 }
 
-.icon-btn{
+.header-btn{
   width:38px;
   height:38px;
+
   border:1px solid var(--border);
+  border-radius:50%;
+
   background:rgba(255,255,255,.035);
   color:white;
-  border-radius:50%;
 }
 
-/* HERO */
+/* ================================
+   APP
+================================ */
+
+.app{
+  width:min(1500px,100%);
+  margin:auto;
+  padding:25px;
+}
+
+/* ================================
+   HERO
+================================ */
 
 .hero{
   text-align:center;
-  padding:35px 20px 30px;
+  padding:50px 10px 35px;
 }
 
-.hero h2{
+.hero h1{
   margin:0;
-  font-size:clamp(30px,5vw,54px);
-  letter-spacing:-2.5px;
-  background:linear-gradient(
-    90deg,
-    #8ab4f8,
-    #c4b5fd,
-    #67e8f9
-  );
+
+  font-size:
+    clamp(
+      36px,
+      6vw,
+      67px
+    );
+
+  line-height:1.03;
+
+  letter-spacing:-3px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #8ab4f8,
+      #b69cff,
+      #72e5ff
+    );
+
   -webkit-background-clip:text;
+  background-clip:text;
+
   color:transparent;
 }
 
 .hero p{
-  max-width:650px;
-  margin:13px auto 0;
+  max-width:700px;
+  margin:18px auto 0;
+
   color:var(--muted);
-  line-height:1.6;
+
+  line-height:1.7;
 }
 
-/* UPLOAD */
+/* ================================
+   WORKSPACE
+================================ */
+
+.workspace{
+  display:grid;
+  grid-template-columns:
+    minmax(0,1fr)
+    330px;
+
+  gap:20px;
+}
+
+/* ================================
+   UPLOAD
+================================ */
 
 .upload-box{
-  position:relative;
-  border:1px dashed rgba(138,180,248,.35);
+  border:1px dashed rgba(138,180,248,.32);
+
   background:
     linear-gradient(
       135deg,
-      rgba(138,180,248,.06),
-      rgba(167,139,250,.04)
+      rgba(138,180,248,.07),
+      rgba(182,156,255,.035)
     );
+
   border-radius:28px;
-  padding:45px 25px;
+
+  padding:42px 25px;
+
   text-align:center;
-  transition:.25s;
+
+  transition:.2s;
 }
 
-.upload-box:hover,
 .upload-box.drag{
   border-color:var(--blue);
-  background:rgba(138,180,248,.08);
-  transform:translateY(-1px);
+
+  background:
+    rgba(138,180,248,.1);
+
+  transform:translateY(-2px);
 }
 
-.upload-icon{
-  width:65px;
-  height:65px;
-  margin:auto;
-  border-radius:20px;
+.upload-symbol{
+  width:64px;
+  height:64px;
+
   display:grid;
   place-items:center;
-  font-size:28px;
-  background:rgba(138,180,248,.10);
-  border:1px solid rgba(138,180,248,.18);
+
+  margin:auto;
+
+  border-radius:20px;
+
+  background:rgba(138,180,248,.09);
+
+  font-size:29px;
 }
 
-.upload-box h3{
+.upload-box h2{
   margin:17px 0 7px;
-  font-size:19px;
+  font-size:20px;
 }
 
 .upload-box p{
+  margin:0 auto 20px;
   color:var(--muted);
   font-size:13px;
-  margin-bottom:20px;
+}
+
+input[type=file]{
+  display:none;
 }
 
 .upload-btn{
   display:inline-flex;
   align-items:center;
   gap:8px;
-  background:white;
-  color:#111;
+
+  padding:12px 19px;
+
   border:0;
-  padding:12px 20px;
   border-radius:999px;
-  font-weight:700;
+
+  background:#fff;
+  color:#111;
+
+  font-weight:750;
+
+  cursor:pointer;
 }
 
-#videoInput{
-  display:none;
+/* ================================
+   CONTROL PANEL
+================================ */
+
+.control-panel{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:25px;
+  padding:19px;
 }
 
-/* TOOLBAR */
+.panel-title{
+  font-weight:750;
+  margin-bottom:18px;
+}
 
-.toolbar{
+.control{
+  padding:13px 0;
+  border-top:1px solid var(--border);
+}
+
+.control:first-of-type{
+  border-top:0;
+}
+
+.control-label{
+  color:var(--muted);
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.7px;
+  margin-bottom:8px;
+}
+
+.music-upload{
+  display:block;
+
+  width:100%;
+
+  border:1px solid var(--border);
+
+  border-radius:12px;
+
+  padding:10px;
+
+  color:var(--text);
+
+  background:var(--surface2);
+
+  cursor:pointer;
+
+  font-size:12px;
+}
+
+.render-btn{
+  width:100%;
+
+  margin-top:14px;
+
+  padding:13px;
+
+  border:0;
+
+  border-radius:14px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #8ab4f8,
+      #b69cff
+    );
+
+  color:#101116;
+
+  font-weight:800;
+
+  cursor:pointer;
+}
+
+.render-btn:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+}
+
+.small-note{
+  color:#727785;
+  font-size:10px;
+  line-height:1.5;
+  margin-top:11px;
+}
+
+/* ================================
+   RESULTS HEADER
+================================ */
+
+.results-header{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  margin:28px 0 15px;
-  gap:15px;
+
+  margin:25px 0 14px;
 }
 
-.toolbar-title{
-  font-size:16px;
-  font-weight:700;
+.results-title{
+  font-weight:750;
 }
 
-.toolbar-title span{
+.results-title span{
   color:var(--muted);
   font-weight:400;
 }
 
 .clear-btn{
   background:transparent;
-  color:var(--muted);
   border:1px solid var(--border);
+  color:var(--muted);
+
   padding:8px 13px;
+
   border-radius:999px;
+
+  cursor:pointer;
 }
 
-/* VIDEO GRID */
+/* ================================
+   VIDEO GRID
+================================ */
 
 .video-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(360px,1fr));
+
+  grid-template-columns:
+    repeat(
+      auto-fill,
+      minmax(370px,1fr)
+    );
+
   gap:20px;
 }
 
-/* CARD */
+/* ================================
+   CARD
+================================ */
 
-.video-card{
-  background:linear-gradient(
-    180deg,
-    rgba(255,255,255,.045),
-    rgba(255,255,255,.018)
-  );
-  border:1px solid var(--border);
-  border-radius:23px;
+.card{
   overflow:hidden;
-  box-shadow:var(--shadow);
-  animation:cardIn .4s ease both;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255,255,255,.045),
+      rgba(255,255,255,.018)
+    );
+
+  border:1px solid var(--border);
+
+  border-radius:25px;
+
+  box-shadow:
+    0 25px 70px rgba(0,0,0,.25);
+
+  animation:
+    cardIn .35s ease;
 }
 
 @keyframes cardIn{
   from{
     opacity:0;
-    transform:translateY(15px);
+    transform:translateY(12px);
   }
   to{
     opacity:1;
@@ -258,243 +465,350 @@ button{
   }
 }
 
+/* ================================
+   PREVIEW
+================================ */
+
 .preview{
   position:relative;
+
   aspect-ratio:16/9;
-  background:#050505;
+
+  background:#030406;
+
   overflow:hidden;
 }
 
 .preview video{
   width:100%;
   height:100%;
-  object-fit:cover;
+
   display:block;
-}
 
-.thumbnail{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
   object-fit:cover;
-  display:none;
 }
 
-.preview-overlay{
+.preview-badge{
   position:absolute;
-  left:12px;
-  right:12px;
+
   top:12px;
-  display:flex;
-  justify-content:space-between;
-}
+  left:12px;
 
-.badge{
   padding:6px 9px;
+
   border-radius:999px;
-  background:rgba(0,0,0,.58);
-  backdrop-filter:blur(10px);
-  font-size:11px;
+
+  background:rgba(0,0,0,.6);
+
+  backdrop-filter:blur(12px);
+
+  font-size:10px;
+
+  font-weight:800;
 }
 
-.download{
-  width:34px;
-  height:34px;
-  border-radius:50%;
-  border:1px solid rgba(255,255,255,.16);
-  background:rgba(0,0,0,.58);
-  color:white;
+.download-btn{
+  position:absolute;
+
+  top:10px;
+  right:10px;
+
+  width:37px;
+  height:37px;
+
   display:grid;
   place-items:center;
+
+  border-radius:50%;
+
+  background:rgba(0,0,0,.62);
+
+  border:1px solid rgba(255,255,255,.15);
+
+  color:white;
+
   text-decoration:none;
-  backdrop-filter:blur(10px);
+
+  backdrop-filter:blur(12px);
+
+  font-size:17px;
+
+  transition:.2s;
 }
 
-.download:hover{
+.download-btn:hover{
   background:white;
   color:#111;
 }
 
-/* CARD BODY */
+.download-btn.disabled{
+  opacity:.35;
+  pointer-events:none;
+}
+
+/* ================================
+   CARD BODY
+================================ */
 
 .card-body{
   padding:17px;
 }
 
-.generated{
+.file-name{
+  color:#737887;
   font-size:10px;
-  color:var(--blue);
-  text-transform:uppercase;
-  letter-spacing:1px;
-  font-weight:800;
-  margin-bottom:8px;
+
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+
+  margin-bottom:10px;
 }
 
-.title{
+.ai-label{
+  color:var(--blue);
+
+  font-size:10px;
+
+  letter-spacing:1px;
+
+  font-weight:800;
+
+  margin-bottom:7px;
+}
+
+.video-title{
   font-size:18px;
   line-height:1.3;
-  font-weight:750;
+
+  font-weight:780;
+
   margin-bottom:8px;
 }
 
 .description{
   color:var(--muted);
+
   font-size:13px;
+
   line-height:1.55;
 }
 
-.hashtags{
+.tags{
   display:flex;
   flex-wrap:wrap;
+
   gap:6px;
+
   margin-top:12px;
 }
 
 .tag{
-  color:#c4b5fd;
-  background:rgba(167,139,250,.09);
-  border:1px solid rgba(167,139,250,.12);
   padding:5px 8px;
+
   border-radius:999px;
-  font-size:11px;
+
+  color:#c8b8ff;
+
+  background:rgba(182,156,255,.08);
+
+  border:1px solid rgba(182,156,255,.12);
+
+  font-size:10px;
 }
 
-/* MUSIC */
+/* ================================
+   AUDIO PANEL
+================================ */
 
-.music-section{
-  margin-top:16px;
+.audio-panel{
   border-top:1px solid var(--border);
+
+  margin-top:16px;
   padding-top:15px;
 }
 
-.section-label{
-  font-size:11px;
+.audio-title{
   color:var(--muted);
-  margin-bottom:8px;
+
+  font-size:10px;
+
   text-transform:uppercase;
+
   letter-spacing:.8px;
+
+  margin-bottom:10px;
 }
 
-.music-row{
+.audio-row{
   display:flex;
   align-items:center;
   gap:10px;
 }
 
-.music-icon{
-  width:36px;
-  height:36px;
-  border-radius:11px;
+.audio-icon{
+  width:38px;
+  height:38px;
+
+  flex:none;
+
   display:grid;
   place-items:center;
-  background:rgba(103,232,249,.08);
+
+  border-radius:12px;
+
+  background:rgba(114,229,255,.08);
+
+  font-size:18px;
 }
 
-.music-info{
-  flex:1;
+.audio-info{
   min-width:0;
+  flex:1;
 }
 
-.music-name{
-  font-size:13px;
-  font-weight:650;
+.audio-name{
+  font-size:12px;
+  font-weight:700;
+
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 
-.music-meta{
-  font-size:10px;
+.audio-meta{
   color:var(--muted);
-  margin-top:2px;
+  font-size:9px;
+  margin-top:3px;
 }
 
-select{
-  background:#1a1b22;
-  color:white;
-  border:1px solid var(--border);
-  padding:8px;
-  border-radius:10px;
-  max-width:150px;
+.volume{
+  width:80px;
 }
 
-/* STATUS */
+/* ================================
+   STATUS
+================================ */
 
 .status{
-  margin-top:16px;
+  margin-top:15px;
+
   display:flex;
   align-items:center;
   gap:8px;
+
   color:var(--muted);
-  font-size:11px;
+
+  font-size:10px;
 }
 
 .status-dot{
   width:7px;
   height:7px;
+
   border-radius:50%;
+
   background:var(--green);
-  box-shadow:0 0 10px rgba(129,201,149,.6);
 }
 
-.loading{
-  color:var(--blue);
-}
-
-.loading .status-dot{
+.status.processing .status-dot{
   background:var(--blue);
-  animation:pulse 1s infinite;
+
+  animation:
+    pulse 1s infinite;
 }
 
 @keyframes pulse{
-  50%{opacity:.25}
+  50%{
+    opacity:.25;
+  }
 }
 
-/* EMPTY */
+.progress{
+  height:3px;
+
+  margin-top:8px;
+
+  background:rgba(255,255,255,.07);
+
+  border-radius:10px;
+
+  overflow:hidden;
+}
+
+.progress-bar{
+  width:0%;
+  height:100%;
+
+  background:
+    linear-gradient(
+      90deg,
+      var(--blue),
+      var(--purple),
+      var(--cyan)
+    );
+
+  transition:width .25s;
+}
+
+/* ================================
+   EMPTY
+================================ */
 
 .empty{
+  grid-column:1/-1;
+
   text-align:center;
-  padding:55px 20px;
+
+  padding:70px 20px;
+
   color:var(--muted);
 }
 
-.empty-icon{
+.empty-symbol{
   font-size:35px;
   margin-bottom:10px;
 }
 
-/* FOOTER */
+/* ================================
+   RESPONSIVE
+================================ */
 
-.footer{
-  text-align:center;
-  color:#666975;
-  font-size:11px;
-  padding:35px 0 15px;
+@media(max-width:1050px){
+
+  .workspace{
+    grid-template-columns:1fr;
+  }
+
+  .control-panel{
+    order:-1;
+  }
 }
 
-/* MOBILE */
-
 @media(max-width:650px){
+
   .app{
     padding:14px;
   }
 
-  .header{
-    margin-bottom:5px;
+  .header-inner{
+    padding:0 14px;
   }
 
   .hero{
-    padding:30px 5px 25px;
+    padding:35px 5px 28px;
   }
 
-  .hero h2{
-    letter-spacing:-1.5px;
+  .hero h1{
+    letter-spacing:-2px;
   }
 
   .video-grid{
     grid-template-columns:1fr;
   }
 
-  .toolbar{
-    align-items:flex-start;
+  .video-card{
+    min-width:0;
   }
 }
 </style>
@@ -502,357 +816,655 @@ select{
 
 <body>
 
+<header class="header">
+
+  <div class="header-inner">
+
+    <div class="brand">
+
+      <div class="logo">✦</div>
+
+      <div>
+        <div class="brand-title">
+          AI Video Studio
+        </div>
+
+        <div class="brand-subtitle">
+          Create publish-ready short videos
+        </div>
+      </div>
+
+    </div>
+
+    <div class="header-right">
+      <button class="header-btn">✦</button>
+      <button class="header-btn">⚙</button>
+    </div>
+
+  </div>
+
+</header>
+
+
 <div class="app">
 
-  <header class="header">
-    <div class="brand">
-      <div class="logo">✦</div>
-      <div>
-        <h1>AI Video Studio</h1>
-        <span>Transform videos into ready-to-publish content</span>
-      </div>
-    </div>
-
-    <div class="header-actions">
-      <button class="icon-btn" title="Settings">⚙</button>
-      <button class="icon-btn" title="AI">✦</button>
-    </div>
-  </header>
-
-
   <section class="hero">
-    <h2>Create viral-ready videos.</h2>
-    <p>
-      Upload multiple videos and generate thumbnails, titles,
-      descriptions, hashtags and music suggestions from one page.
-    </p>
-  </section>
 
-
-  <section
-    class="upload-box"
-    id="dropZone"
-  >
-
-    <div class="upload-icon">＋</div>
-
-    <h3>Drop your videos here</h3>
+    <h1>
+      Create viral-ready videos.
+    </h1>
 
     <p>
-      Upload MP4, MOV, WebM or other browser-supported video files.
+      Upload multiple videos, generate AI metadata,
+      replace the original audio with royalty-free music,
+      render your edited videos and download them directly.
     </p>
-
-    <label class="upload-btn" for="videoInput">
-      ✦ Choose videos
-    </label>
-
-    <input
-      id="videoInput"
-      type="file"
-      accept="video/*"
-      multiple
-    >
 
   </section>
 
 
-  <div class="toolbar">
-    <div class="toolbar-title">
-      Video Results
-      <span id="count">(0)</span>
+  <section class="workspace">
+
+
+    <!-- UPLOAD -->
+
+    <div>
+
+      <div
+        class="upload-box"
+        id="dropZone"
+      >
+
+        <div class="upload-symbol">
+          ＋
+        </div>
+
+        <h2>
+          Drop multiple videos here
+        </h2>
+
+        <p>
+          MP4, MOV, WebM and other browser-supported formats
+        </p>
+
+        <label
+          for="videoInput"
+          class="upload-btn"
+        >
+          ✦ Choose videos
+        </label>
+
+        <input
+          id="videoInput"
+          type="file"
+          accept="video/*"
+          multiple
+        >
+
+      </div>
+
+
+      <div class="results-header">
+
+        <div class="results-title">
+
+          Video Results
+
+          <span id="counter">
+            (0)
+          </span>
+
+        </div>
+
+        <button
+          class="clear-btn"
+          id="clearBtn"
+        >
+          Clear all
+        </button>
+
+      </div>
+
+
+      <main
+        id="videoGrid"
+        class="video-grid"
+      >
+
+        <div
+          class="empty"
+          id="emptyState"
+        >
+
+          <div class="empty-symbol">
+            ◌
+          </div>
+
+          Upload videos to begin.
+
+        </div>
+
+      </main>
+
     </div>
 
-    <button class="clear-btn" id="clearBtn">
-      Clear all
-    </button>
-  </div>
+
+    <!-- CONTROL PANEL -->
+
+    <aside class="control-panel">
+
+      <div class="panel-title">
+        Audio Studio
+      </div>
 
 
-  <main id="videoGrid" class="video-grid">
+      <div class="control">
 
-    <div class="empty" id="emptyState">
-      <div class="empty-icon">◌</div>
-      Upload videos to begin.
-    </div>
+        <div class="control-label">
+          Replacement music
+        </div>
 
-  </main>
+        <label
+          class="music-upload"
+          for="musicInput"
+        >
+          ＋ Add royalty-free music
+        </label>
+
+        <input
+          id="musicInput"
+          type="file"
+          accept="audio/*"
+        >
+
+      </div>
 
 
-  <div class="footer">
-    AI Video Studio · Browser-based prototype
-  </div>
+      <div class="control">
+
+        <div class="control-label">
+          Original video audio
+        </div>
+
+        <div style="
+          color:var(--green);
+          font-size:13px;
+          font-weight:700;
+        ">
+          🔇 Automatically removed
+        </div>
+
+      </div>
+
+
+      <div class="control">
+
+        <div class="control-label">
+          Output
+        </div>
+
+        <div style="
+          color:var(--muted);
+          font-size:12px;
+          line-height:1.6;
+        ">
+          MP4<br>
+          H.264 video<br>
+          AAC replacement audio
+        </div>
+
+      </div>
+
+
+      <button
+        class="render-btn"
+        id="renderAll"
+        disabled
+      >
+        ✦ Render edited videos
+      </button>
+
+
+      <div class="small-note">
+
+        Your original audio is not included in the
+        rendered output. Replacement music is looped
+        or trimmed automatically to match the video length.
+
+        <br><br>
+
+        Use music that you own or have permission to use.
+
+      </div>
+
+    </aside>
+
+  </section>
 
 </div>
 
 
+<!-- FFmpeg -->
+
+<script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/umd/ffmpeg.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@ffmpeg/util@0.12.1/dist/umd/index.js"></script>
+
+
 <script>
 
-/* =========================================================
-   SETTINGS
-========================================================= */
-
-const videoInput = document.getElementById("videoInput");
-const videoGrid = document.getElementById("videoGrid");
-const dropZone = document.getElementById("dropZone");
-const emptyState = document.getElementById("emptyState");
-const count = document.getElementById("count");
-const clearBtn = document.getElementById("clearBtn");
-
-let videos = [];
+"use strict";
 
 
-/* =========================================================
-   UPLOAD
-========================================================= */
+/* ============================================================
+   GLOBAL STATE
+============================================================ */
 
-videoInput.addEventListener("change", e => {
-  addVideos([...e.target.files]);
-  videoInput.value = "";
-});
+const state = {
 
+  videos: [],
 
-dropZone.addEventListener("dragover", e => {
-  e.preventDefault();
-  dropZone.classList.add("drag");
-});
+  music: null,
 
+  ffmpeg: null,
 
-dropZone.addEventListener("dragleave", () => {
-  dropZone.classList.remove("drag");
-});
+  ffmpegLoaded: false,
+
+  rendering: false
+
+};
 
 
-dropZone.addEventListener("drop", e => {
-  e.preventDefault();
+/* ============================================================
+   DOM
+============================================================ */
 
-  dropZone.classList.remove("drag");
+const videoInput =
+  document.getElementById("videoInput");
 
-  const files = [...e.dataTransfer.files]
-    .filter(file => file.type.startsWith("video/"));
+const musicInput =
+  document.getElementById("musicInput");
 
-  addVideos(files);
-});
+const dropZone =
+  document.getElementById("dropZone");
+
+const videoGrid =
+  document.getElementById("videoGrid");
+
+const emptyState =
+  document.getElementById("emptyState");
+
+const counter =
+  document.getElementById("counter");
+
+const clearBtn =
+  document.getElementById("clearBtn");
+
+const renderAll =
+  document.getElementById("renderAll");
 
 
-/* =========================================================
-   ADD MULTIPLE VIDEOS
-========================================================= */
+/* ============================================================
+   VIDEO UPLOAD
+============================================================ */
+
+videoInput.addEventListener(
+  "change",
+  event => {
+
+    addVideos(
+      [...event.target.files]
+    );
+
+    videoInput.value = "";
+
+  }
+);
+
+
+/* ============================================================
+   DRAG & DROP
+============================================================ */
+
+dropZone.addEventListener(
+  "dragover",
+  event => {
+
+    event.preventDefault();
+
+    dropZone.classList.add("drag");
+
+  }
+);
+
+
+dropZone.addEventListener(
+  "dragleave",
+  () => {
+
+    dropZone.classList.remove("drag");
+
+  }
+);
+
+
+dropZone.addEventListener(
+  "drop",
+  event => {
+
+    event.preventDefault();
+
+    dropZone.classList.remove("drag");
+
+    const files =
+      [...event.dataTransfer.files]
+      .filter(
+        file =>
+          file.type.startsWith("video/")
+      );
+
+    addVideos(files);
+
+  }
+);
+
+
+/* ============================================================
+   MUSIC UPLOAD
+============================================================ */
+
+musicInput.addEventListener(
+  "change",
+  event => {
+
+    const file =
+      event.target.files[0];
+
+    if(!file){
+      return;
+    }
+
+    if(state.music){
+      URL.revokeObjectURL(
+        state.music.url
+      );
+    }
+
+    state.music = {
+
+      file,
+
+      url:
+        URL.createObjectURL(file)
+
+    };
+
+    updateMusicUI();
+
+  }
+);
+
+
+/* ============================================================
+   ADD VIDEOS
+============================================================ */
 
 function addVideos(files){
 
-  if(!files.length) return;
+  if(!files.length){
+    return;
+  }
 
   files.forEach(file => {
 
     const item = {
-      id: crypto.randomUUID(),
+
+      id:
+        crypto.randomUUID(),
+
       file,
-      url: URL.createObjectURL(file),
-      thumbnail: null,
-      title: "",
-      description: "",
-      hashtags: [],
-      music: "Neon Pulse"
+
+      url:
+        URL.createObjectURL(file),
+
+      thumbnail:null,
+
+      renderedUrl:null,
+
+      renderedBlob:null,
+
+      title:"Analyzing video…",
+
+      description:
+        "AI is analyzing the visual content…",
+
+      hashtags:[],
+
+      volume:0.75
+
     };
 
-    videos.push(item);
+    state.videos.push(item);
 
-    createCard(item);
+    createVideoCard(item);
 
   });
 
   updateCounter();
+
+  renderAll.disabled =
+    state.videos.length === 0;
+
 }
 
 
-/* =========================================================
-   CREATE CARD
-========================================================= */
+/* ============================================================
+   CREATE VIDEO CARD
+============================================================ */
 
-function createCard(item){
+function createVideoCard(item){
 
   if(emptyState){
-    emptyState.style.display = "none";
+
+    emptyState.style.display =
+      "none";
+
   }
 
-  const card = document.createElement("article");
 
-  card.className = "video-card";
+  const card =
+    document.createElement("article");
 
-  card.dataset.id = item.id;
+  card.className = "card";
+
+  card.dataset.id =
+    item.id;
+
 
   card.innerHTML = `
 
     <div class="preview">
 
       <video
+        class="preview-video"
         src="${item.url}"
         controls
         playsinline
         preload="metadata"
       ></video>
 
-      <img
-        class="thumbnail"
-        alt="AI generated thumbnail"
+      <span class="preview-badge">
+        ORIGINAL PREVIEW
+      </span>
+
+      <a
+        class="download-btn disabled"
+        title="Download edited video"
       >
-
-      <div class="preview-overlay">
-
-        <span class="badge">
-          AI READY
-        </span>
-
-        <a
-          class="download"
-          href="${item.url}"
-          download="${safeName(item.file.name)}"
-          title="Download video"
-        >
-          ↓
-        </a>
-
-      </div>
+        ↓
+      </a>
 
     </div>
 
 
     <div class="card-body">
 
-      <div class="generated">
-        ✦ AI GENERATED CONTENT
+      <div class="file-name">
+        ${escapeHTML(item.file.name)}
       </div>
 
-      <div class="title">
-        Analyzing your video…
+      <div class="ai-label">
+        ✦ AI GENERATED
+      </div>
+
+      <div class="video-title">
+        Analyzing video…
       </div>
 
       <div class="description">
-        AI is analyzing the visual content and generating
-        a social-ready description.
+        AI is analyzing the visual content…
       </div>
 
-      <div class="hashtags"></div>
+      <div class="tags"></div>
 
 
-      <div class="music-section">
+      <div class="audio-panel">
 
-        <div class="section-label">
-          Suggested royalty-free music
+        <div class="audio-title">
+          Replacement audio
         </div>
 
-        <div class="music-row">
+        <div class="audio-row">
 
-          <div class="music-icon">
+          <div class="audio-icon">
             ♪
           </div>
 
-          <div class="music-info">
+          <div class="audio-info">
 
-            <div class="music-name">
-              Neon Pulse
+            <div class="audio-name">
+              No music selected
             </div>
 
-            <div class="music-meta">
-              Energetic · Social · Royalty-free
+            <div class="audio-meta">
+              Original audio will be removed
             </div>
 
           </div>
 
-          <select class="music-select">
-
-            <option>
-              Neon Pulse
-            </option>
-
-            <option>
-              Future Drive
-            </option>
-
-            <option>
-              Cinematic Rise
-            </option>
-
-            <option>
-              Summer Energy
-            </option>
-
-            <option>
-              Chill Motion
-            </option>
-
-          </select>
+          <input
+            class="volume"
+            type="range"
+            min="0"
+            max="1"
+            step=".01"
+            value=".75"
+            title="Music volume"
+          >
 
         </div>
 
       </div>
 
 
-      <div class="status loading">
+      <div class="status">
 
         <span class="status-dot"></span>
 
         <span class="status-text">
-          Generating thumbnail at 0.1s…
+          Creating 0.1s thumbnail…
         </span>
 
       </div>
 
+      <div class="progress">
+
+        <div class="progress-bar"></div>
+
+      </div>
+
     </div>
+
   `;
+
 
   videoGrid.appendChild(card);
 
 
-  const video = card.querySelector("video");
-
-  video.addEventListener("loadedmetadata", () => {
-
-    generateThumbnail(
-      video,
-      card,
-      item
+  const video =
+    card.querySelector(
+      ".preview-video"
     );
 
-  });
+
+  video.addEventListener(
+    "loadedmetadata",
+    () => {
+
+      generateThumbnail(
+        video,
+        item,
+        card
+      );
+
+    }
+  );
 
 
-  card.querySelector(".music-select")
-    .addEventListener("change", e => {
-
-      item.music = e.target.value;
-
-      updateMusic(card, item);
-
-    });
+  const volume =
+    card.querySelector(
+      ".volume"
+    );
 
 
-  /*
-    Simulated AI analysis.
+  volume.addEventListener(
+    "input",
+    event => {
 
-    Replace generateAIContent() with a real
-    Gemini/OpenAI/backend video analysis call.
-  */
+      item.volume =
+        Number(event.target.value);
 
-  generateAIContent(item, card);
+    }
+  );
+
+
+  generateAIContent(
+    item,
+    card
+  );
 
 }
 
 
-/* =========================================================
-   GENERATE 0.1 SECOND THUMBNAIL
-========================================================= */
+/* ============================================================
+   0.1 SECOND HD THUMBNAIL
+============================================================ */
 
-function generateThumbnail(video, card, item){
+function generateThumbnail(
+  video,
+  item,
+  card
+){
 
   try{
 
-    const canvas = document.createElement("canvas");
+    const canvas =
+      document.createElement(
+        "canvas"
+      );
+
+
+    /*
+      1920 x 1080 thumbnail canvas.
+    */
 
     canvas.width = 1920;
     canvas.height = 1080;
 
-    const ctx = canvas.getContext("2d");
+
+    const ctx =
+      canvas.getContext("2d");
+
 
     const capture = () => {
 
@@ -866,36 +1478,29 @@ function generateThumbnail(video, card, item){
           canvas.height
         );
 
+
         item.thumbnail =
           canvas.toDataURL(
             "image/jpeg",
-            .92
+            .95
           );
 
-        const img =
-          card.querySelector(".thumbnail");
-
-        img.src = item.thumbnail;
-
-        /*
-          Keep video visible as preview.
-          Thumbnail can be enabled here if desired.
-        */
 
         const status =
-          card.querySelector(".status");
+          card.querySelector(
+            ".status-text"
+          );
 
-        status.classList.remove("loading");
 
-        status.querySelector(".status-text")
-          .textContent =
-          "HD thumbnail generated · 0.1s";
+        status.textContent =
+          "HD thumbnail ready · 0.1s";
 
-      }catch(err){
 
-        console.warn(
-          "Thumbnail capture failed",
-          err
+      }catch(error){
+
+        console.error(
+          "Thumbnail error:",
+          error
         );
 
       }
@@ -903,26 +1508,28 @@ function generateThumbnail(video, card, item){
     };
 
 
-    /*
-      Capture at approximately 0.1 second.
-    */
-
-    const targetTime =
+    const target =
       Math.min(
-        0.1,
+        .1,
         Math.max(
           0,
           (video.duration || 1) - .01
         )
       );
 
-    video.currentTime = targetTime;
+
+    video.currentTime =
+      target;
+
 
     video.addEventListener(
       "seeked",
       capture,
-      {once:true}
+      {
+        once:true
+      }
     );
+
 
   }catch(error){
 
@@ -933,120 +1540,102 @@ function generateThumbnail(video, card, item){
 }
 
 
-/* =========================================================
-   AI CONTENT GENERATOR
-========================================================= */
+/* ============================================================
+   AI CONTENT
+============================================================ */
 
-async function generateAIContent(item, card){
+/*
+  DEMO AI GENERATOR
 
-  /*
-    -------------------------------------------------------
-    DEMO MODE
-    -------------------------------------------------------
+  For actual AI video understanding, replace this function
+  with an API request that sends video frames/transcript
+  to your chosen AI vision model.
 
-    The browser cannot reliably understand arbitrary video
-    content without an AI service.
+  Importantly, the production implementation should analyze
+  the CONTENT of the video instead of the uploaded filename.
+*/
 
-    Replace this function with:
+async function generateAIContent(
+  item,
+  card
+){
 
-       await fetch("/api/analyze-video", ...)
-
-    or your preferred AI backend.
-
-    The backend should analyze actual frames/transcript,
-    rather than relying on the uploaded filename.
-  */
-
-  await wait(
-    900 +
+  await sleep(
+    700 +
     Math.random() * 1400
   );
 
 
-  /*
-    Generate a demo concept based on filename.
-
-    IMPORTANT:
-    This is only fallback/demo behavior.
-  */
-
-  const base =
-    item.file.name
-      .replace(/\.[^/.]+$/, "")
-      .replace(/[_-]/g, " ")
-      .trim();
-
-
-  const concepts = [
+  const ideas = [
 
     {
+
       title:
-        "This Moment Changed Everything 👀",
+        "Wait Until You See What Happens Next 👀",
 
       description:
-        "A quick look at an unexpected moment that grabs attention from the first second. Perfect for short-form viewers who love surprising and highly engaging content.",
+        "A fast-moving moment packed with visual interest and curiosity. The strongest moment is positioned as the hook to keep viewers watching.",
 
-      hashtags:
-        [
-          "#Viral",
-          "#Trending",
-          "#Shorts",
-          "#MustWatch",
-          "#ForYou"
-        ]
+      hashtags:[
+        "#Viral",
+        "#Trending",
+        "#Shorts",
+        "#FYP",
+        "#MustWatch"
+      ]
+
     },
 
     {
+
       title:
-        "Wait Until You See What Happens Next 🔥",
+        "This Moment Was Too Good Not To Share 🔥",
 
       description:
-        "A fast-paced moment packed with visual impact and curiosity. Built around the strongest part of the footage to encourage viewers to keep watching.",
+        "A highly engaging visual moment turned into a short-form concept designed to capture attention immediately and encourage viewers to watch until the end.",
 
-      hashtags:
-        [
-          "#TrendingNow",
-          "#ViralVideo",
-          "#ShortVideo",
-          "#FYP",
-          "#WatchThis"
-        ]
+      hashtags:[
+        "#TrendingNow",
+        "#ViralVideo",
+        "#ShortVideo",
+        "#ForYou",
+        "#WatchThis"
+      ]
+
     },
 
     {
+
       title:
-        "You Won't Believe This Happened 😳",
+        "You Have To See This 😳",
 
       description:
-        "An attention-grabbing short built around the most interesting visual moment in the footage, with a strong curiosity hook designed for social audiences.",
+        "A concise social-ready concept built around the most interesting visual moment in the footage, with a curiosity-driven opening.",
 
-      hashtags:
-        [
-          "#Viral",
-          "#Trending",
-          "#Wow",
-          "#Reels",
-          "#Shorts"
-        ]
+      hashtags:[
+        "#Viral",
+        "#Trending",
+        "#Reels",
+        "#Shorts",
+        "#Wow"
+      ]
+
     }
 
   ];
 
 
-  /*
-    Pick one concept.
-  */
-
   const result =
-    concepts[
+    ideas[
       Math.floor(
         Math.random() *
-        concepts.length
+        ideas.length
       )
     ];
 
 
-  item.title = result.title;
+  item.title =
+    result.title;
 
   item.description =
     result.description;
@@ -1055,200 +1644,786 @@ async function generateAIContent(item, card){
     result.hashtags;
 
 
-  /*
-    Update UI.
-  */
-
-  card.querySelector(".title")
-    .textContent =
+  card.querySelector(
+    ".video-title"
+  ).textContent =
     item.title;
 
 
-  card.querySelector(".description")
-    .textContent =
+  card.querySelector(
+    ".description"
+  ).textContent =
     item.description;
 
 
   const tags =
-    card.querySelector(".hashtags");
+    card.querySelector(
+      ".tags"
+    );
+
 
   tags.innerHTML = "";
 
-  item.hashtags.forEach(tag => {
 
-    const el =
-      document.createElement("span");
+  item.hashtags.forEach(
+    hashtag => {
 
-    el.className = "tag";
+      const span =
+        document.createElement(
+          "span"
+        );
 
-    el.textContent = tag;
+      span.className =
+        "tag";
 
-    tags.appendChild(el);
+      span.textContent =
+        hashtag;
 
-  });
+      tags.appendChild(span);
+
+    }
+  );
 
 
-  card.querySelector(".status")
-    .classList.remove("loading");
+  setStatus(
+    card,
+    "AI content ready"
+  );
+
+}
 
 
-  card.querySelector(".status-text")
-    .textContent =
-    "AI content ready";
+/* ============================================================
+   UPDATE MUSIC UI
+============================================================ */
+
+function updateMusicUI(){
+
+  state.videos.forEach(
+    item => {
+
+      const card =
+        getCard(item.id);
+
+      if(!card){
+        return;
+      }
+
+      const name =
+        card.querySelector(
+          ".audio-name"
+        );
+
+      const meta =
+        card.querySelector(
+          ".audio-meta"
+        );
+
+
+      if(state.music){
+
+        name.textContent =
+          state.music.file.name;
+
+        meta.textContent =
+          "Replacement music · original audio removed";
+
+      }else{
+
+        name.textContent =
+          "No music selected";
+
+        meta.textContent =
+          "Original audio will be removed";
+
+      }
+
+    }
+  );
+
+}
+
+
+/* ============================================================
+   RENDER ALL
+============================================================ */
+
+renderAll.addEventListener(
+  "click",
+  async () => {
+
+    if(state.rendering){
+      return;
+    }
+
+    if(!state.music){
+
+      alert(
+        "Please select a royalty-free music file first."
+      );
+
+      return;
+
+    }
+
+
+    state.rendering = true;
+
+    renderAll.disabled =
+      true;
+
+    renderAll.textContent =
+      "Loading video renderer…";
+
+
+    try{
+
+      await loadFFmpeg();
+
+
+      for(
+        const item of state.videos
+      ){
+
+        await renderVideo(
+          item
+        );
+
+      }
+
+
+      renderAll.textContent =
+        "✓ All videos rendered";
+
+
+    }catch(error){
+
+      console.error(error);
+
+      alert(
+        "Rendering failed. Check the browser console for details."
+      );
+
+      renderAll.textContent =
+        "✦ Render edited videos";
+
+    }
+
+
+    state.rendering =
+      false;
+
+    renderAll.disabled =
+      false;
+
+  }
+);
+
+
+/* ============================================================
+   LOAD FFMPEG
+============================================================ */
+
+async function loadFFmpeg(){
+
+  if(state.ffmpegLoaded){
+    return;
+  }
+
+
+  const {
+    FFmpeg
+  } = FFmpegWASM;
+
+
+  const {
+    fetchFile,
+    toBlobURL
+  } = FFmpegUtil;
+
+
+  state.ffmpeg =
+    new FFmpeg();
+
+
+  state.ffmpeg.on(
+    "progress",
+    ({progress}) => {
+
+      state.currentProgress =
+        progress;
+
+    }
+  );
 
 
   /*
-    In a real implementation:
+    FFmpeg core loaded from CDN.
 
-    1. Extract several frames.
-    2. Send frames to an AI vision model.
-    3. Transcribe audio.
-    4. Combine visual + transcript.
-    5. Generate title.
-    6. Generate description.
-    7. Generate hashtags.
-    8. Generate thumbnail prompt.
+    No video is uploaded to the CDN.
+    Processing happens locally in the browser.
   */
 
-}
+  const baseURL =
+    "https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/umd";
 
 
-/* =========================================================
-   MUSIC
-========================================================= */
+  await state.ffmpeg.load({
 
-function updateMusic(card, item){
+    coreURL:
+      await toBlobURL(
+        `${baseURL}/ffmpeg-core.js`,
+        "text/javascript"
+      ),
 
-  const musicName =
-    card.querySelector(".music-name");
+    wasmURL:
+      await toBlobURL(
+        `${baseURL}/ffmpeg-core.wasm`,
+        "application/wasm"
+      ),
 
-  const meta =
-    card.querySelector(".music-meta");
-
-
-  musicName.textContent =
-    item.music;
-
-
-  meta.textContent =
-    "Selected · royalty-free track";
-
-
-}
-
-
-/* =========================================================
-   CLEAR
-========================================================= */
-
-clearBtn.addEventListener("click", () => {
-
-  videos.forEach(item => {
-
-    URL.revokeObjectURL(
-      item.url
-    );
+    workerURL:
+      await toBlobURL(
+        `${baseURL}/ffmpeg-core.worker.js`,
+        "text/javascript"
+      )
 
   });
 
-  videos = [];
 
-  videoGrid.innerHTML = "";
+  state.fetchFile =
+    fetchFile;
 
-  const empty =
-    document.createElement("div");
-
-  empty.className = "empty";
-
-  empty.innerHTML = `
-    <div class="empty-icon">◌</div>
-    Upload videos to begin.
-  `;
-
-  videoGrid.appendChild(empty);
-
-  updateCounter();
-
-});
-
-
-/* =========================================================
-   HELPERS
-========================================================= */
-
-function updateCounter(){
-
-  count.textContent =
-    `(${videos.length})`;
+  state.ffmpegLoaded =
+    true;
 
 }
 
 
-function safeName(name){
+/* ============================================================
+   RENDER SINGLE VIDEO
+============================================================ */
 
-  return name
-    .replace(/\.[^/.]+$/, "")
-    .replace(/[^\w-]+/g,"-")
-    .toLowerCase()
-    + "-ai-ready.mp4";
+async function renderVideo(item){
 
-}
+  const card =
+    getCard(item.id);
 
 
-function wait(ms){
+  if(!card){
+    return;
+  }
 
-  return new Promise(
-    resolve =>
-      setTimeout(resolve,ms)
+
+  if(!state.music){
+    return;
+  }
+
+
+  setProcessing(
+    card,
+    "Preparing edited video…"
   );
 
+
+  const ffmpeg =
+    state.ffmpeg;
+
+
+  const fetchFile =
+    state.fetchFile;
+
+
+  const inputExtension =
+    getExtension(
+      item.file.name
+    ) || "mp4";
+
+
+  const musicExtension =
+    getExtension(
+      state.music.file.name
+    ) || "mp3";
+
+
+  const inputName =
+    `input_${item.id}.${inputExtension}`;
+
+
+  const musicName =
+    `music_${item.id}.${musicExtension}`;
+
+
+  const outputName =
+    `AI_EDITED_${item.id}.mp4`;
+
+
+  try{
+
+    /*
+      Write source video and replacement music
+      into FFmpeg's in-memory filesystem.
+    */
+
+    await ffmpeg.writeFile(
+      inputName,
+      await fetchFile(item.file)
+    );
+
+
+    await ffmpeg.writeFile(
+      musicName,
+      await fetchFile(state.music.file)
+    );
+
+
+    setProcessing(
+      card,
+      "Removing original audio…"
+    );
+
+
+    /*
+      Important:
+
+      -map 0:v = take video only
+      -map 1:a = take music only
+
+      Therefore original audio is NOT mapped
+      into the output.
+    */
+
+
+    await ffmpeg.exec([
+
+      "-i",
+      inputName,
+
+      "-stream_loop",
+      "-1",
+
+      "-i",
+      musicName,
+
+      "-map",
+      "0:v:0",
+
+      "-map",
+      "1:a:0",
+
+      "-c:v",
+      "libx264",
+
+      "-preset",
+      "veryfast",
+
+      "-crf",
+      "18",
+
+      "-pix_fmt",
+      "yuv420p",
+
+      "-c:a",
+      "aac",
+
+      "-b:a",
+      "192k",
+
+      "-filter:a",
+      `volume=${item.volume}`,
+
+      "-shortest",
+
+      "-movflags",
+      "+faststart",
+
+      outputName
+
+    ]);
+
+
+    setProcessing(
+      card,
+      "Creating edited preview…"
+    );
+
+
+    const data =
+      await ffmpeg.readFile(
+        outputName
+      );
+
+
+    /*
+      Create browser Blob.
+
+      This is the actual edited MP4.
+    */
+
+    const blob =
+      new Blob(
+        [data.buffer],
+        {
+          type:"video/mp4"
+        }
+      );
+
+
+    item.renderedBlob =
+      blob;
+
+
+    if(item.renderedUrl){
+
+      URL.revokeObjectURL(
+        item.renderedUrl
+      );
+
+    }
+
+
+    item.renderedUrl =
+      URL.createObjectURL(
+        blob
+      );
+
+
+    /*
+      Replace preview with EDITED video.
+    */
+
+    const video =
+      card.querySelector(
+        ".preview-video"
+      );
+
+
+    video.pause();
+
+    video.src =
+      item.renderedUrl;
+
+    video.load();
+
+
+    /*
+      Download icon now points to
+      the edited file.
+    */
+
+    const download =
+      card.querySelector(
+        ".download-btn"
+      );
+
+
+    download.href =
+      item.renderedUrl;
+
+
+    download.download =
+      createOutputName(
+        item.file.name
+      );
+
+
+    download.classList.remove(
+      "disabled"
+    );
+
+
+    const badge =
+      card.querySelector(
+        ".preview-badge"
+      );
+
+
+    badge.textContent =
+      "✓ EDITED PREVIEW";
+
+
+    setStatus(
+      card,
+      "✓ Edited video ready"
+    );
+
+
+    setProgress(
+      card,
+      100
+    );
+
+
+    /*
+      Clean FFmpeg memory.
+    */
+
+    try{
+
+      await ffmpeg.deleteFile(
+        inputName
+      );
+
+      await ffmpeg.deleteFile(
+        musicName
+      );
+
+      await ffmpeg.deleteFile(
+        outputName
+      );
+
+    }catch(cleanError){
+
+      console.warn(
+        "Cleanup warning:",
+        cleanError
+      );
+
+    }
+
+
+  }catch(error){
+
+    console.error(
+      "FFmpeg render error:",
+      error
+    );
+
+
+    setStatus(
+      card,
+      "Rendering failed"
+    );
+
+  }
+
 }
 
 
-/* =========================================================
-   OPTIONAL REAL AI API EXAMPLE
-=========================================================
+/* ============================================================
+   STATUS HELPERS
+============================================================ */
 
-async function analyzeWithAI(file){
+function setProcessing(
+  card,
+  text
+){
 
-  const formData =
-    new FormData();
+  const status =
+    card.querySelector(
+      ".status"
+    );
 
-  formData.append(
-    "video",
-    file
+  status.classList.add(
+    "processing"
   );
 
-  const response =
-    await fetch(
-      "/api/analyze-video",
-      {
-        method:"POST",
-        body:formData
+
+  status.querySelector(
+    ".status-text"
+  ).textContent =
+    text;
+
+}
+
+
+function setStatus(
+  card,
+  text
+){
+
+  const status =
+    card.querySelector(
+      ".status"
+    );
+
+  status.classList.remove(
+    "processing"
+  );
+
+
+  status.querySelector(
+    ".status-text"
+  ).textContent =
+    text;
+
+}
+
+
+function setProgress(
+  card,
+  value
+){
+
+  card.querySelector(
+    ".progress-bar"
+  ).style.width =
+    `${value}%`;
+
+}
+
+
+/* ============================================================
+   CLEAR
+============================================================ */
+
+clearBtn.addEventListener(
+  "click",
+  () => {
+
+    state.videos.forEach(
+      item => {
+
+        URL.revokeObjectURL(
+          item.url
+        );
+
+        if(item.renderedUrl){
+
+          URL.revokeObjectURL(
+            item.renderedUrl
+          );
+
+        }
+
       }
     );
 
-  return response.json();
+
+    state.videos = [];
+
+
+    videoGrid.innerHTML = `
+
+      <div
+        class="empty"
+        id="emptyState"
+      >
+
+        <div class="empty-symbol">
+          ◌
+        </div>
+
+        Upload videos to begin.
+
+      </div>
+
+    `;
+
+
+    updateCounter();
+
+
+    renderAll.disabled =
+      true;
+
+  }
+);
+
+
+/* ============================================================
+   HELPERS
+============================================================ */
+
+function getCard(id){
+
+  return videoGrid.querySelector(
+    `.card[data-id="${id}"]`
+  );
 
 }
 
-Expected response:
 
-{
-  title: "...",
-  description: "...",
-  hashtags: [
-    "#viral",
-    "#trending"
-  ],
-  thumbnail: "...",
-  music: "..."
+function updateCounter(){
+
+  counter.textContent =
+    `(${state.videos.length})`;
+
 }
 
-========================================================= */
+
+function sleep(ms){
+
+  return new Promise(
+    resolve =>
+      setTimeout(
+        resolve,
+        ms
+      )
+  );
+
+}
+
+
+function getExtension(name){
+
+  const match =
+    name.match(
+      /\.([^.]+)$/
+    );
+
+  return match
+    ? match[1]
+    : "mp4";
+
+}
+
+
+function createOutputName(
+  original
+){
+
+  const base =
+    original
+      .replace(
+        /\.[^/.]+$/,
+        ""
+      )
+      .replace(
+        /[^\w-]+/g,
+        "-"
+      );
+
+
+  return `${base}-AI-EDITED.mp4`;
+
+}
+
+
+function escapeHTML(value){
+
+  return String(value)
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+
+}
+
+
+/* ============================================================
+   INITIAL STATE
+============================================================ */
+
+updateCounter();
 
 </script>
 
 </body>
 </html>
-```
