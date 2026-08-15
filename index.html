@@ -1,3280 +1,1174 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>CreatorPilot | YouTube Automation</title>
-
-    <style>
-        :root {
-            --bg: #f4f6f9;
-            --card: #ffffff;
-            --dark: #111827;
-            --dark-2: #1f2937;
-            --text: #111827;
-            --muted: #6b7280;
-            --border: #e5e7eb;
-            --red: #ef4444;
-            --red-dark: #dc2626;
-            --green: #16a34a;
-            --blue: #2563eb;
-            --purple: #7c3aed;
-            --orange: #d97706;
-            --shadow: 0 8px 30px rgba(0, 0, 0, .06);
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family:
-                Inter,
-                -apple-system,
-                BlinkMacSystemFont,
-                "Segoe UI",
-                Arial,
-                sans-serif;
-            background: var(--bg);
-            color: var(--text);
-        }
-
-        button,
-        input,
-        select,
-        textarea {
-            font: inherit;
-        }
-
-        button {
-            cursor: pointer;
-        }
-
-        /* =========================
-           HEADER
-        ========================= */
-
-        header {
-            height: 70px;
-            background: var(--dark);
-            color: white;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 30px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .brand-logo {
-            width: 40px;
-            height: 40px;
-            background: var(--red);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 15px;
-            font-weight: 900;
-        }
-
-        .brand-name {
-            font-size: 20px;
-            font-weight: 800;
-        }
-
-        .brand-name span {
-            color: #f87171;
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .system-status {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #d1d5db;
-            font-size: 13px;
-        }
-
-        .status-dot {
-            width: 9px;
-            height: 9px;
-            border-radius: 50%;
-            background: #22c55e;
-            box-shadow: 0 0 0 4px rgba(34,197,94,.12);
-        }
-
-        .avatar {
-            width: 38px;
-            height: 38px;
-            background: #374151;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-        }
-
-        /* =========================
-           LAYOUT
-        ========================= */
-
-        .layout {
-            display: flex;
-            min-height: calc(100vh - 70px);
-        }
-
-        .sidebar {
-            width: 230px;
-            background: white;
-            border-right: 1px solid var(--border);
-            padding: 25px 14px;
-            flex-shrink: 0;
-        }
-
-        .nav-title {
-            font-size: 10px;
-            color: #9ca3af;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 800;
-            margin: 12px;
-        }
-
-        .nav-item {
-            padding: 12px;
-            border-radius: 9px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 4px;
-            color: #4b5563;
-            font-size: 13px;
-            font-weight: 650;
-        }
-
-        .nav-item:hover,
-        .nav-item.active {
-            background: #fff1f2;
-            color: var(--red);
-        }
-
-        .nav-icon {
-            width: 22px;
-            text-align: center;
-        }
-
-        .main {
-            flex: 1;
-            min-width: 0;
-            padding: 30px;
-        }
-
-        /* =========================
-           PAGE HEADER
-        ========================= */
-
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-
-        .page-header h1 {
-            font-size: 30px;
-            margin-bottom: 7px;
-        }
-
-        .page-header p {
-            color: var(--muted);
-            font-size: 14px;
-        }
-
-        /* =========================
-           BUTTONS
-        ========================= */
-
-        .btn {
-            border: 0;
-            border-radius: 8px;
-            padding: 11px 16px;
-            font-size: 13px;
-            font-weight: 700;
-            transition: .2s;
-        }
-
-        .btn-primary {
-            background: var(--red);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: var(--red-dark);
-        }
-
-        .btn-dark {
-            background: var(--dark);
-            color: white;
-        }
-
-        .btn-light {
-            background: #f3f4f6;
-            color: #374151;
-        }
-
-        .btn-light:hover {
-            background: #e5e7eb;
-        }
-
-        .btn-green {
-            background: #dcfce7;
-            color: #15803d;
-        }
-
-        .btn-small {
-            padding: 7px 10px;
-            font-size: 11px;
-        }
-
-        /* =========================
-           STATS
-        ========================= */
-
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 14px;
-            margin-bottom: 24px;
-        }
-
-        .stat {
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 18px;
-            box-shadow: var(--shadow);
-        }
-
-        .stat-label {
-            color: var(--muted);
-            font-size: 11px;
-            margin-bottom: 9px;
-        }
-
-        .stat-value {
-            font-size: 25px;
-            font-weight: 850;
-        }
-
-        .stat-note {
-            font-size: 10px;
-            color: var(--green);
-            margin-top: 5px;
-        }
-
-        /* =========================
-           CARDS
-        ========================= */
-
-        .card {
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            box-shadow: var(--shadow);
-            padding: 22px;
-            margin-bottom: 20px;
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .card-title {
-            font-size: 17px;
-            font-weight: 800;
-        }
-
-        .card-subtitle {
-            color: var(--muted);
-            font-size: 11px;
-            margin-top: 4px;
-        }
-
-        /* =========================
-           UPLOAD
-        ========================= */
-
-        .upload-area {
-            border: 2px dashed #d1d5db;
-            border-radius: 13px;
-            padding: 42px 20px;
-            text-align: center;
-            background: #fafafa;
-            transition: .2s;
-        }
-
-        .upload-area.dragover {
-            border-color: var(--red);
-            background: #fff7f7;
-        }
-
-        .upload-icon {
-            width: 55px;
-            height: 55px;
-            background: #fee2e2;
-            color: var(--red);
-            border-radius: 14px;
-            margin: 0 auto 13px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 25px;
-        }
-
-        .upload-area h3 {
-            font-size: 16px;
-            margin-bottom: 7px;
-        }
-
-        .upload-area p {
-            color: var(--muted);
-            font-size: 12px;
-            margin-bottom: 17px;
-        }
-
-        .upload-area input {
-            display: none;
-        }
-
-        /* =========================
-           QUEUE
-        ========================= */
-
-        .queue {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .queue-item {
-            border: 1px solid var(--border);
-            border-radius: 11px;
-            padding: 13px;
-            display: flex;
-            align-items: center;
-            gap: 13px;
-        }
-
-        .queue-item.next {
-            border: 2px solid #fca5a5;
-            background: #fffafa;
-        }
-
-        .queue-thumb {
-            width: 125px;
-            height: 70px;
-            border-radius: 8px;
-            background: var(--dark);
-            color: #9ca3af;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-shrink: 0;
-        }
-
-        .queue-thumb img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .queue-info {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .queue-name {
-            font-size: 14px;
-            font-weight: 750;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            margin-bottom: 5px;
-        }
-
-        .queue-meta {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            color: var(--muted);
-            font-size: 10px;
-        }
-
-        .queue-actions {
-            display: flex;
-            align-items: center;
-            gap: 7px;
-        }
-
-        /* =========================
-           BADGES
-        ========================= */
-
-        .badge {
-            border-radius: 20px;
-            padding: 5px 8px;
-            font-size: 10px;
-            font-weight: 800;
-            white-space: nowrap;
-        }
-
-        .badge-next {
-            background: #fee2e2;
-            color: #dc2626;
-        }
-
-        .badge-queued {
-            background: #dbeafe;
-            color: #2563eb;
-        }
-
-        .badge-processing {
-            background: #fef3c7;
-            color: #d97706;
-        }
-
-        .badge-scheduled {
-            background: #ede9fe;
-            color: #7c3aed;
-        }
-
-        .badge-published {
-            background: #dcfce7;
-            color: #15803d;
-        }
-
-        /* =========================
-           TWO COLUMNS
-        ========================= */
-
-        .columns {
-            display: grid;
-            grid-template-columns: 1.45fr 1fr;
-            gap: 20px;
-        }
-
-        /* =========================
-           FORMS
-        ========================= */
-
-        .form-group {
-            margin-bottom: 17px;
-        }
-
-        label {
-            display: block;
-            font-size: 12px;
-            font-weight: 750;
-            margin-bottom: 7px;
-        }
-
-        input[type="text"],
-        input[type="date"],
-        input[type="time"],
-        input[type="number"],
-        input[type="range"],
-        textarea,
-        select {
-            width: 100%;
-        }
-
-        input[type="text"],
-        input[type="date"],
-        input[type="time"],
-        input[type="number"],
-        textarea,
-        select {
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 11px 12px;
-            background: white;
-            outline: none;
-            font-size: 13px;
-        }
-
-        textarea {
-            min-height: 115px;
-            resize: vertical;
-        }
-
-        input:focus,
-        textarea:focus,
-        select:focus {
-            border-color: #f87171;
-            box-shadow: 0 0 0 3px rgba(239,68,68,.08);
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        /* =========================
-           THUMBNAIL
-        ========================= */
-
-        .thumbnail-preview {
-            width: 100%;
-            aspect-ratio: 16 / 9;
-            background: var(--dark);
-            border-radius: 10px;
-            overflow: hidden;
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #9ca3af;
-            margin-bottom: 12px;
-        }
-
-        .thumbnail-preview img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .frame-time {
-            position: absolute;
-            left: 10px;
-            bottom: 10px;
-            background: rgba(0,0,0,.75);
-            color: white;
-            padding: 5px 8px;
-            border-radius: 5px;
-            font-size: 10px;
-        }
-
-        /* =========================
-           SETTINGS
-        ========================= */
-
-        .setting-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            padding: 13px 0;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .setting-row:last-child {
-            border-bottom: 0;
-        }
-
-        .setting-title {
-            font-size: 13px;
-            font-weight: 700;
-        }
-
-        .setting-description {
-            font-size: 10px;
-            color: var(--muted);
-            margin-top: 3px;
-        }
-
-        /* =========================
-           SWITCH
-        ========================= */
-
-        .switch {
-            width: 46px;
-            height: 25px;
-            position: relative;
-            flex-shrink: 0;
-        }
-
-        .switch input {
-            display: none;
-        }
-
-        .slider {
-            position: absolute;
-            inset: 0;
-            background: #d1d5db;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: .2s;
-        }
-
-        .slider::before {
-            content: "";
-            width: 19px;
-            height: 19px;
-            position: absolute;
-            left: 3px;
-            top: 3px;
-            background: white;
-            border-radius: 50%;
-            transition: .2s;
-        }
-
-        .switch input:checked + .slider {
-            background: var(--green);
-        }
-
-        .switch input:checked + .slider::before {
-            transform: translateX(21px);
-        }
-
-        /* =========================
-           SCHEDULE SLOTS
-        ========================= */
-
-        .slots {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .slot {
-            padding: 14px;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            background: #fafafa;
-        }
-
-        .slot.active {
-            border-color: #86efac;
-            background: #f0fdf4;
-        }
-
-        .slot-time {
-            font-size: 20px;
-            font-weight: 850;
-        }
-
-        .slot-label {
-            font-size: 10px;
-            color: var(--muted);
-            margin-top: 3px;
-        }
-
-        /* =========================
-           MUSIC
-        ========================= */
-
-        .music-box {
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 13px;
-            background: #fafafa;
-        }
-
-        .music-status {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .music-safe {
-            color: #15803d;
-            background: #dcfce7;
-            padding: 5px 8px;
-            border-radius: 20px;
-            font-size: 10px;
-            font-weight: 800;
-        }
-
-        .range-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .range-row input {
-            flex: 1;
-        }
-
-        .volume-value {
-            width: 40px;
-            text-align: right;
-            font-size: 11px;
-            color: var(--muted);
-        }
-
-        /* =========================
-           PUBLISH PANEL
-        ========================= */
-
-        .publish-panel {
-            background: var(--dark);
-            color: white;
-            border-radius: 13px;
-            padding: 22px;
-        }
-
-        .publish-panel h3 {
-            font-size: 17px;
-            margin-bottom: 6px;
-        }
-
-        .publish-panel p {
-            color: #9ca3af;
-            font-size: 11px;
-            line-height: 1.5;
-            margin-bottom: 18px;
-        }
-
-        .publish-panel .btn {
-            width: 100%;
-        }
-
-        /* =========================
-           EMPTY
-        ========================= */
-
-        .empty {
-            text-align: center;
-            color: var(--muted);
-            padding: 40px 20px;
-            font-size: 13px;
-        }
-
-        .empty-icon {
-            font-size: 35px;
-            margin-bottom: 10px;
-        }
-
-        /* =========================
-           TOAST
-        ========================= */
-
-        .toast {
-            position: fixed;
-            right: 25px;
-            bottom: 25px;
-            background: var(--dark);
-            color: white;
-            padding: 14px 18px;
-            border-radius: 9px;
-            font-size: 12px;
-            box-shadow: 0 10px 35px rgba(0,0,0,.2);
-            opacity: 0;
-            transform: translateY(80px);
-            transition: .25s;
-            pointer-events: none;
-            z-index: 999;
-        }
-
-        .toast.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* =========================
-           RESPONSIVE
-        ========================= */
-
-        @media (max-width: 1200px) {
-
-            .stats {
-                grid-template-columns: repeat(3, 1fr);
-            }
-
-            .sidebar {
-                width: 70px;
-            }
-
-            .nav-title,
-            .nav-item span:not(.nav-icon) {
-                display: none;
-            }
-
-            .nav-item {
-                justify-content: center;
-            }
-        }
-
-        @media (max-width: 900px) {
-
-            .columns {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 650px) {
-
-            header {
-                padding: 0 15px;
-            }
-
-            .system-status {
-                display: none;
-            }
-
-            .sidebar {
-                display: none;
-            }
-
-            .main {
-                padding: 20px 14px;
-            }
-
-            .page-header {
-                flex-direction: column;
-            }
-
-            .stats {
-                grid-template-columns: 1fr 1fr;
-            }
-
-            .queue-item {
-                align-items: flex-start;
-            }
-
-            .queue-thumb {
-                width: 90px;
-                height: 55px;
-            }
-
-            .queue-actions {
-                flex-direction: column;
-            }
-
-            .form-row,
-            .slots {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0b1020">
+<meta name="description" content="CreatorPilot — premium YouTube automation workspace">
+<title>CreatorPilot — YouTube Automation</title>
+
+<style>
+:root{
+  --bg:#f6f7fb;
+  --surface:#ffffff;
+  --surface-2:#f9fafc;
+  --surface-3:#f1f4f8;
+  --text:#111827;
+  --muted:#667085;
+  --subtle:#98a2b3;
+  --border:#e5e7eb;
+  --border-strong:#d0d5dd;
+  --dark:#0b1020;
+  --dark-2:#151b2e;
+  --accent:#ff3b30;
+  --accent-2:#ff6b61;
+  --success:#12b76a;
+  --warning:#f79009;
+  --info:#2e90fa;
+  --purple:#7f56d9;
+  --shadow-sm:0 1px 2px rgba(16,24,40,.04);
+  --shadow:0 8px 28px rgba(16,24,40,.07);
+  --shadow-lg:0 18px 55px rgba(16,24,40,.13);
+  --radius-sm:8px;
+  --radius:12px;
+  --radius-lg:16px;
+  --radius-xl:22px;
+  --ease:cubic-bezier(.2,.8,.2,1);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:var(--text);
+  background:var(--bg);
+  -webkit-font-smoothing:antialiased;
+}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{
+  outline:3px solid rgba(46,144,250,.2);
+  outline-offset:2px;
+}
+.hidden{display:none!important}
+.muted{color:var(--muted)}
+.small{font-size:12px}
+.icon{width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center}
+svg{display:block}
+
+.app-header{
+  height:68px;
+  position:sticky;
+  top:0;
+  z-index:50;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 22px;
+  color:#fff;
+  background:rgba(11,16,32,.94);
+  border-bottom:1px solid rgba(255,255,255,.08);
+  backdrop-filter:blur(18px);
+}
+.brand{display:flex;align-items:center;gap:11px}
+.brand-mark{
+  width:36px;height:36px;border-radius:10px;
+  display:grid;place-items:center;
+  color:#fff;font-weight:900;font-size:12px;
+  background:linear-gradient(135deg,var(--accent),#ff7a70);
+  box-shadow:0 8px 24px rgba(255,59,48,.22);
+}
+.brand-name{font-weight:800;letter-spacing:-.02em}
+.brand-name span{color:#ff837b}
+.header-actions{display:flex;align-items:center;gap:14px}
+.live{
+  display:flex;align-items:center;gap:8px;
+  color:#cbd5e1;font-size:12px
+}
+.live-dot{
+  width:8px;height:8px;border-radius:50%;background:#22c55e;
+  box-shadow:0 0 0 5px rgba(34,197,94,.11)
+}
+.avatar{
+  width:34px;height:34px;border-radius:50%;
+  display:grid;place-items:center;background:#26304a;color:#fff;font-weight:750
+}
+
+.layout{display:flex;min-height:calc(100vh - 68px)}
+.sidebar{
+  width:238px;flex:0 0 238px;
+  background:var(--surface);
+  border-right:1px solid var(--border);
+  padding:22px 12px;
+}
+.nav-label{
+  margin:12px 10px 8px;
+  color:var(--subtle);
+  font-size:10px;font-weight:800;
+  letter-spacing:.11em;text-transform:uppercase;
+}
+.nav-item{
+  width:100%;border:0;background:transparent;
+  color:#475467;
+  padding:10px 11px;margin:2px 0;
+  border-radius:9px;
+  display:flex;align-items:center;gap:11px;
+  text-align:left;font-size:13px;font-weight:650;
+  transition:.18s var(--ease);
+}
+.nav-item:hover{background:#f5f7fa;color:var(--text)}
+.nav-item.active{background:#fff1f0;color:var(--accent)}
+.nav-item .nav-icon{width:22px;text-align:center;opacity:.9}
+
+.main{flex:1;min-width:0;padding:28px;max-width:1700px}
+.page-header{
+  display:flex;justify-content:space-between;align-items:flex-start;
+  gap:18px;margin-bottom:22px
+}
+.eyebrow{
+  color:var(--accent);font-size:11px;font-weight:850;
+  text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px
+}
+h1{font-size:30px;line-height:1.12;letter-spacing:-.035em;margin:0 0 7px}
+.page-header p{margin:0;color:var(--muted);font-size:13px;max-width:720px;line-height:1.55}
+
+.btn{
+  min-height:38px;border:1px solid transparent;border-radius:9px;
+  padding:9px 14px;display:inline-flex;align-items:center;justify-content:center;
+  gap:8px;font-size:12px;font-weight:750;transition:.18s var(--ease);
+}
+.btn:active{transform:translateY(1px)}
+.btn-primary{background:var(--accent);color:#fff;box-shadow:0 7px 18px rgba(255,59,48,.18)}
+.btn-primary:hover{background:#e92f25}
+.btn-dark{background:var(--dark);color:#fff}
+.btn-dark:hover{background:#171e34}
+.btn-light{background:#fff;color:#344054;border-color:var(--border)}
+.btn-light:hover{background:#f8fafc;border-color:var(--border-strong)}
+.btn-ghost{background:transparent;color:#475467}
+.btn-ghost:hover{background:#f2f4f7}
+.btn-danger{background:#fff1f0;color:#d92d20;border-color:#ffd5d1}
+.btn-small{min-height:31px;padding:6px 10px;font-size:11px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+.stats{
+  display:grid;grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:12px;margin-bottom:18px
+}
+.stat{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:16px;
+  box-shadow:var(--shadow-sm)
+}
+.stat-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.stat-label{color:var(--muted);font-size:10px;font-weight:800;letter-spacing:.08em}
+.stat-value{font-size:25px;line-height:1.1;font-weight:850;letter-spacing:-.035em;margin-top:10px}
+.stat-note{font-size:10px;color:var(--success);margin-top:5px}
+
+.card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:20px;
+  box-shadow:var(--shadow-sm);margin-bottom:16px
+}
+.card-header{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  gap:14px;margin-bottom:17px
+}
+.card-title{font-size:15px;font-weight:800;letter-spacing:-.015em}
+.card-subtitle{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.45}
+.card-tools{display:flex;gap:7px;align-items:center}
+
+.upload{
+  position:relative;border:1.5px dashed #cbd5e1;
+  border-radius:14px;padding:34px 20px;text-align:center;
+  background:linear-gradient(180deg,#fbfcfe,#f8fafc);
+  transition:.2s var(--ease)
+}
+.upload.dragover{border-color:var(--accent);background:#fff7f6;transform:scale(1.002)}
+.upload-icon{
+  width:50px;height:50px;border-radius:14px;margin:0 auto 12px;
+  display:grid;place-items:center;background:#fff0ef;color:var(--accent);
+  font-size:22px;font-weight:800
+}
+.upload h3{margin:0 0 6px;font-size:15px}
+.upload p{margin:0 auto 15px;color:var(--muted);font-size:11px;max-width:550px;line-height:1.55}
+.upload input{display:none}
+.upload-hint{font-size:10px;color:var(--subtle);margin-top:10px}
+
+.queue{display:flex;flex-direction:column;gap:9px}
+.queue-item{
+  display:flex;align-items:center;gap:12px;
+  padding:11px;border:1px solid var(--border);border-radius:12px;
+  background:#fff;transition:.18s var(--ease)
+}
+.queue-item:hover{border-color:#d7dce4;box-shadow:var(--shadow-sm)}
+.queue-item.next{border-color:#ffb4ae;box-shadow:0 0 0 3px rgba(255,59,48,.05)}
+.thumb{
+  width:116px;height:65px;flex:0 0 116px;border-radius:8px;
+  overflow:hidden;background:#111827;display:grid;place-items:center;color:#98a2b3;
+  position:relative
+}
+.thumb img{width:100%;height:100%;object-fit:cover}
+.thumb .play{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:30px;height:30px;border-radius:50%;display:grid;place-items:center;
+  background:rgba(0,0,0,.58);color:#fff;font-size:11px
+}
+.queue-info{min-width:0;flex:1}
+.queue-name{font-size:13px;font-weight:750;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.queue-meta{display:flex;gap:9px;flex-wrap:wrap;margin-top:6px;color:var(--muted);font-size:10px}
+.queue-actions{display:flex;gap:6px;align-items:center}
+.badge{
+  display:inline-flex;align-items:center;gap:5px;
+  border-radius:999px;padding:5px 8px;font-size:9px;font-weight:850;
+  white-space:nowrap
+}
+.badge-queued{background:#eff8ff;color:#175cd3}
+.badge-processing{background:#fffaeb;color:#b54708}
+.badge-scheduled{background:#f4f3ff;color:#6941c6}
+.badge-published{background:#ecfdf3;color:#027a48}
+.badge-next{background:#fff1f0;color:#d92d20}
+
+.columns{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(300px,.85fr);gap:16px}
+.form-group{margin-bottom:15px}
+label{display:block;font-size:11px;font-weight:750;margin-bottom:6px}
+input[type=text],input[type=number],input[type=date],input[type=time],textarea,select{
+  width:100%;border:1px solid var(--border);border-radius:9px;
+  background:#fff;color:var(--text);padding:10px 11px;
+  font-size:12px;outline:none;transition:.18s
+}
+input:focus,textarea:focus,select:focus{border-color:#98a2b3;box-shadow:0 0 0 3px rgba(152,162,179,.12)}
+textarea{min-height:110px;resize:vertical;line-height:1.5}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+.preview{
+  width:100%;aspect-ratio:16/9;border-radius:12px;
+  background:#0f172a;overflow:hidden;position:relative;
+  display:grid;place-items:center;color:#94a3b8;margin-bottom:12px
+}
+.preview img{width:100%;height:100%;object-fit:cover}
+.preview .frame-time{
+  position:absolute;bottom:8px;left:8px;background:rgba(0,0,0,.7);
+  color:#fff;padding:5px 7px;border-radius:6px;font-size:9px
+}
+.preview .preview-label{
+  position:absolute;top:8px;left:8px;background:rgba(0,0,0,.58);
+  color:#fff;padding:5px 7px;border-radius:6px;font-size:9px
+}
+
+.setting-row{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:12px 0;border-bottom:1px solid var(--border)
+}
+.setting-row:last-child{border-bottom:0}
+.setting-title{font-size:12px;font-weight:750}
+.setting-description{font-size:10px;color:var(--muted);margin-top:3px;line-height:1.4}
+
+.switch{width:44px;height:24px;position:relative;flex:0 0 auto}
+.switch input{display:none}
+.slider{position:absolute;inset:0;background:#d0d5dd;border-radius:99px;transition:.2s}
+.slider:before{
+  content:"";position:absolute;width:18px;height:18px;left:3px;top:3px;
+  background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 2px rgba(0,0,0,.15)
+}
+.switch input:checked+.slider{background:var(--success)}
+.switch input:checked+.slider:before{transform:translateX(20px)}
+
+.slots{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.slot{
+  padding:14px;border:1px solid var(--border);border-radius:11px;background:var(--surface-2)
+}
+.slot.active{border-color:#a6f4c5;background:#f0fdf4}
+.slot-time{font-size:19px;font-weight:850;letter-spacing:-.03em}
+.slot-label{font-size:9px;color:var(--muted);margin-top:3px}
+.slot-status{font-size:9px;color:var(--success);font-weight:800;margin-top:9px}
+
+.music-box{
+  border:1px solid var(--border);border-radius:12px;padding:13px;background:var(--surface-2)
+}
+.music-status{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:12px}
+.music-safe{font-size:9px;font-weight:850;padding:5px 7px;border-radius:999px;background:#ecfdf3;color:#027a48}
+.range-row{display:flex;align-items:center;gap:10px}
+.range-row input{flex:1}
+.range-value{width:38px;text-align:right;font-size:10px;color:var(--muted)}
+
+.publish-panel{
+  padding:20px;border-radius:15px;color:#fff;
+  background:linear-gradient(145deg,#0b1020,#171e34);
+  box-shadow:var(--shadow-lg)
+}
+.publish-panel h3{font-size:16px;margin:0 0 7px}
+.publish-panel p{color:#aab4c7;font-size:10px;line-height:1.55;margin:0 0 16px}
+.publish-panel .btn{width:100%}
+
+.timeline{
+  display:flex;align-items:center;gap:8px;padding:12px;
+  border:1px solid var(--border);border-radius:11px;background:var(--surface-2);
+  margin-top:12px
+}
+.timeline-step{display:flex;align-items:center;gap:7px;min-width:0}
+.timeline-dot{width:9px;height:9px;border-radius:50%;background:#d0d5dd;flex:0 0 auto}
+.timeline-step.active .timeline-dot{background:var(--accent);box-shadow:0 0 0 5px rgba(255,59,48,.09)}
+.timeline-step.done .timeline-dot{background:var(--success)}
+.timeline-text{font-size:9px;color:var(--muted);white-space:nowrap}
+.timeline-line{height:1px;background:#e4e7ec;flex:1}
+
+.toast{
+  position:fixed;right:20px;bottom:20px;z-index:100;
+  min-width:260px;max-width:420px;padding:12px 14px;
+  border:1px solid rgba(255,255,255,.08);border-radius:11px;
+  background:#101828;color:#fff;box-shadow:var(--shadow-lg);
+  opacity:0;transform:translateY(12px);pointer-events:none;
+  transition:.2s var(--ease);font-size:11px
+}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.success{border-color:rgba(18,183,106,.35)}
+.toast.error{border-color:rgba(240,68,56,.4)}
+
+.modal-backdrop{
+  position:fixed;inset:0;z-index:90;display:none;place-items:center;
+  background:rgba(15,23,42,.48);backdrop-filter:blur(5px);padding:20px
+}
+.modal-backdrop.open{display:grid}
+.modal{
+  width:min(680px,100%);max-height:90vh;overflow:auto;
+  background:#fff;border:1px solid var(--border);border-radius:18px;
+  box-shadow:var(--shadow-lg);padding:20px
+}
+.modal-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+.modal-title{font-size:17px;font-weight:850}
+.close{border:0;background:#f2f4f7;width:32px;height:32px;border-radius:8px;font-size:18px}
+.drop-list{display:grid;gap:8px}
+.drop-row{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:10px;border:1px solid var(--border);border-radius:10px
+}
+
+.empty{text-align:center;padding:38px 20px;color:var(--muted);font-size:12px}
+.empty-icon{font-size:28px;margin-bottom:8px}
+
+@media(max-width:1200px){
+  .stats{grid-template-columns:repeat(3,1fr)}
+  .sidebar{width:72px;flex-basis:72px}
+  .nav-label,.nav-item span:not(.nav-icon){display:none}
+  .nav-item{justify-content:center}
+}
+@media(max-width:900px){
+  .columns{grid-template-columns:1fr}
+  .main{padding:20px}
+}
+@media(max-width:680px){
+  .app-header{padding:0 14px}
+  .live{display:none}
+  .sidebar{display:none}
+  .main{padding:17px 13px}
+  .page-header{flex-direction:column}
+  h1{font-size:25px}
+  .page-header .btn{width:100%}
+  .stats{grid-template-columns:1fr 1fr}
+  .queue-item{align-items:flex-start}
+  .thumb{width:90px;height:54px;flex-basis:90px}
+  .queue-actions{flex-direction:column}
+  .form-row,.slots{grid-template-columns:1fr}
+  .card{padding:15px}
+  .timeline{overflow:auto}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
+}
+</style>
 </head>
 
-
 <body>
-
-<header>
-
-    <div class="brand">
-
-        <div class="brand-logo">
-            CP
-        </div>
-
-        <div class="brand-name">
-            Creator<span>Pilot</span>
-        </div>
-
-    </div>
-
-    <div class="header-right">
-
-        <div class="system-status">
-
-            <span class="status-dot"></span>
-
-            Automation Active
-
-        </div>
-
-        <div class="avatar">
-            R
-        </div>
-
-    </div>
-
+<header class="app-header">
+  <div class="brand">
+    <div class="brand-mark">CP</div>
+    <div class="brand-name">Creator<span>Pilot</span></div>
+  </div>
+  <div class="header-actions">
+    <div class="live"><span class="live-dot"></span>Automation active</div>
+    <div class="avatar" aria-label="User profile">R</div>
+  </div>
 </header>
 
-
 <div class="layout">
+  <aside class="sidebar" aria-label="Workspace navigation">
+    <div class="nav-label">Workspace</div>
+    <button class="nav-item active"><span class="nav-icon">▦</span><span>Dashboard</span></button>
+    <button class="nav-item"><span class="nav-icon">▶</span><span>Video Queue</span></button>
+    <button class="nav-item"><span class="nav-icon">▣</span><span>Thumbnails</span></button>
+    <button class="nav-item"><span class="nav-icon">♫</span><span>Music</span></button>
+    <button class="nav-item"><span class="nav-icon">✦</span><span>AI Optimization</span></button>
+    <button class="nav-item"><span class="nav-icon">◷</span><span>Schedule</span></button>
+    <div class="nav-label">System</div>
+    <button class="nav-item"><span class="nav-icon">⚙</span><span>Settings</span></button>
+    <button class="nav-item"><span class="nav-icon">≡</span><span>Activity Logs</span></button>
+  </aside>
 
-    <aside class="sidebar">
+  <main class="main">
+    <section class="page-header">
+      <div>
+        <div class="eyebrow">Creator automation workspace</div>
+        <h1>YouTube Automation</h1>
+        <p>Upload once. CreatorPilot keeps the queue ordered, prepares thumbnails and metadata, applies your permitted music workflow, and assigns the next publishing slot.</p>
+      </div>
+      <button class="btn btn-primary" id="addVideosBtn">＋ Add videos</button>
+    </section>
 
-        <div class="nav-title">
-            Workspace
+    <section class="stats" aria-label="Automation statistics">
+      <div class="stat"><div class="stat-top"><div class="stat-label">QUEUED</div><span>◉</span></div><div class="stat-value" id="queueCount">0</div><div class="stat-note">Oldest first</div></div>
+      <div class="stat"><div class="stat-top"><div class="stat-label">TODAY</div><span>◷</span></div><div class="stat-value" id="todayCount">0 / 2</div><div class="stat-note">11:00 AM + 8:00 PM</div></div>
+      <div class="stat"><div class="stat-top"><div class="stat-label">SCHEDULED</div><span>◌</span></div><div class="stat-value" id="scheduledCount">0</div><div class="stat-note">Upcoming</div></div>
+      <div class="stat"><div class="stat-top"><div class="stat-label">PUBLISHED</div><span>✓</span></div><div class="stat-value" id="publishedCount">0</div><div class="stat-note">Completed</div></div>
+      <div class="stat"><div class="stat-top"><div class="stat-label">AUTOMATION</div><span>●</span></div><div class="stat-value" id="automationText">ON</div><div class="stat-note">FIFO enabled</div></div>
+    </section>
+
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Video Library</div>
+          <div class="card-subtitle">Add multiple videos or Shorts. Queue order is based on upload time.</div>
         </div>
-
-        <div class="nav-item active">
-            <span class="nav-icon">📊</span>
-            <span>Dashboard</span>
+        <div class="card-tools">
+          <button class="btn btn-light btn-small" id="sortOldestBtn">Oldest first</button>
+          <button class="btn btn-light btn-small" id="clearPublishedBtn">Clear published</button>
         </div>
+      </div>
 
-        <div class="nav-item">
-            <span class="nav-icon">🎬</span>
-            <span>Video Queue</span>
+      <div class="upload" id="uploadArea">
+        <div class="upload-icon">↑</div>
+        <h3>Drop videos here</h3>
+        <p>Select one or many video files. The oldest queued video becomes the next item for processing.</p>
+        <button class="btn btn-primary" id="selectVideosBtn">Select videos</button>
+        <input type="file" id="videoInput" accept="video/*" multiple>
+        <div class="upload-hint">Browser storage is used for this front-end demo. Production uploads should use object storage + a backend.</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Publishing Queue</div>
+          <div class="card-subtitle">FIFO — first uploaded, first processed.</div>
         </div>
+      </div>
+      <div class="queue" id="videoQueue"></div>
+    </section>
 
-        <div class="nav-item">
-            <span class="nav-icon">🖼️</span>
-            <span>Thumbnails</span>
-        </div>
-
-        <div class="nav-item">
-            <span class="nav-icon">🎵</span>
-            <span>Music</span>
-        </div>
-
-        <div class="nav-item">
-            <span class="nav-icon">🤖</span>
-            <span>AI Optimization</span>
-        </div>
-
-        <div class="nav-item">
-            <span class="nav-icon">📅</span>
-            <span>Schedule</span>
-        </div>
-
-        <div class="nav-title">
-            System
-        </div>
-
-        <div class="nav-item">
-            <span class="nav-icon">⚙️</span>
-            <span>Settings</span>
-        </div>
-
-        <div class="nav-item">
-            <span class="nav-icon">📋</span>
-            <span>Activity Logs</span>
-        </div>
-
-    </aside>
-
-
-    <main class="main">
-
-        <div class="page-header">
-
+    <div class="columns">
+      <div>
+        <section class="card">
+          <div class="card-header">
             <div>
-
-                <h1>YouTube Automation</h1>
-
-                <p>
-                    Upload once. CreatorPilot handles the queue,
-                    thumbnail, music, optimization and schedule.
-                </p>
-
+              <div class="card-title">Automatic Thumbnail</div>
+              <div class="card-subtitle">Extract a real frame from the selected local video. Smart analysis is backend-ready.</div>
             </div>
-
-            <button
-                class="btn btn-primary"
-                onclick="openUploader()">
-
-                + Add Videos
-
-            </button>
-
-        </div>
-
-
-        <!-- =========================
-             STATISTICS
-        ========================= -->
-
-        <section class="stats">
-
-            <div class="stat">
-
-                <div class="stat-label">
-                    QUEUED
-                </div>
-
-                <div
-                    class="stat-value"
-                    id="queueCount">
-                    0
-                </div>
-
-                <div class="stat-note">
-                    Oldest first
-                </div>
-
-            </div>
-
-
-            <div class="stat">
-
-                <div class="stat-label">
-                    TODAY
-                </div>
-
-                <div
-                    class="stat-value"
-                    id="todayCount">
-                    0 / 2
-                </div>
-
-                <div class="stat-note">
-                    11 AM + 8 PM
-                </div>
-
-            </div>
-
-
-            <div class="stat">
-
-                <div class="stat-label">
-                    SCHEDULED
-                </div>
-
-                <div
-                    class="stat-value"
-                    id="scheduledCount">
-                    0
-                </div>
-
-                <div class="stat-note">
-                    Upcoming
-                </div>
-
-            </div>
-
-
-            <div class="stat">
-
-                <div class="stat-label">
-                    PUBLISHED
-                </div>
-
-                <div
-                    class="stat-value"
-                    id="publishedCount">
-                    0
-                </div>
-
-                <div class="stat-note">
-                    Completed
-                </div>
-
-            </div>
-
-
-            <div class="stat">
-
-                <div class="stat-label">
-                    AUTOMATION
-                </div>
-
-                <div
-                    class="stat-value"
-                    id="automationText">
-                    ON
-                </div>
-
-                <div class="stat-note">
-                    FIFO enabled
-                </div>
-
-            </div>
-
+          </div>
+          <div class="preview" id="thumbnailPreview"><span>No frame selected</span></div>
+          <div class="form-group">
+            <label for="thumbnailMode">Thumbnail detection</label>
+            <select id="thumbnailMode">
+              <option value="smart">Smart — Best Frame Automatically</option>
+              <option value="first">First Frame</option>
+              <option value="0.1">0.1 second</option>
+              <option value="0.5">0.5 second</option>
+              <option value="1">1 second</option>
+              <option value="manual">Manual time</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="frameTime">Frame time (seconds)</label>
+            <input type="number" id="frameTime" value="0.1" min="0" step="0.1">
+          </div>
+          <button class="btn btn-dark" id="analyzeThumbnailBtn" style="width:100%">Analyze & select thumbnail</button>
         </section>
-
-
-        <!-- =========================
-             UPLOAD
-        ========================= -->
 
         <section class="card">
-
-            <div class="card-header">
-
-                <div>
-
-                    <div class="card-title">
-                        🎬 Video Library
-                    </div>
-
-                    <div class="card-subtitle">
-                        Add multiple videos or Shorts. There is no artificial queue limit in this interface.
-                    </div>
-
-                </div>
-
-                <button
-                    class="btn btn-light btn-small"
-                    onclick="sortOldest()">
-
-                    Oldest First
-
-                </button>
-
+          <div class="card-header">
+            <div>
+              <div class="card-title">AI Content Optimization</div>
+              <div class="card-subtitle">Prepare metadata locally now; connect your AI endpoint for production generation.</div>
             </div>
-
-
-            <div
-                class="upload-area"
-                id="uploadArea">
-
-                <div class="upload-icon">
-                    ↑
-                </div>
-
-                <h3>
-                    Drop videos here
-                </h3>
-
-                <p>
-                    Select one or many videos. The oldest queued video is automatically processed first.
-                </p>
-
-                <button
-                    class="btn btn-primary"
-                    onclick="openUploader()">
-
-                    Select Videos
-
-                </button>
-
-                <input
-                    type="file"
-                    id="videoInput"
-                    accept="video/*"
-                    multiple>
-
-            </div>
-
+          </div>
+          <div class="form-group">
+            <label for="titleStyle">Title style</label>
+            <select id="titleStyle">
+              <option>Trending + Curiosity</option>
+              <option>Professional</option>
+              <option>Educational</option>
+              <option>Viral Shorts</option>
+              <option>SEO Focused</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="titleInput">Video title</label>
+            <input type="text" id="titleInput" placeholder="AI generated title">
+          </div>
+          <button class="btn btn-dark" id="generateTitleBtn" style="margin-bottom:15px">✦ Generate title</button>
+          <div class="form-group">
+            <label for="descriptionInput">Description</label>
+            <textarea id="descriptionInput" placeholder="AI generated description..."></textarea>
+          </div>
+          <div class="form-group">
+            <label for="hashtagsInput">Hashtags</label>
+            <input type="text" id="hashtagsInput" placeholder="#youtube #shorts #creator">
+          </div>
         </section>
-
-
-        <!-- =========================
-             QUEUE
-        ========================= -->
 
         <section class="card">
-
-            <div class="card-header">
-
-                <div>
-
-                    <div class="card-title">
-                        📋 Publishing Queue
-                    </div>
-
-                    <div class="card-subtitle">
-                        FIFO — First uploaded, first processed.
-                    </div>
-
-                </div>
-
-                <button
-                    class="btn btn-light btn-small"
-                    onclick="clearPublished()">
-
-                    Clear Published
-
-                </button>
-
+          <div class="card-header">
+            <div>
+              <div class="card-title">Music Automation</div>
+              <div class="card-subtitle">Only use tracks your licensing workflow permits.</div>
             </div>
-
-
-            <div
-                class="queue"
-                id="videoQueue">
-
+          </div>
+          <div class="music-box">
+            <div class="music-status"><strong style="font-size:12px">Licensed music source</strong><span class="music-safe">COPYRIGHT-SAFE WORKFLOW</span></div>
+            <div class="form-group">
+              <label for="musicSource">Music selection</label>
+              <select id="musicSource">
+                <option value="auto">Auto — Best Matching Licensed Track</option>
+                <option value="trending">Trending Licensed Track</option>
+                <option value="upbeat">Upbeat</option>
+                <option value="cinematic">Cinematic</option>
+                <option value="lofi">Lo-Fi</option>
+                <option value="none">No Music</option>
+              </select>
             </div>
+            <div class="form-group">
+              <label for="musicVolume">Music volume</label>
+              <div class="range-row">
+                <input type="range" id="musicVolume" min="0" max="100" value="12">
+                <div class="range-value" id="volumeValue">12%</div>
+              </div>
+            </div>
+            <div class="setting-row">
+              <div><div class="setting-title">Automatically mix music</div><div class="setting-description">Backend FFmpeg processing should perform the final mix.</div></div>
+              <label class="switch"><input type="checkbox" id="musicEnabled" checked><span class="slider"></span></label>
+            </div>
+          </div>
+        </section>
+      </div>
 
+      <div>
+        <section class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Automation Rules</div>
+              <div class="card-subtitle">Publishing engine configuration.</div>
+            </div>
+          </div>
+          <div class="setting-row">
+            <div><div class="setting-title">Automatic publishing</div><div class="setting-description">Process queued items automatically when your backend scheduler is running.</div></div>
+            <label class="switch"><input type="checkbox" id="autoPublish" checked><span class="slider"></span></label>
+          </div>
+          <div class="setting-row">
+            <div><div class="setting-title">Oldest video first</div><div class="setting-description">FIFO is always used by the queue.</div></div>
+            <label class="switch"><input type="checkbox" checked disabled><span class="slider"></span></label>
+          </div>
+          <div class="setting-row">
+            <div><div class="setting-title">Automatic thumbnail</div><div class="setting-description">Analyze frames before publishing.</div></div>
+            <label class="switch"><input type="checkbox" id="autoThumbnail" checked><span class="slider"></span></label>
+          </div>
+          <div class="setting-row">
+            <div><div class="setting-title">Automatic music</div><div class="setting-description">Select and mix permitted music.</div></div>
+            <label class="switch"><input type="checkbox" id="autoMusic" checked><span class="slider"></span></label>
+          </div>
         </section>
 
-
-        <div class="columns">
-
+        <section class="card">
+          <div class="card-header">
             <div>
-
-                <!-- =========================
-                     THUMBNAIL
-                ========================= -->
-
-                <section class="card">
-
-                    <div class="card-header">
-
-                        <div>
-
-                            <div class="card-title">
-                                🖼️ Automatic Thumbnail
-                            </div>
-
-                            <div class="card-subtitle">
-                                Analyze the video and choose the strongest frame.
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <div
-                        class="thumbnail-preview"
-                        id="thumbnailPreview">
-
-                        <span>
-                            No frame selected
-                        </span>
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label>
-                            Thumbnail Detection
-                        </label>
-
-                        <select id="thumbnailMode">
-
-                            <option value="smart">
-                                Smart — Best Frame Automatically
-                            </option>
-
-                            <option value="first">
-                                First Frame
-                            </option>
-
-                            <option value="01">
-                                0.1 Second
-                            </option>
-
-                            <option value="05">
-                                0.5 Second
-                            </option>
-
-                            <option value="1">
-                                1 Second
-                            </option>
-
-                            <option value="manual">
-                                Manual Selection
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label>
-                            Preferred Frame Time
-                        </label>
-
-                        <input
-                            type="number"
-                            id="frameTime"
-                            value="0.1"
-                            min="0"
-                            step="0.1">
-
-                    </div>
-
-
-                    <button
-                        class="btn btn-dark"
-                        style="width:100%;"
-                        onclick="analyzeThumbnail()">
-
-                        🔍 Analyze Video & Select Best Thumbnail
-
-                    </button>
-
-                </section>
-
-
-                <!-- =========================
-                     AI
-                ========================= -->
-
-                <section class="card">
-
-                    <div class="card-header">
-
-                        <div>
-
-                            <div class="card-title">
-                                🤖 AI Content Optimization
-                            </div>
-
-                            <div class="card-subtitle">
-                                Generate titles, descriptions and hashtags.
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label>
-                            Preferred Title Style
-                        </label>
-
-                        <select id="titleStyle">
-
-                            <option>
-                                Trending + Curiosity
-                            </option>
-
-                            <option>
-                                Professional
-                            </option>
-
-                            <option>
-                                Educational
-                            </option>
-
-                            <option>
-                                Viral Shorts
-                            </option>
-
-                            <option>
-                                SEO Focused
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label>
-                            Video Title
-                        </label>
-
-                        <input
-                            type="text"
-                            id="titleInput"
-                            placeholder="AI generated title">
-
-                    </div>
-
-
-                    <button
-                        class="btn btn-dark"
-                        style="margin-bottom:17px;"
-                        onclick="generateTitle()">
-
-                        ✨ Generate Trending Title
-
-                    </button>
-
-
-                    <div class="form-group">
-
-                        <label>
-                            Description
-                        </label>
-
-                        <textarea
-                            id="descriptionInput"
-                            placeholder="AI generated description..."></textarea>
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label>
-                            Hashtags
-                        </label>
-
-                        <input
-                            type="text"
-                            id="hashtagsInput"
-                            placeholder="#youtube #shorts #trending">
-
-                    </div>
-
-                </section>
-
-
-                <!-- =========================
-                     MUSIC
-                ========================= -->
-
-                <section class="card">
-
-                    <div class="card-header">
-
-                        <div>
-
-                            <div class="card-title">
-                                🎵 Music Automation
-                            </div>
-
-                            <div class="card-subtitle">
-                                Use music that your licensing workflow permits.
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="music-box">
-
-                        <div class="music-status">
-
-                            <strong>
-                                Licensed Music Source
-                            </strong>
-
-                            <span class="music-safe">
-                                COPYRIGHT-SAFE WORKFLOW
-                            </span>
-
-                        </div>
-
-
-                        <div class="form-group">
-
-                            <label>
-                                Music Selection
-                            </label>
-
-                            <select id="musicSource">
-
-                                <option value="auto">
-                                    Auto — Best Matching Licensed Track
-                                </option>
-
-                                <option value="trending">
-                                    Trending Licensed Track
-                                </option>
-
-                                <option value="upbeat">
-                                    Upbeat
-                                </option>
-
-                                <option value="cinematic">
-                                    Cinematic
-                                </option>
-
-                                <option value="lofi">
-                                    Lo-Fi
-                                </option>
-
-                                <option value="none">
-                                    No Music
-                                </option>
-
-                            </select>
-
-                        </div>
-
-
-                        <div class="form-group">
-
-                            <label>
-                                Music Volume
-                            </label>
-
-                            <div class="range-row">
-
-                                <input
-                                    type="range"
-                                    id="musicVolume"
-                                    min="0"
-                                    max="100"
-                                    value="12"
-                                    oninput="updateVolume()">
-
-                                <div
-                                    class="volume-value"
-                                    id="volumeValue">
-
-                                    12%
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="setting-row">
-
-                            <div>
-
-                                <div class="setting-title">
-                                    Automatically Mix Music
-                                </div>
-
-                                <div class="setting-description">
-                                    Add selected music during video processing.
-                                </div>
-
-                            </div>
-
-                            <label class="switch">
-
-                                <input
-                                    type="checkbox"
-                                    id="musicEnabled"
-                                    checked>
-
-                                <span class="slider"></span>
-
-                            </label>
-
-                        </div>
-
-                    </div>
-
-                </section>
-
+              <div class="card-title">Fixed Publishing Schedule</div>
+              <div class="card-subtitle">Maximum two automated publishing slots per day.</div>
             </div>
-
-
-            <div>
-
-                <!-- =========================
-                     AUTOMATION
-                ========================= -->
-
-                <section class="card">
-
-                    <div class="card-header">
-
-                        <div>
-
-                            <div class="card-title">
-                                ⚙️ Automation Rules
-                            </div>
-
-                            <div class="card-subtitle">
-                                Your publishing engine configuration.
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="setting-row">
-
-                        <div>
-
-                            <div class="setting-title">
-                                Automatic Publishing
-                            </div>
-
-                            <div class="setting-description">
-                                Process the queue automatically.
-                            </div>
-
-                        </div>
-
-                        <label class="switch">
-
-                            <input
-                                type="checkbox"
-                                id="autoPublish"
-                                checked
-                                onchange="updateAutomation()">
-
-                            <span class="slider"></span>
-
-                        </label>
-
-                    </div>
-
-
-                    <div class="setting-row">
-
-                        <div>
-
-                            <div class="setting-title">
-                                Oldest Video First
-                            </div>
-
-                            <div class="setting-description">
-                                FIFO queue is always enabled.
-                            </div>
-
-                        </div>
-
-                        <label class="switch">
-
-                            <input
-                                type="checkbox"
-                                checked
-                                disabled>
-
-                            <span class="slider"></span>
-
-                        </label>
-
-                    </div>
-
-
-                    <div class="setting-row">
-
-                        <div>
-
-                            <div class="setting-title">
-                                Automatic Thumbnail
-                            </div>
-
-                            <div class="setting-description">
-                                Analyze frames automatically.
-                            </div>
-
-                        </div>
-
-                        <label class="switch">
-
-                            <input
-                                type="checkbox"
-                                id="autoThumbnail"
-                                checked>
-
-                            <span class="slider"></span>
-
-                        </label>
-
-                    </div>
-
-
-                    <div class="setting-row">
-
-                        <div>
-
-                            <div class="setting-title">
-                                Automatic Music
-                            </div>
-
-                            <div class="setting-description">
-                                Select and mix licensed music.
-                            </div>
-
-                        </div>
-
-                        <label class="switch">
-
-                            <input
-                                type="checkbox"
-                                id="autoMusic"
-                                checked>
-
-                            <span class="slider"></span>
-
-                        </label>
-
-                    </div>
-
-                </section>
-
-
-                <!-- =========================
-                     FIXED SCHEDULE
-                ========================= -->
-
-                <section class="card">
-
-                    <div class="card-header">
-
-                        <div>
-
-                            <div class="card-title">
-                                🕐 Fixed Publishing Schedule
-                            </div>
-
-                            <div class="card-subtitle">
-                                Maximum two automated publishing slots per day.
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="slots">
-
-                        <div class="slot active">
-
-                            <div class="slot-time">
-                                11:00 AM
-                            </div>
-
-                            <div class="slot-label">
-                                DAILY PUBLISHING SLOT
-                            </div>
-
-                        </div>
-
-
-                        <div class="slot active">
-
-                            <div class="slot-time">
-                                8:00 PM
-                            </div>
-
-                            <div class="slot-label">
-                                DAILY PUBLISHING SLOT
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <div
-                        class="form-group"
-                        style="margin-top:17px;">
-
-                        <label>
-                            Timezone
-                        </label>
-
-                        <select id="timezone">
-
-                            <option value="Asia/Kuala_Lumpur">
-                                Malaysia — GMT+8
-                            </option>
-
-                            <option value="Asia/Singapore">
-                                Singapore — GMT+8
-                            </option>
-
-                            <option value="Asia/Tokyo">
-                                Tokyo — GMT+9
-                            </option>
-
-                            <option value="UTC">
-                                UTC
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                    <div class="setting-row">
-
-                        <div>
-
-                            <div class="setting-title">
-                                Skip Full Slots
-                            </div>
-
-                            <div class="setting-description">
-                                Move to the next available day automatically.
-                            </div>
-
-                        </div>
-
-                        <label class="switch">
-
-                            <input
-                                type="checkbox"
-                                checked>
-
-                            <span class="slider"></span>
-
-                        </label>
-
-                    </div>
-
-                </section>
-
-
-                <!-- =========================
-                     PUBLISH
-                ========================= -->
-
-                <section class="publish-panel">
-
-                    <h3>
-                        🚀 Automation Engine
-                    </h3>
-
-                    <p>
-                        CreatorPilot will select the oldest queued video,
-                        analyze its frames, prepare metadata, apply the
-                        selected licensed music, and assign the next
-                        available 11:00 AM or 8:00 PM publishing slot.
-                    </p>
-
-                    <button
-                        class="btn btn-primary"
-                        onclick="processOldest()">
-
-                        Process Oldest Video
-
-                    </button>
-
-                </section>
-
-            </div>
-
-        </div>
-
-    </main>
-
+          </div>
+          <div class="slots">
+            <div class="slot active"><div class="slot-time">11:00 AM</div><div class="slot-label">DAILY PUBLISHING SLOT</div><div class="slot-status">Available slot</div></div>
+            <div class="slot active"><div class="slot-time">8:00 PM</div><div class="slot-label">DAILY PUBLISHING SLOT</div><div class="slot-status">Available slot</div></div>
+          </div>
+          <div class="form-group" style="margin-top:15px">
+            <label for="timezone">Timezone</label>
+            <select id="timezone">
+              <option value="Asia/Kuala_Lumpur">Malaysia — GMT+8</option>
+              <option value="Asia/Singapore">Singapore — GMT+8</option>
+              <option value="Asia/Tokyo">Tokyo — GMT+9</option>
+              <option value="UTC">UTC</option>
+            </select>
+          </div>
+          <div class="setting-row">
+            <div><div class="setting-title">Skip full slots</div><div class="setting-description">Move to the next available day automatically.</div></div>
+            <label class="switch"><input type="checkbox" id="skipFullSlots" checked><span class="slider"></span></label>
+          </div>
+        </section>
+
+        <section class="publish-panel">
+          <h3>Automation Engine</h3>
+          <p>Select the oldest queued video, extract a thumbnail, prepare metadata, assign the next 11:00 AM or 8:00 PM slot, and hand the job to your production backend.</p>
+          <div class="timeline" id="processTimeline">
+            <div class="timeline-step active"><span class="timeline-dot"></span><span class="timeline-text">Queue</span></div>
+            <div class="timeline-line"></div>
+            <div class="timeline-step"><span class="timeline-dot"></span><span class="timeline-text">Thumbnail</span></div>
+            <div class="timeline-line"></div>
+            <div class="timeline-step"><span class="timeline-dot"></span><span class="timeline-text">Metadata</span></div>
+            <div class="timeline-line"></div>
+            <div class="timeline-step"><span class="timeline-dot"></span><span class="timeline-text">Schedule</span></div>
+          </div>
+          <button class="btn btn-primary" id="processBtn" style="margin-top:14px">Process oldest video</button>
+        </section>
+      </div>
+    </div>
+  </main>
 </div>
 
-
-<div
-    class="toast"
-    id="toast">
+<div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="eyebrow">Queue manager</div>
+        <div class="modal-title" id="modalTitle">Queued videos</div>
+      </div>
+      <button class="close" id="closeModal" aria-label="Close">×</button>
+    </div>
+    <div class="drop-list" id="modalList"></div>
+  </div>
 </div>
 
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
+/*
+  CreatorPilot enhanced front-end
+  --------------------------------
+  This is intentionally a browser-only front-end.
+  Real YouTube upload, OAuth, FFmpeg rendering, licensed-music retrieval,
+  AI generation and server-side scheduling must be implemented by a backend.
 
-    /* ==========================================
-       APPLICATION STATE
-    ========================================== */
+  Recommended production endpoints:
+    POST /api/videos
+    POST /api/video/analyze-thumbnail
+    POST /api/video/render
+    POST /api/ai/metadata
+    POST /api/youtube/upload
+    POST /api/youtube/thumbnail
+    GET  /api/music/catalog
+    GET  /api/scheduler/next-slot
+*/
 
-    let videos =
-        JSON.parse(
-            localStorage.getItem(
-                "creatorPilotVideos"
-            ) || "[]"
-        );
+const DB_NAME = "creatorPilotEnhanced";
+const DB_VERSION = 1;
+const STORE = "videos";
+let videos = [];
+let selectedVideoId = null;
+let toastTimer = null;
 
+const $ = id => document.getElementById(id);
 
-    let selectedVideoId = null;
+function uid(){
+  return crypto.randomUUID ? crypto.randomUUID() : Date.now()+"-"+Math.random();
+}
 
+function escapeHtml(value){
+  const d=document.createElement("div");
+  d.textContent=String(value ?? "");
+  return d.innerHTML;
+}
 
-    const videoInput =
-        document.getElementById(
-            "videoInput"
-        );
+function formatSize(bytes){
+  if(!bytes) return "—";
+  const units=["B","KB","MB","GB","TB"];
+  const i=Math.min(Math.floor(Math.log(bytes)/Math.log(1024)),units.length-1);
+  return `${(bytes/Math.pow(1024,i)).toFixed(i?1:0)} ${units[i]}`;
+}
 
+function showToast(message,type=""){
+  const t=$("toast");
+  t.textContent=message;
+  t.className="toast show "+type;
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.className="toast",3200);
+}
 
-    const uploadArea =
-        document.getElementById(
-            "uploadArea"
-        );
+function openDB(){
+  return new Promise((resolve,reject)=>{
+    const req=indexedDB.open(DB_NAME,DB_VERSION);
+    req.onupgradeneeded=()=>{
+      const db=req.result;
+      if(!db.objectStoreNames.contains(STORE)){
+        const store=db.createObjectStore(STORE,{keyPath:"id"});
+        store.createIndex("uploadedAt","uploadedAt");
+        store.createIndex("status","status");
+      }
+    };
+    req.onsuccess=()=>resolve(req.result);
+    req.onerror=()=>reject(req.error);
+  });
+}
 
+async function dbGetAll(){
+  const db=await openDB();
+  return new Promise((resolve,reject)=>{
+    const tx=db.transaction(STORE,"readonly");
+    const req=tx.objectStore(STORE).getAll();
+    req.onsuccess=()=>resolve(req.result||[]);
+    req.onerror=()=>reject(req.error);
+  });
+}
 
-    const videoQueue =
-        document.getElementById(
-            "videoQueue"
-        );
+async function dbPut(video){
+  const db=await openDB();
+  return new Promise((resolve,reject)=>{
+    const tx=db.transaction(STORE,"readwrite");
+    tx.objectStore(STORE).put(video);
+    tx.oncomplete=()=>resolve();
+    tx.onerror=()=>reject(tx.error);
+  });
+}
 
+async function dbDelete(id){
+  const db=await openDB();
+  return new Promise((resolve,reject)=>{
+    const tx=db.transaction(STORE,"readwrite");
+    tx.objectStore(STORE).delete(id);
+    tx.oncomplete=()=>resolve();
+    tx.onerror=()=>reject(tx.error);
+  });
+}
 
-    /* ==========================================
-       UPLOAD
-    ========================================== */
+async function refresh(){
+  videos=await dbGetAll();
+  videos.sort((a,b)=>new Date(a.uploadedAt)-new Date(b.uploadedAt));
+  render();
+  updateStats();
+}
 
-    function openUploader() {
+function getOldest(){
+  return videos.filter(v=>v.status==="queued")
+    .sort((a,b)=>new Date(a.uploadedAt)-new Date(b.uploadedAt))[0] || null;
+}
 
-        videoInput.click();
+function getSelected(){
+  return selectedVideoId ? videos.find(v=>v.id===selectedVideoId) : getOldest();
+}
 
+function objectUrl(video){
+  return video?.blob ? URL.createObjectURL(video.blob) : "";
+}
+
+async function createFrame(video,time=0.1){
+  if(!video?.blob) return null;
+  const url=URL.createObjectURL(video.blob);
+  const media=document.createElement("video");
+  media.preload="metadata";
+  media.muted=true;
+  media.playsInline=true;
+  media.src=url;
+
+  return new Promise(resolve=>{
+    const cleanup=()=>URL.revokeObjectURL(url);
+    media.onloadedmetadata=()=>{
+      const max=Math.max(0.01,(media.duration||1)-0.05);
+      media.currentTime=Math.min(Math.max(0,time),max);
+    };
+    media.onseeked=()=>{
+      const canvas=document.createElement("canvas");
+      const w=1280;
+      const ratio=(media.videoWidth||16)/(media.videoHeight||9);
+      canvas.width=w;
+      canvas.height=Math.round(w/ratio);
+      const ctx=canvas.getContext("2d");
+      ctx.drawImage(media,0,0,canvas.width,canvas.height);
+      canvas.toBlob(blob=>{
+        cleanup();
+        resolve({blob,url:URL.createObjectURL(blob)});
+      },"image/jpeg",.9);
+    };
+    media.onerror=()=>{cleanup();resolve(null)};
+  });
+}
+
+async function addVideos(fileList){
+  const files=[...fileList].filter(f=>f.type.startsWith("video/"));
+  if(!files.length){showToast("No valid video files selected.","error");return;}
+
+  for(const file of files){
+    const id=uid();
+    await dbPut({
+      id,
+      name:file.name,
+      size:file.size,
+      type:file.type,
+      blob:file,
+      uploadedAt:new Date().toISOString(),
+      status:"queued",
+      thumbnailBlob:null,
+      thumbnailTime:null,
+      title:"",
+      description:"",
+      hashtags:"",
+      music:"auto",
+      musicVolume:12,
+      musicEnabled:true,
+      scheduledAt:null
+    });
+  }
+  await refresh();
+  showToast(`${files.length} video${files.length>1?"s":""} added to the FIFO queue.`,"success");
+}
+
+function render(){
+  const q=$("videoQueue");
+  q.innerHTML="";
+  if(!videos.length){
+    q.innerHTML=`<div class="empty"><div class="empty-icon">🎬</div><strong>No videos uploaded yet</strong><div style="margin-top:5px">Add videos to start building the queue.</div></div>`;
+    return;
+  }
+
+  const oldest=getOldest();
+  videos.forEach(video=>{
+    const item=document.createElement("div");
+    item.className="queue-item"+(oldest?.id===video.id?" next":"");
+
+    let badgeClass="badge-queued", label="Queued";
+    if(video.status==="processing"){badgeClass="badge-processing";label="Processing";}
+    if(video.status==="scheduled"){badgeClass="badge-scheduled";label="Scheduled";}
+    if(video.status==="published"){badgeClass="badge-published";label="Published";}
+
+    let thumb="";
+    if(video.thumbnailBlob){
+      thumb=`<img src="${URL.createObjectURL(video.thumbnailBlob)}" alt="">`;
+    }else{
+      thumb=`<span>VIDEO</span>`;
     }
 
+    item.innerHTML=`
+      <div class="thumb">${thumb}${video.status!=="queued"?"":"<span class='play'>▶</span>"}</div>
+      <div class="queue-info">
+        <div class="queue-name" title="${escapeHtml(video.name)}">${escapeHtml(video.name)}</div>
+        <div class="queue-meta">
+          <span>${formatSize(video.size)}</span>
+          <span>${new Date(video.uploadedAt).toLocaleString()}</span>
+          ${video.scheduledAt?`<span>→ ${escapeHtml(video.scheduledAt)}</span>`:""}
+        </div>
+      </div>
+      ${oldest?.id===video.id&&video.status==="queued"?`<span class="badge badge-next">NEXT</span>`:""}
+      <span class="badge ${badgeClass}">${label}</span>
+      <div class="queue-actions">
+        <button class="btn btn-light btn-small select-btn">Select</button>
+        <button class="btn btn-danger btn-small delete-btn">Delete</button>
+      </div>
+    `;
 
-    videoInput.addEventListener(
-        "change",
-        event => {
+    item.querySelector(".select-btn").onclick=()=>selectVideo(video.id);
+    item.querySelector(".delete-btn").onclick=async()=>{
+      await dbDelete(video.id);
+      if(selectedVideoId===video.id) selectedVideoId=null;
+      await refresh();
+      showToast("Video removed from the queue.");
+    };
+    q.appendChild(item);
+  });
+}
 
-            addVideos(
-                event.target.files
-            );
+function selectVideo(id){
+  selectedVideoId=id;
+  const video=videos.find(v=>v.id===id);
+  if(!video) return;
 
-            videoInput.value = "";
+  $("titleInput").value=video.title||"";
+  $("descriptionInput").value=video.description||"";
+  $("hashtagsInput").value=video.hashtags||"";
+  $("musicSource").value=video.music||"auto";
+  $("musicVolume").value=video.musicVolume ?? 12;
+  $("musicEnabled").checked=video.musicEnabled!==false;
+  $("volumeValue").textContent=`${$("musicVolume").value}%`;
+  renderThumbnailPreview(video);
+  showToast(`Selected: ${video.name}`);
+}
 
-        }
-    );
+function renderThumbnailPreview(video){
+  const p=$("thumbnailPreview");
+  if(video?.thumbnailBlob){
+    const url=URL.createObjectURL(video.thumbnailBlob);
+    p.innerHTML=`<img src="${url}" alt="Selected thumbnail"><span class="preview-label">AUTO THUMBNAIL</span><span class="frame-time">${video.thumbnailTime ?? 0.1}s</span>`;
+  }else{
+    p.innerHTML=`<span>No frame selected</span>`;
+  }
+}
 
+async function analyzeThumbnail(){
+  const video=getSelected();
+  if(!video){showToast("Upload or select a video first.","error");return;}
+  selectedVideoId=video.id;
 
-    uploadArea.addEventListener(
-        "dragover",
-        event => {
+  const mode=$("thumbnailMode").value;
+  let time=parseFloat($("frameTime").value)||0.1;
+  if(mode==="first") time=0;
+  if(["0.1","0.5","1"].includes(mode)) time=parseFloat(mode);
 
-            event.preventDefault();
+  showToast(mode==="smart" ? "Smart thumbnail analysis started…" : `Extracting frame at ${time}s…`);
 
-            uploadArea.classList.add(
-                "dragover"
-            );
+  /*
+    Front-end fallback:
+    Smart mode uses a small frame sweep and chooses the sharpest-looking
+    frame by edge variance. Production should replace this with:
+      POST /api/video/analyze-thumbnail
+  */
+  let chosenTime=time;
+  if(mode==="smart"){
+    const candidates=[0.1,0.5,1,2,3,5];
+    let best=null;
+    for(const t of candidates){
+      const frame=await createFrame(video,t);
+      if(!frame) continue;
+      const score=await sharpnessScore(frame.blob);
+      if(!best || score>best.score){
+        best={...frame,score,time:t};
+      }else{
+        URL.revokeObjectURL(frame.url);
+      }
+    }
+    if(best){
+      video.thumbnailBlob=best.blob;
+      video.thumbnailTime=best.time;
+      await dbPut(video);
+      await refresh();
+      selectVideo(video.id);
+      showToast(`Best local frame selected at ${best.time}s.`,"success");
+      return;
+    }
+  }
 
-        }
-    );
+  const frame=await createFrame(video,chosenTime);
+  if(!frame){showToast("Could not extract a frame from this video.","error");return;}
+  video.thumbnailBlob=frame.blob;
+  video.thumbnailTime=chosenTime;
+  await dbPut(video);
+  await refresh();
+  selectVideo(video.id);
+  showToast(`Thumbnail selected at ${chosenTime}s.`,"success");
+}
 
+async function sharpnessScore(blob){
+  const bitmap=await createImageBitmap(blob);
+  const canvas=document.createElement("canvas");
+  const scale=Math.min(1,320/bitmap.width);
+  canvas.width=Math.max(1,Math.round(bitmap.width*scale));
+  canvas.height=Math.max(1,Math.round(bitmap.height*scale));
+  const ctx=canvas.getContext("2d",{willReadFrequently:true});
+  ctx.drawImage(bitmap,0,0,canvas.width,canvas.height);
+  const data=ctx.getImageData(0,0,canvas.width,canvas.height).data;
+  let total=0,count=0;
+  for(let y=1;y<canvas.height;y+=2){
+    for(let x=1;x<canvas.width;x+=2){
+      const i=(y*canvas.width+x)*4;
+      const p=(y*canvas.width+x-1)*4;
+      total+=Math.abs(data[i]-data[p])+Math.abs(data[i+1]-data[p+1])+Math.abs(data[i+2]-data[p+2]);
+      count++;
+    }
+  }
+  bitmap.close();
+  return total/Math.max(1,count);
+}
 
-    uploadArea.addEventListener(
-        "dragleave",
-        () => {
+function generateTitle(){
+  const video=getSelected();
+  if(!video){showToast("Select a video first.","error");return;}
+  const base=video.name.replace(/\.[^/.]+$/,"").replace(/[_-]+/g," ").trim();
+  const style=$("titleStyle").value;
+  const templates={
+    "Trending + Curiosity":`${base} — The Result Nobody Expected`,
+    "Professional":`${base} | Complete Overview`,
+    "Educational":`${base}: What You Need to Know`,
+    "Viral Shorts":`${base} in 30 Seconds`,
+    "SEO Focused":`${base} | Guide, Tips & Key Takeaways`
+  };
+  $("titleInput").value=templates[style]||base;
+  $("descriptionInput").value=`A concise overview of ${base}. Watch the full video for the complete context, key points and practical takeaways.`;
+  $("hashtagsInput").value="#YouTube #Creator #Video";
+  showToast("Metadata draft generated locally.","success");
+}
 
-            uploadArea.classList.remove(
-                "dragover"
-            );
+function saveSelectedFields(){
+  const video=getSelected();
+  if(!video)return;
+  video.title=$("titleInput").value.trim();
+  video.description=$("descriptionInput").value.trim();
+  video.hashtags=$("hashtagsInput").value.trim();
+  video.music=$("musicSource").value;
+  video.musicVolume=parseInt($("musicVolume").value,10);
+  video.musicEnabled=$("musicEnabled").checked;
+  return dbPut(video);
+}
 
-        }
-    );
+function getNextPublishSlot(){
+  const now=new Date();
+  const slots=[11,20];
+  for(const hour of slots){
+    const candidate=new Date(now);
+    candidate.setHours(hour,0,0,0);
+    if(candidate>now) return candidate;
+  }
+  const tomorrow=new Date(now);
+  tomorrow.setDate(tomorrow.getDate()+1);
+  tomorrow.setHours(11,0,0,0);
+  return tomorrow;
+}
 
+function formatDateTime(date){
+  return new Intl.DateTimeFormat(undefined,{
+    year:"numeric",month:"short",day:"numeric",
+    hour:"2-digit",minute:"2-digit"
+  }).format(date);
+}
 
-    uploadArea.addEventListener(
-        "drop",
-        event => {
+async function processOldest(){
+  const video=getOldest();
+  if(!video){showToast("No queued videos available.","error");return;}
 
-            event.preventDefault();
+  selectedVideoId=video.id;
+  await saveSelectedFields();
 
-            uploadArea.classList.remove(
-                "dragover"
-            );
+  video.status="processing";
+  await dbPut(video);
+  await refresh();
+  setTimeline(1);
+  showToast(`Processing ${video.name}…`);
 
-            addVideos(
-                event.dataTransfer.files
-            );
-
-        }
-    );
-
-
-    function addVideos(fileList) {
-
-        const files =
-            Array.from(fileList)
-            .filter(
-                file =>
-                    file.type.startsWith(
-                        "video/"
-                    )
-            );
-
-
-        if (!files.length) {
-
-            showToast(
-                "No valid video files selected."
-            );
-
-            return;
-
-        }
-
-
-        files.forEach(
-            (file, index) => {
-
-                videos.push({
-
-                    id:
-                        crypto.randomUUID
-                        ? crypto.randomUUID()
-                        :
-                        Date.now() +
-                        Math.random(),
-
-                    name:
-                        file.name,
-
-                    size:
-                        file.size,
-
-                    uploadedAt:
-                        new Date(
-                            Date.now() + index
-                        ).toISOString(),
-
-                    status:
-                        "queued",
-
-                    thumbnail:
-                        null,
-
-                    thumbnailTime:
-                        null,
-
-                    title:
-                        "",
-
-                    description:
-                        "",
-
-                    hashtags:
-                        "",
-
-                    music:
-                        "auto",
-
-                    musicVolume:
-                        12,
-
-                    scheduledAt:
-                        null
-
-                });
-
-            }
-        );
-
-
-        save();
-
-        render();
-
-        showToast(
-            `${files.length} video(s) added to the queue.`
-        );
-
+  setTimeout(async()=>{
+    const autoThumb=$("autoThumbnail").checked;
+    if(autoThumb && !video.thumbnailBlob){
+      await analyzeThumbnail();
     }
 
-
-    /* ==========================================
-       STORAGE
-    ========================================== */
-
-    function save() {
-
-        localStorage.setItem(
-            "creatorPilotVideos",
-            JSON.stringify(videos)
-        );
-
-    }
-
-
-    /* ==========================================
-       SORT
-    ========================================== */
-
-    function sortOldest() {
-
-        videos.sort(
-            (a, b) =>
-                new Date(a.uploadedAt) -
-                new Date(b.uploadedAt)
-        );
-
-        save();
-
-        render();
-
-        showToast(
-            "Queue sorted oldest first."
-        );
-
-    }
-
-
-    /* ==========================================
-       OLDEST QUEUED VIDEO
-    ========================================== */
-
-    function getOldest() {
-
-        return videos
-            .filter(
-                video =>
-                    video.status === "queued"
-            )
-            .sort(
-                (a, b) =>
-                    new Date(a.uploadedAt) -
-                    new Date(b.uploadedAt)
-            )[0];
-
-    }
-
-
-    /* ==========================================
-       RENDER QUEUE
-    ========================================== */
-
-    function render() {
-
-        videos.sort(
-            (a, b) =>
-                new Date(a.uploadedAt) -
-                new Date(b.uploadedAt)
-        );
-
-
-        videoQueue.innerHTML = "";
-
-
-        if (!videos.length) {
-
-            videoQueue.innerHTML = `
-
-                <div class="empty">
-
-                    <div class="empty-icon">
-                        🎬
-                    </div>
-
-                    No videos uploaded yet.
-
-                </div>
-
-            `;
-
-            updateStats();
-
-            return;
-
-        }
-
-
-        const oldest =
-            getOldest();
-
-
-        videos.forEach(
-            video => {
-
-                const isNext =
-                    oldest &&
-                    video.id === oldest.id;
-
-
-                const item =
-                    document.createElement(
-                        "div"
-                    );
-
-
-                item.className =
-                    "queue-item" +
-                    (
-                        isNext
-                        ? " next"
-                        : ""
-                    );
-
-
-                const date =
-                    new Date(
-                        video.uploadedAt
-                    );
-
-
-                item.innerHTML = `
-
-                    <div class="queue-thumb">
-
-                        ${
-                            video.thumbnail
-                            ?
-                            `<img
-                                src="${video.thumbnail}"
-                                alt="Thumbnail">`
-                            :
-                            "▶"
-                        }
-
-                    </div>
-
-
-                    <div class="queue-info">
-
-                        <div class="queue-name">
-                            ${escapeHtml(video.name)}
-                        </div>
-
-                        <div class="queue-meta">
-
-                            <span>
-                                Added:
-                                ${date.toLocaleDateString()}
-                            </span>
-
-                            <span>
-                                ${formatSize(video.size)}
-                            </span>
-
-                            ${
-                                video.scheduledAt
-                                ?
-                                `<span>
-                                    Scheduled:
-                                    ${video.scheduledAt}
-                                </span>`
-                                :
-                                ""
-                            }
-
-                        </div>
-
-                    </div>
-
-
-                    ${
-                        isNext
-                        ?
-                        `<span class="badge badge-next">
-                            NEXT
-                        </span>`
-                        :
-                        statusBadge(video.status)
-                    }
-
-
-                    <div class="queue-actions">
-
-                        ${
-                            isNext
-                            ?
-                            `<button
-                                class="btn btn-primary btn-small"
-                                onclick="selectVideo('${video.id}')">
-                                Select
-                            </button>`
-                            :
-                            ""
-                        }
-
-                        <button
-                            class="btn btn-light btn-small"
-                            onclick="removeVideo('${video.id}')">
-
-                            Remove
-
-                        </button>
-
-                    </div>
-
-                `;
-
-
-                videoQueue.appendChild(
-                    item
-                );
-
-            }
-        );
-
-
-        updateStats();
-
-    }
-
-
-    /* ==========================================
-       STATUS
-    ========================================== */
-
-    function statusBadge(status) {
-
-        const classes = {
-
-            queued:
-                "badge-queued",
-
-            processing:
-                "badge-processing",
-
-            scheduled:
-                "badge-scheduled",
-
-            published:
-                "badge-published"
-
-        };
-
-
-        return `
-
-            <span class="badge ${classes[status] || "badge-queued"}">
-
-                ${
-                    status.charAt(0).toUpperCase()
-                    +
-                    status.slice(1)
-                }
-
-            </span>
-
-        `;
-
-    }
-
-
-    /* ==========================================
-       SELECT
-    ========================================== */
-
-    function selectVideo(id) {
-
-        selectedVideoId =
-            id;
-
-
-        const video =
-            videos.find(
-                item =>
-                    item.id === id
-            );
-
-
-        if (!video) {
-
-            return;
-
-        }
-
-
-        document.getElementById(
-            "titleInput"
-        ).value =
-            video.title || "";
-
-
-        document.getElementById(
-            "descriptionInput"
-        ).value =
-            video.description || "";
-
-
-        document.getElementById(
-            "hashtagsInput"
-        ).value =
-            video.hashtags || "";
-
-
-        document.getElementById(
-            "musicSource"
-        ).value =
-            video.music || "auto";
-
-
-        document.getElementById(
-            "musicVolume"
-        ).value =
-            video.musicVolume || 12;
-
-
-        updateVolume();
-
-
-        if (video.thumbnail) {
-
-            document.getElementById(
-                "thumbnailPreview"
-            ).innerHTML = `
-
-                <img
-                    src="${video.thumbnail}"
-                    alt="Detected Thumbnail">
-
-                <div class="frame-time">
-                    Frame: ${video.thumbnailTime || "auto"}s
-                </div>
-
-            `;
-
-        }
-
-
-        showToast(
-            `Selected ${video.name}`
-        );
-
-    }
-
-
-    /* ==========================================
-       REMOVE
-    ========================================== */
-
-    function removeVideo(id) {
-
-        videos =
-            videos.filter(
-                video =>
-                    video.id !== id
-            );
-
-
-        save();
-
-        render();
-
-        showToast(
-            "Video removed."
-        );
-
-    }
-
-
-    /* ==========================================
-       CLEAR PUBLISHED
-    ========================================== */
-
-    function clearPublished() {
-
-        videos =
-            videos.filter(
-                video =>
-                    video.status !==
-                    "published"
-            );
-
-
-        save();
-
-        render();
-
-        showToast(
-            "Published videos cleared."
-        );
-
-    }
-
-
-    /* ==========================================
-       THUMBNAIL ANALYSIS
-    ========================================== */
-
-    function analyzeThumbnail() {
-
-        const video =
-            selectedVideoId
-            ?
-            videos.find(
-                item =>
-                    item.id ===
-                    selectedVideoId
-            )
-            :
-            getOldest();
-
-
-        if (!video) {
-
-            showToast(
-                "Upload a video first."
-            );
-
-            return;
-
-        }
-
-
-        selectedVideoId =
-            video.id;
-
-
-        const mode =
-            document.getElementById(
-                "thumbnailMode"
-            ).value;
-
-
-        let selectedTime;
-
-
-        if (mode === "01") {
-
-            selectedTime =
-                0.1;
-
-        }
-        else if (mode === "05") {
-
-            selectedTime =
-                0.5;
-
-        }
-        else if (mode === "1") {
-
-            selectedTime =
-                1;
-
-        }
-        else if (mode === "smart") {
-
-            selectedTime =
-                "smart";
-
-        }
-        else {
-
-            selectedTime =
-                parseFloat(
-                    document.getElementById(
-                        "frameTime"
-                    ).value
-                ) || 0.1;
-
-        }
-
-
-        /*
-         * FRONTEND DEMO:
-         *
-         * A real implementation should send the video
-         * to a backend/FFmpeg worker.
-         *
-         * Example:
-         *
-         * POST /api/video/analyze-thumbnail
-         *
-         * Backend:
-         * 1. Extract frames.
-         * 2. Score sharpness.
-         * 3. Score composition.
-         * 4. Detect faces/subjects.
-         * 5. Detect blur.
-         * 6. Select best frame.
-         * 7. Return thumbnail.
-         */
-
-
-        showToast(
-            "Analyzing video frames..."
-        );
-
-
-        setTimeout(
-            () => {
-
-                video.thumbnailTime =
-                    selectedTime;
-
-
-                video.thumbnail =
-                    createDemoThumbnail(
-                        video.name
-                    );
-
-
-                save();
-
-                selectVideo(
-                    video.id
-                );
-
-                render();
-
-
-                showToast(
-                    selectedTime === "smart"
-                    ?
-                    "Best thumbnail frame selected."
-                    :
-                    `Thumbnail selected at ${selectedTime}s.`
-                );
-
-            },
-            1000
-        );
-
-    }
-
-
-    /* ==========================================
-       DEMO THUMBNAIL
-    ========================================== */
-
-    function createDemoThumbnail(
-        filename
-    ) {
-
-        const canvas =
-            document.createElement(
-                "canvas"
-            );
-
-
-        canvas.width = 1280;
-
-        canvas.height = 720;
-
-
-        const ctx =
-            canvas.getContext(
-                "2d"
-            );
-
-
-        ctx.fillStyle =
-            "#111827";
-
-
-        ctx.fillRect(
-            0,
-            0,
-            canvas.width,
-            canvas.height
-        );
-
-
-        ctx.fillStyle =
-            "#ef4444";
-
-
-        ctx.fillRect(
-            0,
-            0,
-            18,
-            canvas.height
-        );
-
-
-        ctx.fillStyle =
-            "#ffffff";
-
-
-        ctx.font =
-            "bold 58px Arial";
-
-
-        ctx.fillText(
-            "CREATORPILOT",
-            70,
-            120
-        );
-
-
-        ctx.font =
-            "bold 42px Arial";
-
-
-        ctx.fillText(
-            filename.substring(
-                0,
-                30
-            ),
-            70,
-            200
-        );
-
-
-        ctx.font =
-            "28px Arial";
-
-
-        ctx.fillStyle =
-            "#9ca3af";
-
-
-        ctx.fillText(
-            "AUTO-DETECTED THUMBNAIL",
-            70,
-            265
-        );
-
-
-        return canvas.toDataURL(
-            "image/jpeg",
-            .85
-        );
-
-    }
-
-
-    /* ==========================================
-       AI TITLE
-    ========================================== */
-
-    function generateTitle() {
-
-        const titles = [
-
-            "This Changes Everything You Know About AI",
-
-            "The AI Tools You Need to Know in 2026",
-
-            "You Won't Believe What AI Can Do Now",
-
-            "5 Things Everyone Should Know About This",
-
-            "The Future of Technology Is Already Here",
-
-            "This New AI Workflow Is Seriously Impressive",
-
-            "What Nobody Tells You About AI",
-
-            "The Ultimate Guide You Need to See"
-
-        ];
-
-
-        const title =
-            titles[
-                Math.floor(
-                    Math.random() *
-                    titles.length
-                )
-            ];
-
-
-        document.getElementById(
-            "titleInput"
-        ).value =
-            title;
-
-
-        if (selectedVideoId) {
-
-            const video =
-                videos.find(
-                    item =>
-                        item.id ===
-                        selectedVideoId
-                );
-
-
-            if (video) {
-
-                video.title =
-                    title;
-
-                video.description =
-                    generateDescription(
-                        title
-                    );
-
-                video.hashtags =
-                    "#YouTube #AI #Technology #Trending";
-
-
-                document.getElementById(
-                    "descriptionInput"
-                ).value =
-                    video.description;
-
-
-                document.getElementById(
-                    "hashtagsInput"
-                ).value =
-                    video.hashtags;
-
-
-                save();
-
-            }
-
-        }
-
-
-        showToast(
-            "AI metadata generated."
-        );
-
-    }
-
-
-    function generateDescription(
-        title
-    ) {
-
-        return `${title}
-
-Discover the key ideas, tools and insights
-behind this topic.
-
-Subscribe for more videos and enable
-notifications for future uploads.
-
-#YouTube #AI #Technology`;
-
-    }
-
-
-    /* ==========================================
-       MUSIC VOLUME
-    ========================================== */
-
-    function updateVolume() {
-
-        const value =
-            document.getElementById(
-                "musicVolume"
-            ).value;
-
-
-        document.getElementById(
-            "volumeValue"
-        ).textContent =
-            `${value}%`;
-
-    }
-
-
-    /* ==========================================
-       PROCESS OLDEST
-    ========================================== */
-
-    function processOldest() {
-
-        const video =
-            getOldest();
-
-
-        if (!video) {
-
-            showToast(
-                "No queued videos available."
-            );
-
-            return;
-
-        }
-
-
-        selectedVideoId =
-            video.id;
-
-
-        video.status =
-            "processing";
-
-
-        save();
-
-        render();
-
-
-        showToast(
-            `Processing ${video.name}...`
-        );
-
-
-        /*
-         * REAL BACKEND WORKFLOW:
-         *
-         * POST /api/process
-         *
-         * 1. Load original video.
-         * 2. Extract frames using FFmpeg.
-         * 3. Analyze frames.
-         * 4. Select best thumbnail.
-         * 5. Generate title.
-         * 6. Generate description.
-         * 7. Select licensed music.
-         * 8. Mix music with FFmpeg.
-         * 9. Create final MP4.
-         * 10. Find next 11AM / 8PM slot.
-         * 11. Upload to YouTube.
-         * 12. Set custom thumbnail.
-         */
-
-
-        setTimeout(
-            () => {
-
-                const title =
-                    document.getElementById(
-                        "titleInput"
-                    ).value ||
-                    "New CreatorPilot Video";
-
-
-                video.title =
-                    title;
-
-
-                video.description =
-                    document.getElementById(
-                        "descriptionInput"
-                    ).value ||
-                    generateDescription(
-                        title
-                    );
-
-
-                video.hashtags =
-                    document.getElementById(
-                        "hashtagsInput"
-                    ).value ||
-                    "#YouTube #Trending";
-
-
-                video.music =
-                    document.getElementById(
-                        "musicSource"
-                    ).value;
-
-
-                video.musicVolume =
-                    document.getElementById(
-                        "musicVolume"
-                    ).value;
-
-
-                video.thumbnailTime =
-                    document.getElementById(
-                        "thumbnailMode"
-                    ).value;
-
-
-                video.status =
-                    "scheduled";
-
-
-                video.scheduledAt =
-                    getNextPublishSlot();
-
-
-                save();
-
-                render();
-
-
-                showToast(
-                    `Scheduled for ${video.scheduledAt}`
-                );
-
-            },
-            1500
-        );
-
-    }
-
-
-    /* ==========================================
-       SCHEDULE ENGINE
-    ========================================== */
-
-    function getNextPublishSlot() {
-
-        const now =
-            new Date();
-
-
-        const slots = [
-            {
-                hour: 11,
-                minute: 0
-            },
-            {
-                hour: 20,
-                minute: 0
-            }
-        ];
-
-
-        for (const slot of slots) {
-
-            const candidate =
-                new Date(now);
-
-
-            candidate.setHours(
-                slot.hour,
-                slot.minute,
-                0,
-                0
-            );
-
-
-            if (
-                candidate.getTime() >
-                now.getTime()
-            ) {
-
-                return formatDateTime(
-                    candidate
-                );
-
-            }
-
-        }
-
-
-        const tomorrow =
-            new Date(now);
-
-
-        tomorrow.setDate(
-            tomorrow.getDate() + 1
-        );
-
-
-        tomorrow.setHours(
-            11,
-            0,
-            0,
-            0
-        );
-
-
-        return formatDateTime(
-            tomorrow
-        );
-
-    }
-
-
-    function formatDateTime(
-        date
-    ) {
-
-        return date.toLocaleString(
-            undefined,
-            {
-                year: "numeric",
-                month: "short",
-                day: "numeric",
-                hour: "2-digit",
-                minute: "2-digit"
-            }
-        );
-
-    }
-
-
-    /* ==========================================
-       AUTOMATION
-    ========================================== */
-
-    function updateAutomation() {
-
-        const enabled =
-            document.getElementById(
-                "autoPublish"
-            ).checked;
-
-
-        document.getElementById(
-            "automationText"
-        ).textContent =
-            enabled
-            ? "ON"
-            : "OFF";
-
-
-        showToast(
-            enabled
-            ? "Automation enabled."
-            : "Automation paused."
-        );
-
-    }
-
-
-    /* ==========================================
-       STATS
-    ========================================== */
-
-    function updateStats() {
-
-        const queued =
-            videos.filter(
-                v =>
-                    v.status ===
-                    "queued"
-            ).length;
-
-
-        const scheduled =
-            videos.filter(
-                v =>
-                    v.status ===
-                    "scheduled"
-            ).length;
-
-
-        const published =
-            videos.filter(
-                v =>
-                    v.status ===
-                    "published"
-            ).length;
-
-
-        const today =
-            new Date()
-            .toDateString();
-
-
-        const todayScheduled =
-            videos.filter(
-                v => {
-
-                    if (
-                        !v.scheduledAt
-                    ) {
-
-                        return false;
-
-                    }
-
-
-                    return new Date(
-                        v.scheduledAt
-                    ).toDateString()
-                    ===
-                    today;
-
-                }
-            ).length;
-
-
-        document.getElementById(
-            "queueCount"
-        ).textContent =
-            queued;
-
-
-        document.getElementById(
-            "scheduledCount"
-        ).textContent =
-            scheduled;
-
-
-        document.getElementById(
-            "publishedCount"
-        ).textContent =
-            published;
-
-
-        document.getElementById(
-            "todayCount"
-        ).textContent =
-            `${Math.min(
-                todayScheduled,
-                2
-            )} / 2`;
-
-    }
-
-
-    /* ==========================================
-       FORMAT SIZE
-    ========================================== */
-
-    function formatSize(
-        bytes
-    ) {
-
-        if (!bytes) {
-
-            return "";
-
-        }
-
-
-        const units = [
-            "B",
-            "KB",
-            "MB",
-            "GB",
-            "TB"
-        ];
-
-
-        const index =
-            Math.floor(
-                Math.log(bytes) /
-                Math.log(1024)
-            );
-
-
-        return (
-            bytes /
-            Math.pow(
-                1024,
-                index
-            )
-        ).toFixed(1)
-        + " "
-        + units[index];
-
-    }
-
-
-    /* ==========================================
-       ESCAPE
-    ========================================== */
-
-    function escapeHtml(
-        value
-    ) {
-
-        const div =
-            document.createElement(
-                "div"
-            );
-
-
-        div.textContent =
-            value;
-
-
-        return div.innerHTML;
-
-    }
-
-
-    /* ==========================================
-       TOAST
-    ========================================== */
-
-    let toastTimer;
-
-
-    function showToast(
-        message
-    ) {
-
-        const toast =
-            document.getElementById(
-                "toast"
-            );
-
-
-        toast.textContent =
-            message;
-
-
-        toast.classList.add(
-            "show"
-        );
-
-
-        clearTimeout(
-            toastTimer
-        );
-
-
-        toastTimer =
-            setTimeout(
-                () => {
-
-                    toast.classList.remove(
-                        "show"
-                    );
-
-                },
-                3000
-            );
-
-    }
-
-
-    /* ==========================================
-       INIT
-    ========================================== */
-
+    await saveSelectedFields();
+
+    video.status="scheduled";
+    video.scheduledAt=formatDateTime(getNextPublishSlot());
+    await dbPut(video);
+    await refresh();
+    setTimeline(3);
+    showToast(`Scheduled for ${video.scheduledAt}.`,"success");
+
+    /*
+      Production handoff example:
+        await fetch("/api/youtube/upload",{
+          method:"POST",
+          headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({videoId:video.id})
+        });
+    */
+  },1200);
+}
+
+function setTimeline(activeIndex){
+  const steps=[...document.querySelectorAll(".timeline-step")];
+  steps.forEach((s,i)=>{
+    s.classList.toggle("active",i===activeIndex);
+    s.classList.toggle("done",i<activeIndex);
+  });
+}
+
+function updateStats(){
+  const queued=videos.filter(v=>v.status==="queued").length;
+  const scheduled=videos.filter(v=>v.status==="scheduled").length;
+  const published=videos.filter(v=>v.status==="published").length;
+
+  const today=new Date().toDateString();
+  const todayScheduled=videos.filter(v=>v.scheduledAt && new Date(v.scheduledAt).toDateString()===today).length;
+
+  $("queueCount").textContent=queued;
+  $("scheduledCount").textContent=scheduled;
+  $("publishedCount").textContent=published;
+  $("todayCount").textContent=`${Math.min(todayScheduled,2)} / 2`;
+  $("automationText").textContent=$("autoPublish").checked?"ON":"OFF";
+}
+
+function openModal(){
+  const list=$("modalList");
+  list.innerHTML="";
+  const queued=videos.filter(v=>v.status==="queued");
+  if(!queued.length){
+    list.innerHTML=`<div class="empty">No queued videos.</div>`;
+  }else{
+    queued.forEach((v,i)=>{
+      const row=document.createElement("div");
+      row.className="drop-row";
+      row.innerHTML=`<div><strong>${i+1}. ${escapeHtml(v.name)}</strong><div class="small muted">${new Date(v.uploadedAt).toLocaleString()}</div></div><span class="badge badge-queued">Queued</span>`;
+      list.appendChild(row);
+    });
+  }
+  $("modalBackdrop").classList.add("open");
+}
+
+async function clearPublished(){
+  const published=videos.filter(v=>v.status==="published");
+  if(!published.length){showToast("No published items to clear.");return;}
+  for(const v of published) await dbDelete(v.id);
+  await refresh();
+  showToast(`${published.length} published item${published.length>1?"s":""} cleared.`,"success");
+}
+
+function bind(){
+  $("addVideosBtn").onclick=()=>$("videoInput").click();
+  $("selectVideosBtn").onclick=()=>$("videoInput").click();
+  $("videoInput").onchange=e=>{addVideos(e.target.files);e.target.value=""};
+
+  const area=$("uploadArea");
+  ["dragenter","dragover"].forEach(evt=>area.addEventListener(evt,e=>{
+    e.preventDefault();area.classList.add("dragover");
+  }));
+  ["dragleave","drop"].forEach(evt=>area.addEventListener(evt,e=>{
+    e.preventDefault();area.classList.remove("dragover");
+  }));
+  area.addEventListener("drop",e=>addVideos(e.dataTransfer.files));
+
+  $("sortOldestBtn").onclick=async()=>{
+    videos.sort((a,b)=>new Date(a.uploadedAt)-new Date(b.uploadedAt));
     render();
+    showToast("Queue sorted oldest first.");
+  };
 
-    updateVolume();
+  $("clearPublishedBtn").onclick=clearPublished;
+  $("analyzeThumbnailBtn").onclick=analyzeThumbnail;
+  $("generateTitleBtn").onclick=generateTitle;
+  $("processBtn").onclick=processOldest;
 
+  $("musicVolume").oninput=()=>{
+    $("volumeValue").textContent=`${$("musicVolume").value}%`;
+  };
+
+  $("autoPublish").onchange=()=>{
+    updateStats();
+    showToast($("autoPublish").checked?"Automation enabled.":"Automation paused.");
+  };
+
+  ["titleInput","descriptionInput","hashtagsInput","musicSource","musicVolume","musicEnabled"].forEach(id=>{
+    $(id).addEventListener("change",saveSelectedFields);
+  });
+
+  $("closeModal").onclick=()=>$("modalBackdrop").classList.remove("open");
+  $("modalBackdrop").onclick=e=>{
+    if(e.target===$("modalBackdrop"))$("modalBackdrop").classList.remove("open");
+  };
+
+  document.addEventListener("keydown",e=>{
+    if(e.key==="Escape")$("modalBackdrop").classList.remove("open");
+    if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==="u"){
+      e.preventDefault();$("videoInput").click();
+    }
+  });
+}
+
+(async function init(){
+  bind();
+  $("volumeValue").textContent=`${$("musicVolume").value}%`;
+  try{
+    await refresh();
+  }catch(err){
+    console.error(err);
+    showToast("Browser storage could not be initialized. Use a modern browser.","error");
+  }
+})();
 </script>
-
 </body>
 </html>
-```
